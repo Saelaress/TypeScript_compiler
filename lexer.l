@@ -1,26 +1,37 @@
 %option noyywrap
 %option never-interactive
 
-digits [0-9]+
-
 %{
 /* Объявление глобальных переменных */
 #include <stdio.h>
 int integer_count = 0;
 %}
 
+%x COMMENT
+
+decimal [0-9]+
+bin 0b[0-7]+
+octal 0o[0-7]+
+hex 0x[\da-f]+
+float \b[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?\b
+
 /* Описание правил */
 %%
-digits { /* Если найдено целое число */
+
+
+{decimal} { /* Если найдено целое число */
          integer_count++;
          printf("Found integer %s\n", yytext);
        }
-.|\n  { /* Все остальные символы и переносы строк */
-         /* Ничего не делать */
-       }
+.|\n {}
+       
+"/*" { BEGIN(COMMENT); }
+<COMMENT>[^*]+ {printf("Found comment:  %s\n", yytext); /* Ничего не делать */}
+<COMMENT>"*"+[^*/] 
+<COMMENT>"*"+"/" { BEGIN(INITIAL); }
+
 %%
 
-/* Точка входа в программу */
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
