@@ -4,13 +4,15 @@
 %{
 /* Объявление глобальных переменных */
 #include <stdio.h>
-int integer_count = 0;
+#include <typeinfo>
+#include <iostream> 
+using namespace std;
 %}
 
 %x COMMENT
 
 decimal [0-9]+
-bin 0b[0-7]+
+bin 0b[01]+
 octal 0o[0-7]+
 hex 0x[\da-f]+
 float \b[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?\b
@@ -18,15 +20,26 @@ float \b[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?\b
 /* Описание правил */
 %%
 
+{decimal} { /* Число десятичное */
+        char buffer[sizeof(yytext)];
+        strcpy(buffer, yytext);
+        int num = std::atoi(buffer);
 
-{decimal} { /* Если найдено целое число */
-         integer_count++;
-         printf("Found integer %s\n", yytext);
+        fprintf(yyout, "Число десятичное: %d\n", num);
        }
+
+{bin} { /* Число двоичное */
+        char buffer[sizeof(yytext)];
+        strcpy(buffer, yytext);
+        int num = std::atoi(buffer);
+
+        fprintf(yyout, "Число двоичное: %s\n", num);
+       }
+
 .|\n {}
-       
+
 "/*" { BEGIN(COMMENT); }
-<COMMENT>[^*]+ {printf("Found comment:  %s\n", yytext); /* Ничего не делать */}
+<COMMENT>[^*]+ {}
 <COMMENT>"*"+[^*/] 
 <COMMENT>"*"+"/" { BEGIN(INITIAL); }
 
@@ -43,9 +56,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Error: could not open file '%s'\n", argv[1]);
         return 1;
     }
-
-    yyin = input_file;
-    yylex();
+    
 	// Открываем выходной файл для записи
 	FILE* output_file = fopen("output.txt", "w");
 	if (!output_file) {
@@ -54,8 +65,9 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	// Записываем результат в выходной файл
-	fprintf(output_file, "Количество найденных целых чисел: %d\n", integer_count);
+    yyin = input_file;
+    yyout = output_file;
+    yylex();        
 
 	// Закрываем файлы
 	fclose(input_file);
