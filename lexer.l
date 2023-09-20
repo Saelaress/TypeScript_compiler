@@ -11,30 +11,35 @@ using namespace std;
 
 %x COMMENT
 
-decimal [0-9]+
-bin 0b[01]+
-octal 0o[0-7]+
-hex 0x[\da-f]+
-float \b[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?\b
+decimal [-]?[0-9]+
+bin [-]?0[bB][01]+
+octal [-]?0[oO][0-7]+
+hex [-]?0[xX][0-9a-fA-F]+
+float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
 
 /* Описание правил */
 %%
 
 {decimal} { /* Число десятичное */
-        char buffer[sizeof(yytext)];
-        strcpy(buffer, yytext);
-        int num = std::atoi(buffer);
-
-        fprintf(yyout, "Число десятичное: %d\n", num);
-       }
+        fprintf(yyout, "Число: %s\n", yytext);
+        }
 
 {bin} { /* Число двоичное */
-        char buffer[sizeof(yytext)];
-        strcpy(buffer, yytext);
-        int num = std::atoi(buffer);
+        fprintf(yyout, "Число: %s\n", yytext);
+        }
 
-        fprintf(yyout, "Число двоичное: %s\n", num);
-       }
+{octal} { /* Число восьмеричное */
+        fprintf(yyout, "Число: %s\n", yytext);
+        }
+
+{float} { /* Число с плавающей запятой */
+        fprintf(yyout, "Число: %s\n", yytext);
+        }
+
+{hex} { /* Число шестнадцатеричное */
+        fprintf(yyout, "Число: %s\n", yytext);
+        }
+
 
 .|\n {}
 
