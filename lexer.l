@@ -10,6 +10,7 @@ using namespace std;
 %}
 
 %x COMMENT
+%x STRING
 
 decimal [-]?[0-9]+
 bin [-]?0[bB][01]+
@@ -19,6 +20,44 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
 
 /* Описание правил */
 %%
+
+%{ 
+    char str[1000];
+    char comment[1000];
+%} /* Объявление локальных переменных */
+
+\" {
+    BEGIN(STRING);
+    str[0] = 0; // зануляем переменную
+}
+<STRING>[^\\\"\n]+ {strcat(str, yytext);}
+<STRING>\\n {strcat(str, "\n");}
+<STRING>\\\\ {strcat(str, "\\");}
+<STRING>\\\" {strcat(str, "\"");}
+<STRING>\\x[0-9A-F]{2} {
+    char* end, num[2];
+    num[0] = (char)strtol(yytext+2, &end, 16);
+    num[1] = 0;
+    }
+<STRING>\" {
+    fprintf(yyout, "Found string: %s\n", str);
+    BEGIN(INITIAL);
+    }
+<STRING>\n {printf("ERROR! Line break inside literal");}
+<STRING><<EOF>> {printf("ERROR! No end comma");}
+
+
+"/*" {
+    BEGIN(COMMENT); 
+    comment[0] = 0; // зануляем переменную
+    }
+<COMMENT>[^*]+ {strcat(comment, yytext);}
+<COMMENT>"*"+[^*/] {strcat(comment, yytext);}
+<COMMENT>"*"+"/" { 
+    fprintf(yyout, "Found comment: %s\n", comment);
+    BEGIN(INITIAL); 
+    }
+
 
 {decimal} { /* Число десятичное */
         fprintf(yyout, "Число: %s\n", yytext);
@@ -40,13 +79,7 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
         fprintf(yyout, "Число: %s\n", yytext);
         }
 
-
 .|\n {}
-
-"/*" { BEGIN(COMMENT); }
-<COMMENT>[^*]+ {}
-<COMMENT>"*"+[^*/] 
-<COMMENT>"*"+"/" { BEGIN(INITIAL); }
 
 %%
 

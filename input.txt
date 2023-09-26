@@ -10,3 +10,5 @@ sfevs
 -0x234abcd
 0.2345 -0.2345
 +24345 sdgfsd
+"i'm a string"
+/* wevdfvdfb */
