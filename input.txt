@@ -1,3 +1,14 @@
 7777753
+-7777753
 /* ok */
-0b01101
+0b1011
+-0b1011
+sfevs
+ sdfv   0o2343 -0o2343
+
+0x234abcd
+-0x234abcd
+0.2345 -0.2345
++24345 sdgfsd
+"i'm a string"
+/* wevdfvdfb */
