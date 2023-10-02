@@ -184,7 +184,9 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     str[0] = 0; // зануляем переменную
     }
 <STRINGB>\$\{ {
-    BEGIN(TEMPLATE);}
+    // BEGIN(TEMPLATE);
+    strcat(str, "${");
+    }
 <STRINGB>\$\{\s*\} {
     printf("ERROR! Unexpected '}'.");
     exit(1);
