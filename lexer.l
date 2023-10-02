@@ -5,7 +5,7 @@
 /* Объявление глобальных переменных */
 #include <stdio.h>
 #include <typeinfo>
-#include <iostream> 
+#include <iostream>
 using namespace std;
 %}
 
@@ -14,6 +14,7 @@ using namespace std;
 %x STRINGS
 %x STRINGB
 %x TEMPLATE
+%x COMMENTONE
 
 decimal [-]?[0-9]+
 bin [-]?0[bB][01]+
@@ -23,6 +24,12 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
 
 /* Описание правил */
 %%
+%{ 
+    char str[1000];
+    char comment[1000];
+    bool tempSC = false;
+%} /* Объявление локальных переменных */
+
 \babstract\b {fprintf(yyout, "Ключевое слово, которое описывает абстрактные классы или методы: %s\n", yytext);}
 \bany\b {fprintf(yyout, "Смешанный тип данных: %s\n", yytext);}
 \bas\b {fprintf(yyout, "Ключевое слово для приведения типов: %s\n", yytext);}
@@ -58,7 +65,7 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
 \binterface\b {fprintf(yyout, "Ключевое слово для определения контракта: %s\n", yytext);}
 \bis\b {fprintf(yyout, "Ключевое слово для создания пользовательских условных типов: %s\n", yytext);}
 \bkeyof\b {fprintf(yyout, "Оператор для извлечения ключей типа объекта: %s\n", yytext);}
-\blet\b {fprintf(yyout, "Ключевое слово, объявляющее переменную с блочной областью видимости: %s\n", yytext);}
+
 \bmodule\b {fprintf(yyout, "Ключевое слово для определения модуля или пространства имен: %s\n", yytext);}
 \bnamespace\b {fprintf(yyout, "Ключевое слово для определения пространства имен: %s\n", yytext);}
 \bnever\b {fprintf(yyout, "Тип данных: %s\n", yytext);}
@@ -89,13 +96,6 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
 \bunknown\b {fprintf(yyout, "Тип данных: %s\n", yytext);}
 \bvar\b {fprintf(yyout, "Ключевое слово, объявляющее переменную с функциональной областью видимости: %s\n", yytext);}
 
-
-%{ 
-    char str[1000];
-    char comment[1000];
-    bool tempSC = false;
-%} /* Объявление локальных переменных */
-
 \" { // строка с двойными кавычками
     BEGIN(STRINGD);
     str[0] = 0; // зануляем переменную
@@ -115,11 +115,11 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
     else BEGIN(INITIAL);
     }
 <STRINGD>\n {
-    printf("ERROR! Line break inside literal.");
+    printf("ERROR! Line break inside literal in double quote string.");
     exit(1);
     }
 <STRINGD><<EOF>> {
-    printf("ERROR! Unterminated string literal.");
+    printf("ERROR! Unterminated string literal in double quote string.");
     exit(1);
     }
 
@@ -143,11 +143,11 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
     else BEGIN(INITIAL);
     }
 <STRINGS>\n {
-    printf("ERROR! Line break inside literal.");
+    printf("ERROR! Line break inside literal in single quote string.");
     exit(1);
     }
 <STRINGS><<EOF>> {
-    printf("ERROR! Unterminated string literal.");
+    printf("ERROR! Unterminated string literal in single quote string.");
     exit(1);
     }
 
@@ -156,7 +156,8 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
     BEGIN(STRINGB);
     str[0] = 0; // зануляем переменную
     }
-<STRINGB>[^\\\`\n\t(?!\$\{)]+ {strcat(str, yytext);}
+<STRINGB>[^\\\`\n\t]+ {//тут надо убрать совпадение с ${}
+strcat(str, yytext);}
 <STRINGB>\$\{ {BEGIN(TEMPLATE);}
 <STRINGB>\$\{\s*\} {
     printf("ERROR! Unexpected '}'.");
@@ -173,7 +174,7 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
     BEGIN(INITIAL);
     }
 <STRINGB><<EOF>> {
-    printf("ERROR! Unterminated string literal.");
+    printf("ERROR! Unterminated string literal in pattern string.");
     exit(1);
     }
 
@@ -212,10 +213,29 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
     tempSC = true;
     BEGIN(STRINGS);
     }
-<TEMPLATE>\s*\} {BEGIN(STRINGB);}
-<TEMPLATE>[\`\\n] {
-    printf("ERROR! Unterminated string literal.");
+<TEMPLATE>\s*\} { // конец шаблона
+    BEGIN(STRINGB);
+    }
+<TEMPLATE>.|\n {
+    strcat(str, yytext);
+    }
+<TEMPLATE>[\`] {
+    printf("ERROR! Unterminated string literal in template from pattern string.");
     exit(1);
+    }
+
+\/\/ {
+    BEGIN(COMMENTONE); 
+    comment[0] = 0; // зануляем переменную
+}
+<COMMENTONE>[^\n] {strcat(comment, yytext);}
+<COMMENTONE>\n {
+    fprintf(yyout, "Found comment: %s\n", comment);
+    BEGIN(INITIAL);
+    }
+<COMMENTONE><<EOF>> {
+    fprintf(yyout, "Found comment: %s\n", comment);
+    BEGIN(INITIAL);
     }
 
 
@@ -233,7 +253,6 @@ float [-]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?+
     printf("ERROR! No closing comment at the end.");
     exit(1);
     }
-
 
 {decimal} { /* Число десятичное */
         fprintf(yyout, "Число: %s\n", yytext);

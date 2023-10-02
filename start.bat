@@ -1,5 +1,5 @@
 flex -omain.cpp lexer.l
 g++ -omain main.cpp
-main input.txt
+main test.ts
 
 pause
