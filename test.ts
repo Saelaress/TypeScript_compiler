@@ -1,6 +1,9 @@
+const asciiChar: string = "\x41";
+const asciiChar1: string = '\113';
+
 /* Объявление переменных разных типов данных */
 // Числа
-letletlet;
+const letletlet = "let";
 let myDec: number = 7777753;
 let myMinusDec: number = -7777753;
 let myBin: number = 0b1011;
@@ -39,12 +42,3 @@ class Person {
 // Создание экземпляра класса и вызов его метода
 const person = new Person("John", 30);
 person.sayHello();
-
-/* Этот фрагмент кода содержит примеры следующих типов лексем:
-Ключевые слова: let, number, string, boolean, function, return, class, constructor, public, private, void, new, const
-Идентификаторы: myNumber, myString, myBoolean, myArray, myTuple, sayHello, Person, name, age, person
-Знаки препинания: ,, =, :, ;, (), {}, [], . $
-Литералы: 42, "Hello, world!", true, "apple", "banana", "orange", [1, "Hello"]
-Строки: "Hello, ${name}!", `Hello, my name is ${this.name} and I am ${this.age} years old.`
-Комментарии: // Объявление переменных разных типов данных, // Функция, возвращающая строку, // Класс с конструктором и методом, // Создание экземпляра класса и вызов его метода.
-*/
