@@ -20,7 +20,7 @@ decimal [-+]?[0-9]+
 bin [-+]?0[bB][01]+
 octal [-+]?0[oO][0-7]+
 hex [-+]?0[xX][0-9a-fA-F]+
-float ^[-+]?([0-9]+\.?|\.{1}[0-9]+)[0-9]*([eE][-+]?[0-9]+)?$
+float [-+]?([0-9]+\.?|\.{1}[0-9]+)[0-9]*([eE][-+]?[0-9]+)?
 
 /* Описание правил */
 %%
@@ -233,6 +233,13 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     exit(1);
     }
 
+{float} { /* Число с плавающей запятой */
+    char numStr[20];
+    float num = strtof(yytext, NULL);
+    snprintf(numStr, sizeof(numStr), "%f", num);
+    fprintf(yyout, "Число: %s\n", numStr);
+    }
+
 {decimal} { /* Число десятичное */
     fprintf(yyout, "Число: %s\n", yytext);
     }
@@ -248,13 +255,6 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     char* end, numStr[20];
     long int num = strtol(yytext+2, &end, 8);
     snprintf(numStr, sizeof(numStr), "%ld", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
-
-{float} { /* Число с плавающей запятой */
-    char numStr[20];
-    float num = strtof(yytext, NULL);
-    snprintf(numStr, sizeof(numStr), "%f", num);
     fprintf(yyout, "Число: %s\n", numStr);
     }
 
