@@ -45,6 +45,10 @@ expr: INT
 | '-' expr %prec UMINUS
 ;
 
+if_stmt : IF '(' expr ')' stmt 
+| IF '(' expr ')' stmt ELSE stmt
+;
+
 
 
 %%
