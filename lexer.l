@@ -29,109 +29,109 @@ float ([0-9]+\.?|\.{1}[0-9]+)[0-9]*([eE][-+]?[0-9]+)?
     char comment[1000];
 %} /* Объявление локальных переменных */
 
-abstract {fprintf(yyout, "Ключевое слово, которое описывает абстрактные классы или методы: %s\n", yytext);} 
-any {fprintf(yyout, "Смешанный тип данных: %s\n", yytext);} 
-as {fprintf(yyout, "Ключевое слово для приведения типов: %s\n", yytext);} 
-boolean {fprintf(yyout, "Тип данных: %s\n", yytext);} 
-break {fprintf(yyout, "Ключевое слово, которое используется для выхода из цикла или оператора switch: %s\n", yytext);} 
-case {fprintf(yyout, "Ключевое слово, которое используется в операторе switch для определения маршрута исполнения кода: %s\n", yytext);} 
-catch {fprintf(yyout, "Ключевое слово для блока обработки ошибок: %s\n", yytext);} 
-class {fprintf(yyout, "Ключевое слово для определения класса: %s\n", yytext);} 
-continue {fprintf(yyout, "Ключевое слово, которое используется для перехода к следующей итерации цикла: %s\n", yytext);} 
-const {fprintf(yyout, "Ключевое слово для объявления постоянной переменной: %s\n", yytext);} 
-constructor {fprintf(yyout, "Конструктор класса: %s\n", yytext);} 
-debugger {fprintf(yyout, "Ключевое слово для для добавления точки останова в коде: %s\n", yytext);} 
-declare {fprintf(yyout, "Ключевое слово для объявления переменных, функций или типов без определения объекта: %s\n", yytext);} 
-default {fprintf(yyout, "Ключевое слово, которое указывает действие, выполняемое по умолчанию в операторе switch: %s\n", yytext);} 
-delete {fprintf(yyout, "Оператор удаления свойств объекта: %s\n", yytext);} 
-do {fprintf(yyout, "Ключевое слово, которое используется в цикле do-while: %s\n", yytext);} 
-else {fprintf(yyout, "Ключевое слово, которое указывает выполнение другого блока кода, если условие в if не выполняется: %s\n", yytext);} 
-enum {fprintf(yyout, "Определение перечисления: %s\n", yytext);} 
-export {fprintf(yyout, "Ключевое слово для экспорта переменных, функций или классов из модуля: %s\n", yytext);} 
-extends {fprintf(yyout, "Ключевое слово для обозначения наследования классом существующего класса: %s\n", yytext);} 
-false {fprintf(yyout, "Логическое значение ложь: %s\n", yytext);} 
-finally {fprintf(yyout, "Ключевое слово для обозначения блока кода, выполняемого после try-catch, независимо от результата: %s\n", yytext);} 
-for {fprintf(yyout, "Ключевое слово для определения цикла for: %s\n", yytext);} 
-from {fprintf(yyout, "Ключевое слово для импортирования определений из модуля при использовании import: %s\n", yytext);} 
-function {fprintf(yyout, "Ключевое слово для объявления функции: %s\n", yytext);} 
-get {fprintf(yyout, "Геттер: %s\n", yytext);} 
-if {fprintf(yyout, "Оператор условного выполнения кода: %s\n", yytext);} 
-implements {fprintf(yyout, "Ключевое слово для реализации интерфейса в классе: %s\n", yytext);} 
-import {fprintf(yyout, "Ключевое слово для импорта переменных, функций или классов из других модулей: %s\n", yytext);} 
-in {fprintf(yyout, "Оператор для определения наличия свойств в объекте: %s\n", yytext);} 
-infer {fprintf(yyout, "Ключевое слово для вывода типов в условных типах: %s\n", yytext);} 
-instanceof {fprintf(yyout, "Оператор для определения принадлежности объекта к определенному классу: %s\n", yytext);} 
-interface {fprintf(yyout, "Ключевое слово для определения контракта: %s\n", yytext);} 
-is {fprintf(yyout, "Ключевое слово для создания пользовательских условных типов: %s\n", yytext);} 
-keyof {fprintf(yyout, "Оператор для извлечения ключей типа объекта: %s\n", yytext);} 
-let {fprintf(yyout, "Ключевое слово, объявляющее переменную с блочной областью видимости: %s\n", yytext);} 
-module {fprintf(yyout, "Ключевое слово для определения модуля или пространства имен: %s\n", yytext);} 
-namespace {fprintf(yyout, "Ключевое слово для определения пространства имен: %s\n", yytext);} 
-never {fprintf(yyout, "Тип данных: %s\n", yytext);} 
-new {fprintf(yyout, "Оператор создания нового объекта: %s\n", yytext);} 
-null {fprintf(yyout, "Специальное значение, означающее отсутствие значения: %s\n", yytext);} 
-number {fprintf(yyout, "Тип данных: %s\n", yytext);} 
-object {fprintf(yyout, "Базовый тип для всех объектов: %s\n", yytext);} 
-package {fprintf(yyout, "Модификатор доступа: %s\n", yytext);} 
-private {fprintf(yyout, "Модификатор доступа: %s\n", yytext);} 
-protected {fprintf(yyout, "Модификатор доступа: %s\n", yytext);} 
-public {fprintf(yyout, "Модификатор доступа: %s\n", yytext);} 
-readonly {fprintf(yyout, "Модификатор для создания свойств, доступных только для чтения: %s\n", yytext);} 
-require {fprintf(yyout, "Функция для импорта модулей в стиле CommonJS: %s\n", yytext);} 
-return {fprintf(yyout, "Оператор возврата результата функции: %s\n", yytext);} 
-set {fprintf(yyout, "Сеттер: %s\n", yytext);} 
-static {fprintf(yyout, "Ключевое слово, определяющее статические свойства или методы класса: %s\n", yytext);} 
-string {fprintf(yyout, "Тип данных: %s\n", yytext);} 
-super {fprintf(yyout, "Вызов конструктора базового класса: %s\n", yytext);} 
-switch {fprintf(yyout, "Оператор для выполнения блока кода на основе значения переменной: %s\n", yytext);} 
-symbol {fprintf(yyout, "Специфический и уникальный тип данных для создания идентификаторов: %s\n", yytext);} 
-this {fprintf(yyout, "Ссылка на текущий объект: %s\n", yytext);} 
-throw {fprintf(yyout, "Оператор выброса исключения: %s\n", yytext);} 
-true {fprintf(yyout, "Логическое значение истина: %s\n", yytext);} 
-try {fprintf(yyout, "Ключевое слово, начинающее блок кода, обрабатывающего исключения: %s\n", yytext);} 
-type {fprintf(yyout, "Ключевое слово для объявления нового именованного типа данных: %s\n", yytext);} 
-typeof {fprintf(yyout, "Оператор для определения типа данных переменной: %s\n", yytext);} 
-unique {fprintf(yyout, "Ключевое слово, резервированное для возможного использования в будущем: %s\n", yytext);} 
-unknown {fprintf(yyout, "Тип данных: %s\n", yytext);} 
-var {fprintf(yyout, "Ключевое слово, объявляющее переменную с функциональной областью видимости: %s\n", yytext);}
+abstract {fprintf(yyout, "Found KW_ABSTRACT: %s\n", yytext);} 
+any {fprintf(yyout, "Found TYPE_ANY: %s\n", yytext);} 
+as {fprintf(yyout, "Found KW_AS: %s\n", yytext);} 
+boolean {fprintf(yyout, "Found TYPE_BOOLEAN: %s\n", yytext);} 
+break {fprintf(yyout, "Found KW_BREAK: %s\n", yytext);} 
+case {fprintf(yyout, "Found KW_CASE: %s\n", yytext);} 
+catch {fprintf(yyout, "Found KW_CATCH: %s\n", yytext);} 
+class {fprintf(yyout, "Found KW_CLASS: %s\n", yytext);} 
+continue {fprintf(yyout, "Found KW_CONTINUE: %s\n", yytext);} 
+const {fprintf(yyout, "Found KW_CONST: %s\n", yytext);} 
+constructor {fprintf(yyout, "Found KW_CONSTRUCTOR: %s\n", yytext);} 
+debugger {fprintf(yyout, "Found KW_DEBUGGER: %s\n", yytext);} 
+declare {fprintf(yyout, "Found KW_DECLARE: %s\n", yytext);} 
+default {fprintf(yyout, "Found KW_DEFAULT: %s\n", yytext);} 
+delete {fprintf(yyout, "Found KW_DELETE: %s\n", yytext);} 
+do {fprintf(yyout, "Found KW_DO: %s\n", yytext);} 
+else {fprintf(yyout, "Found KW_ELSE: %s\n", yytext);} 
+enum {fprintf(yyout, "Found KW_ENUM: %s\n", yytext);} 
+export {fprintf(yyout, "Found KW_EXPORT: %s\n", yytext);} 
+extends {fprintf(yyout, "Found KW_EXTENDS: %s\n", yytext);} 
+false {fprintf(yyout, "Found KW_FALSE: %s\n", yytext);} 
+finally {fprintf(yyout, "Found KW_FINALLY: %s\n", yytext);} 
+for {fprintf(yyout, "Found KW_FOR: %s\n", yytext);} 
+from {fprintf(yyout, "Found KW_FROM: %s\n", yytext);} 
+function {fprintf(yyout, "Found KW_FUNCTION: %s\n", yytext);} 
+get {fprintf(yyout, "Found KW_GET: %s\n", yytext);} 
+if {fprintf(yyout, "Found KW_IF: %s\n", yytext);} 
+implements {fprintf(yyout, "Found KW_IMPLEMENTS: %s\n", yytext);} 
+import {fprintf(yyout, "Found KW_IMPORT: %s\n", yytext);} 
+in {fprintf(yyout, "Found KW_IN: %s\n", yytext);} 
+infer {fprintf(yyout, "Found KW_INFER: %s\n", yytext);} 
+instanceof {fprintf(yyout, "Found KW_INSTANCEOF: %s\n", yytext);} 
+interface {fprintf(yyout, "Found KW_INTARFACE: %s\n", yytext);} 
+is {fprintf(yyout, "Found KW_IS: %s\n", yytext);} 
+keyof {fprintf(yyout, "Found KW_KEYOF: %s\n", yytext);} 
+let {fprintf(yyout, "Found KW_LET: %s\n", yytext);} 
+module {fprintf(yyout, "Found KW_MODULE: %s\n", yytext);} 
+namespace {fprintf(yyout, "Found KW_NAMESPACE: %s\n", yytext);} 
+never {fprintf(yyout, "Found TYPE_NEVER: %s\n", yytext);} 
+new {fprintf(yyout, "Found KW_NEW: %s\n", yytext);} 
+null {fprintf(yyout, "Found KW_NULL: %s\n", yytext);} 
+number {fprintf(yyout, "Found TYPE_NUMBER: %s\n", yytext);} 
+object {fprintf(yyout, "Found TYPE_OBJECT: %s\n", yytext);} 
+package {fprintf(yyout, "Found KW_PACKAGE: %s\n", yytext);} 
+private {fprintf(yyout, "Found KW_PRIVATE: %s\n", yytext);} 
+protected {fprintf(yyout, "Found KW_PROTECTED: %s\n", yytext);} 
+public {fprintf(yyout, "Found KW_PUBLIC: %s\n", yytext);} 
+readonly {fprintf(yyout, "Found KW_READONLY: %s\n", yytext);} 
+require {fprintf(yyout, "Found KW_REQUIRE: %s\n", yytext);} 
+return {fprintf(yyout, "Found KW_RETURN: %s\n", yytext);} 
+set {fprintf(yyout, "Found KW_SET: %s\n", yytext);} 
+static {fprintf(yyout, "Found KW_STATIC: %s\n", yytext);} 
+string {fprintf(yyout, "Found TYPE_STRING: %s\n", yytext);} 
+super {fprintf(yyout, "Found KW_SUPER: %s\n", yytext);} 
+switch {fprintf(yyout, "Found KW_SWITCH: %s\n", yytext);} 
+symbol {fprintf(yyout, "Found TYPE_SYMBOL: %s\n", yytext);} 
+this {fprintf(yyout, "Found KW_THIS: %s\n", yytext);} 
+throw {fprintf(yyout, "Found KW_THROW: %s\n", yytext);} 
+true {fprintf(yyout, "Found KW_TRUE: %s\n", yytext);} 
+try {fprintf(yyout, "Found KW_TRY: %s\n", yytext);} 
+type {fprintf(yyout, "Found KW_TYPE: %s\n", yytext);} 
+typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);} 
+unique {fprintf(yyout, "Found KW_UNIQUE: %s\n", yytext);} 
+unknown {fprintf(yyout, "Found TYPE_UNKNOWN: %s\n", yytext);} 
+var {fprintf(yyout, "Found KW_VAR: %s\n", yytext);}
 
-\% {fprintf(yyout, "Оператор остатка от деления: %s\n", yytext);} 
-\%\= {fprintf(yyout, "Оператор краткой записи вычисления остатка от деления: %s\n", yytext);} 
-\+ {fprintf(yyout, "Оператор арифметического сложения: %s\n", yytext);} 
-\+\= {fprintf(yyout, "Оператор краткой записи сложения: %s\n", yytext);} 
-\+\+ {fprintf(yyout, "Оператор инкремента: %s\n", yytext);} 
-\- {fprintf(yyout, "Оператор арифметического вычитания: %s\n", yytext);} 
-\-\= {fprintf(yyout, "Оператор краткой записи вычитания: %s\n", yytext);} 
-\-\- {fprintf(yyout, "Оператор декремента: %s\n", yytext);} 
-\* {fprintf(yyout, "Оператор умножения: %s\n", yytext);} 
-\*\= {fprintf(yyout, "Оператор краткой записи умножения: %s\n", yytext);} 
-\= {fprintf(yyout, "Оператор присваивания: %s\n", yytext);} 
-\=\= {fprintf(yyout, "Оператор сравнения равенства: %s\n", yytext);} 
-\=\=\= {fprintf(yyout, "Оператор сравнения по значению и типу: %s\n", yytext);} 
-\! {fprintf(yyout, "Оператор логического НЕ: %s\n", yytext);} 
-\!\= {fprintf(yyout, "Оператор неравенства: %s\n", yytext);} 
-\!\=\= {fprintf(yyout, "Оператор неравенства по значению и типу: %s\n", yytext);} 
-\> {fprintf(yyout, "Оператор больше: %s\n", yytext);} 
-\>\= {fprintf(yyout, "Оператор больше или равно: %s\n", yytext);} 
-\< {fprintf(yyout, "Оператор меньше: %s\n", yytext);} 
-\<\= {fprintf(yyout, "Оператор меньше или равно: %s\n", yytext);} 
-\/ {fprintf(yyout, "Оператор деления: %s\n", yytext);} 
-\/\= {fprintf(yyout, "Оператор краткой записи деления: %s\n", yytext);} 
-\^ {fprintf(yyout, "Бинарный оператор исключающего ИЛИ: %s\n", yytext);} 
+\% {fprintf(yyout, "Found OPERATOR_MOD: %s\n", yytext);} 
+\%\= {fprintf(yyout, "Found OPERATOR_MOD_ASSIGNMENT: %s\n", yytext);} 
+\+ {fprintf(yyout, "Found OPERATOR_PLUS: %s\n", yytext);} 
+\+\= {fprintf(yyout, "Found OPERATOR_PLUS_ASSIGNMENT: %s\n", yytext);} 
+\+\+ {fprintf(yyout, "Found OPERATOR_INCREMENT: %s\n", yytext);} 
+\- {fprintf(yyout, "Found OPERATOR_MINUS: %s\n", yytext);} 
+\-\= {fprintf(yyout, "Found OPERATOR_MINUS_ASSIGNMENT: %s\n", yytext);} 
+\-\- {fprintf(yyout, "Found OPERATOR_DICREMENT: %s\n", yytext);} 
+\* {fprintf(yyout, "Found OPERATOR_MUL: %s\n", yytext);} 
+\*\= {fprintf(yyout, "Found OPERATOR_MUL_ASSIGNMENT: %s\n", yytext);} 
+\= {fprintf(yyout, "Found OPERATOR_ASSIGNMENT: %s\n", yytext);} 
+\=\= {fprintf(yyout, "Found OPERATOR_EQUAL: %s\n", yytext);} 
+\=\=\= {fprintf(yyout, "Found OPERATOR_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);} 
+\! {fprintf(yyout, "Found OPERATOR_BIT_NOT: %s\n", yytext);} 
+\!\= {fprintf(yyout, "Found OPERATOR_NOT_EQUAL: %s\n", yytext);} 
+\!\=\= {fprintf(yyout, "Found OPERATOR_NOT_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);} 
+\> {fprintf(yyout, "Found OPERATOR_MORE: %s\n", yytext);} 
+\>\= {fprintf(yyout, "Found OPERATOR_MORE_OR_EQUAL: %s\n", yytext);} 
+\< {fprintf(yyout, "Found OPERATOR_LESS: %s\n", yytext);} 
+\<\= {fprintf(yyout, "Found OPERATOR_LESS_OR_EQUA: %s\n", yytext);} 
+\/ {fprintf(yyout, "Found OPERATOR_DIV: %s\n", yytext);} 
+\/\= {fprintf(yyout, "Found OPERATOR_DIV_ASSIGNMENT: %s\n", yytext);} 
+\^ {fprintf(yyout, "Found OPERATOR_BIT_XOR: %s\n", yytext);} 
 \~ {fprintf(yyout, "Унарный оператор побитового НЕ: %s\n", yytext);} 
-\& {fprintf(yyout, "Оператор пересечения типов: %s\n", yytext);} 
-\&\& {fprintf(yyout, "Оператор логического И: %s\n", yytext);} 
-\| {fprintf(yyout, "Оператор объединения типов: %s\n", yytext);} 
-\|\| {fprintf(yyout, "Оператор логического ИЛИ: %s\n", yytext);} 
-\[ {fprintf(yyout, "Открывающая квадратная скобка: %s\n", yytext);} 
-\] {fprintf(yyout, "Закрывающая квадратная скобка: %s\n", yytext);} 
-\( {fprintf(yyout, "Открывающая круглая скобка: %s\n", yytext);} 
-\) {fprintf(yyout, "Закрывающая круглая скобка: %s\n", yytext);} 
-\{ {fprintf(yyout, "Открывающая фигурная скобка: %s\n", yytext);} 
-\} {fprintf(yyout, "Закрывающая фигурная скобка: %s\n", yytext);}
-\: {fprintf(yyout, "оператор указания типа переменной: %s\n", yytext);}
-\; {fprintf(yyout, "Оператор завершения: %s\n", yytext);}
-\n {fprintf(yyout, "Оператор завершения: \\n\n", yytext);}
+\& {fprintf(yyout, "Found OPERATOR_AMPERSAND: %s\n", yytext);} 
+\&\& {fprintf(yyout, "Found OPERATOR_AND: %s\n", yytext);} 
+\| {fprintf(yyout, "Found OPERATOR_BIT_OR: %s\n", yytext);} 
+\|\| {fprintf(yyout, "Found OPERATOR_OR: %s\n", yytext);} 
+\[ {fprintf(yyout, "Found LEFT_SQUARE_BRACKET: %s\n", yytext);} 
+\] {fprintf(yyout, "Found RIGHT_SQUARE_BRACKET: %s\n", yytext);} 
+\( {fprintf(yyout, "Found LEFT_ROUND_BRACKET: %s\n", yytext);} 
+\) {fprintf(yyout, "Found RIGHT_ROUND_BRACKET: %s\n", yytext);} 
+\{ {fprintf(yyout, "Found LEFT_FIGURE_BRACKET: %s\n", yytext);} 
+\} {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
+\: {fprintf(yyout, "Found COLON: %s\n", yytext);}
+\; {fprintf(yyout, "Found SEMICOLON: %s\n", yytext);}
+\n {fprintf(yyout, "Found OPERATOR_ENTER: \\n\n", yytext);}
 
 \" { // строка с двойными кавычками
     BEGIN(STRINGD);
