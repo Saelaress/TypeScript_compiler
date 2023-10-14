@@ -187,8 +187,8 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     }
 <STRINGB>\n {strcat(str, "\n");}
 <STRINGB>\$\{ {
-    BEGIN(TEMPLATE);
     strcat(str, "${");
+    BEGIN(TEMPLATE);
     }
 <STRINGB>\$\{\s*\} {
     printf("ERROR! Unexpected '}'.");
@@ -206,7 +206,13 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     BEGIN(INITIAL);
     }
 
-<TEMPLATE>\s*\} {BEGIN(STRINGB);}
+<TEMPLATE>\} {
+    strcat(str, yytext);
+    BEGIN(STRINGB);
+    }
+<TEMPLATE>[^\}]* {
+    strcat(str, yytext);
+}
 <TEMPLATE><<EOF>> {
     printf("ERROR! Missing } in template expression.");
     exit(1);
