@@ -16,11 +16,11 @@ using namespace std;
 %x TEMPLATE
 %x COMMENTONE
 
-decimal [-+]?[0-9]+
-bin [-+]?0[bB][01]+
-octal [-+]?0[oO][0-7]+
-hex [-+]?0[xX][0-9a-fA-F]+
-float [-+]?([0-9]+\.?|\.{1}[0-9]+)[0-9]*([eE][-+]?[0-9]+)?
+decimal [0-9]+
+bin 0[bB][01]+
+octal 0[oO][0-7]+
+hex 0[xX][0-9a-fA-F]+
+float ([0-9]+\.?|\.{1}[0-9]+)[0-9]*([eE][-+]?[0-9]+)?
 
 /* Описание правил */
 %%
@@ -137,20 +137,22 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     BEGIN(STRINGD);
     str[0] = 0; // зануляем переменную
     }
+<STRINGD,STRINGS,STRINGB>\\[xX][^0-9a-fA-F] {printf("ERROR! Invalid hexadecimal escape sequence.");}
 <STRINGD,STRINGS,STRINGB>\\[xX][0-9a-fA-F]{1,2} {
     char* end;
     long int num = strtol(yytext+2, &end, 16);
     char asciiChar = static_cast<char>(num);
     strncat(str, &asciiChar, 1);
     }
-<STRINGD,STRINGS>\\[0-7]{1,3} {
+<STRINGD,STRINGS>\\[0-7]{1,2} {
     char* end;
     long int num = strtol(yytext+1, &end, 8);
     char asciiChar = static_cast<char>(num);
     strncat(str, &asciiChar, 1);
     }
-<STRINGD,STRINGS>[^\\\"\'\n\t]+ {strcat(str, yytext);}
+<STRINGD,STRINGS>[^\\\"\'\n]+ {strcat(str, yytext);}
 <STRINGD,STRINGS,STRINGB>\\n {strcat(str, "\n");}
+<STRINGD,STRINGS,STRINGB>\t {strcat(str, "\t");}
 <STRINGD,STRINGS,STRINGB>\\t {strcat(str, "\t");}
 <STRINGD,STRINGS,STRINGB>\\\\ {strcat(str, "\\");}
 <STRINGD,STRINGS,STRINGB>\\\" {strcat(str, "\"");}
@@ -183,8 +185,9 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     BEGIN(STRINGB);
     str[0] = 0; // зануляем переменную
     }
+<STRINGB>\n {strcat(str, "\n");}
 <STRINGB>\$\{ {
-    // BEGIN(TEMPLATE);
+    BEGIN(TEMPLATE);
     strcat(str, "${");
     }
 <STRINGB>\$\{\s*\} {
@@ -192,8 +195,8 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     exit(1);
     }
 <STRINGB>[\${]+ {strcat(str, yytext);}
-<STRINGB>\\[0-7]{1,3} {
-    printf("ERROR! Legacy octal escape sequences cannot be used in template literals.");
+<STRINGB>\\[0-7]{2} {
+    printf("ERROR! Octal escape sequences are not allowed in template strings.");
     exit(1);
     }
 <STRINGB>[^\\\`\n\t] {strcat(str, yytext);}
@@ -203,34 +206,29 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     BEGIN(INITIAL);
     }
 
-\/\/ {
-    BEGIN(COMMENTONE); 
-    comment[0] = 0; // зануляем переменную
-}
-<COMMENTONE>[^\n] {strcat(comment, yytext);}
-<COMMENTONE>\n {
-    // fprintf(yyout, "Found comment: %s\n", comment);
-    BEGIN(INITIAL);
-    }
-<COMMENTONE><<EOF>> {
-    // fprintf(yyout, "Found comment: %s\n", comment);
-    BEGIN(INITIAL);
+<TEMPLATE>\s*\} {BEGIN(STRINGB);}
+<TEMPLATE><<EOF>> {
+    printf("ERROR! Missing } in template expression.");
+    exit(1);
     }
 
+\/\/ {BEGIN(COMMENTONE);}
+<COMMENTONE>[^\n]* {}
+<COMMENTONE>\n {BEGIN(INITIAL);}
+<COMMENTONE><<EOF>> {BEGIN(INITIAL);}
 
-"/*" {
-    BEGIN(COMMENT); 
-    comment[0] = 0; // зануляем переменную
-    }
-<COMMENT>[^*]+ {strcat(comment, yytext);}
-<COMMENT>"*"+[^*/] {strcat(comment, yytext);}
-<COMMENT>"*"+"/" { 
-    // fprintf(yyout, "Found comment: %s\n", comment);
-    BEGIN(INITIAL); 
-    }
+
+"/*" {BEGIN(COMMENT);}
+<COMMENT>[^*]+ {}
+<COMMENT>"*"+[^*/] {}
+<COMMENT>"*"+"/" {BEGIN(INITIAL);}
 <COMMENT><<EOF>> {
     printf("ERROR! No closing comment at the end.");
     exit(1);
+    }
+
+{decimal} { /* Число десятичное */
+    fprintf(yyout, "Число: %s\n", yytext);
     }
 
 {float} { /* Число с плавающей запятой */
@@ -238,10 +236,6 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     float num = strtof(yytext, NULL);
     snprintf(numStr, sizeof(numStr), "%f", num);
     fprintf(yyout, "Число: %s\n", numStr);
-    }
-
-{decimal} { /* Число десятичное */
-    fprintf(yyout, "Число: %s\n", yytext);
     }
 
 {bin} { /* Число двоичное */
@@ -265,9 +259,9 @@ var {fprintf(yyout, "Ключевое слово, объявляющее пер�
     fprintf(yyout, "Число: %s\n", numStr);
     }
 
-[_]?[A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Имя переменной: %s\n", yytext);}
+[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Имя переменной: %s\n", yytext);}
 
-.|\n {}
+.|\n {/*все остальные символы пропускаем*/}
 
 %%
 

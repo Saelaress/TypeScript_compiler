@@ -1,5 +1,5 @@
 const asciiChar: string = "\x41";
-const asciiChar1: string = '\113';
+const asciiChar1: string = '\43';
 
 /* Объявление переменных разных типов данных */
 // Числа
@@ -19,7 +19,8 @@ let myFloatWithMinusE: number = 3e-5;
 // Строки
 let myDQString: string = "Это строка\nс \'одинарными кавычками\', а также шестнадцатеричным числом: ${0x1A}.";
 let mySQString: string = 'Это строка\nс \"двойными кавычками\", а также шестнадцатеричным числом: ${0x1A}.';
-let myBQString = `Это строка\nсо слешем \\\\ и \"двойными кавычками\", а также шестнадцатеричным числом: ${0x1A}.`;
+let myBQString = `Это строка\nсо слешем \\\\ и \"двойными кавычками\", а также шестнадцатеричным	числом: 
+${0x1A}.`;
 // Другие типы
 let myBoolean: boolean = true;
 let myArray: string[] = ["apple", "banana", "orange"];
