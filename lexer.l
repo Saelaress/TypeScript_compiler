@@ -94,6 +94,7 @@ typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);}
 unique {fprintf(yyout, "Found KW_UNIQUE: %s\n", yytext);} 
 unknown {fprintf(yyout, "Found TYPE_UNKNOWN: %s\n", yytext);} 
 var {fprintf(yyout, "Found KW_VAR: %s\n", yytext);}
+while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 
 \% {fprintf(yyout, "Found OPERATOR_MOD: %s\n", yytext);} 
 \%\= {fprintf(yyout, "Found OPERATOR_MOD_ASSIGNMENT: %s\n", yytext);} 
