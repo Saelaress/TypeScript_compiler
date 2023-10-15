@@ -1,70 +1,28 @@
 %{
-
+    /*Пролог*/
 %}
 
-%union {
-    int INT;
-    char SYMBOLS;
-    string STRING;
-}
-
-%token EOL /* конец строки*/
-%token<num> NUMBER
-%%
-
-expr : INT
-     | ID
-     | expr '+' expr
-     | expr '-' expr
-     | expr '*' expr
-     | expr '/' expr
-     | expr '=' expr
-     | expr '<' expr
-     | expr '>' expr
-     | expr '%' expr
-     | expr '&' expr
-     | expr '~' expr
-     | expr '^' expr
-     | '!' expr
-     | expr DPLUS 
-     | expr DMINUS
-     | expr EQ expr
-     | expr NE expr
-     | expr EQTYPE expr
-     | expr NETYPE expr
-     | expr LOGAND expr
-     | expr LOGOR expr
-     | expr BORE expr 
-     | expr SORE expr
-     | expr PLUSE expr
-     | expr MINUSE expr
-     | expr DIV expr
-     | expr MULT expr
-     | expr MOD expr 
-     | '(' expr ')'
-     | '-' expr %prec UMINUS
-     ;
-
-if_stmt : IF '(' expr ')' stmt 
-        | IF '(' expr ')' stmt ELSE stmt
-        ;
-
-block_stmt : '{' StatementList '}'
-           | '{' '}'
-           ;
-
-visibility: PRIVATE
-          | PROTECTED
-          | INTERNAL
-          | PUBLIC
-          ;
+%token NUMBER_VAL
+%token STRING_VAL
+%token BOOL_VAL
+%token ID
+%token IF DO WHILE ELSE CLASS PUBLIC PROTECTED PRIVATE FUNC
+%token NUMBER STRING BOOLEAN
 
 
+%right ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
+%left ';' ENDL
+%left '[' ']'
+%left OR AND
+%left EQUALS NOT_EQUALS LESS GREATER LESS_OR_EQUAL GREATER_OR_EQUAL
+%left '+' '-' '*' '/' '%'
+%left NOT UPLUS UMINUS
+%right PREF_INCREMENT PREF_DECREMENT
+%left POST_INCREMENT POST_DECREMENT
+%left '.'
+%nonassoc ')'
 
 %%
-
-int main(){
-    yyparse();
-    return 0 ;
-
-}
+Секция правил
+%%
+Секция пользовательского кода 
