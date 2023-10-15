@@ -1,14 +1,8 @@
-%{
-    /*Пролог*/
-%}
+%{ /*Пролог*/ %}
 
-%token NUMBER_VAL
-%token STRING_VAL
-%token BOOL_VAL
-%token ID
-%token IF DO WHILE ELSE CLASS PUBLIC PROTECTED PRIVATE FUNC
+%token NUMBER_VAL STRING_VAL BOOL_VAL ID
+%token IF DO WHILE ELSE CLASS FUNC LET
 %token NUMBER STRING BOOLEAN
-
 
 %right ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left ';' ENDL
@@ -23,6 +17,6 @@
 %nonassoc ')'
 
 %%
-Секция правил
+
 %%
-Секция пользовательского кода 
+{/*Секция пользовательского кода*/}
