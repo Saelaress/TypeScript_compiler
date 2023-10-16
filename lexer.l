@@ -128,7 +128,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 \} {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
 \: {fprintf(yyout, "Found COLON: %s\n", yytext);}
 \; {fprintf(yyout, "Found SEMICOLON: %s\n", yytext);}
-\n {fprintf(yyout, "Found OPERATOR_ENTER: \\n\n", yytext);}
+\n {fprintf(yyout, "Found ENDL: \\n\n", yytext);}
 
 \" { // строка с двойными кавычками
     BEGIN(STRINGD);
@@ -204,7 +204,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     }
 
 <TEMPLATE>\} {
-    strcat(str, yytext);
+    printf("WARNING! Template is not supported");
     BEGIN(STRINGB);
     }
 <TEMPLATE>[^\}]* {
@@ -300,7 +300,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     printf("ERROR: float syntax error %d.\n", line);
 }
 
-[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Имя переменной: %s\n", yytext);}
+[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
 
 .|\n {/*все остальные символы пропускаем*/}
 
