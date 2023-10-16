@@ -316,9 +316,7 @@ int check_underscores(const char* str) {
             return 1; // Подряд два подчеркивания
         }
     }
-
-
-
+    
     return 0; // Нет ошибок
 }
 
