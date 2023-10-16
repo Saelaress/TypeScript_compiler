@@ -1,18 +1,57 @@
 %{ /*Пролог*/ %}
 
-%token NUMBER_VAL STRING_VAL BOOL_VAL ID
-%token IF DO WHILE ELSE CLASS FUNC LET
-%token NUMBER STRING BOOLEAN
+%token ABSTRACT 
+%token INTERFACE
+
+%token CONSTRUCTOR
+%token NEW
+%token EXTENDS
+%token THIS
+%token CLASS
+%token STATIC
+%token RETURN
+
+%token PUBLIC
+%token PROTECTED
+%token PRIVATE
+
+%token DO
+%token IF
+%token ELSE
+%token FOR
+%token OF
+%token IN
+%token WHILE
+
+%token LET
+%token CONST
+%token FUNC
+
+%token UNKNOWN
+%token ANY
+%token NUMBER
+%token STRING
+%token VOID
+%token BOOL
+
+%token NUMBER_LITERAL
+%token STRING_LITERAL
+%token BOOLEAN_LITERAL
+
+%token ID
 
 %right ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
-%left '[' ']'
-%left OR AND
-%left EQUALS NOT_EQUALS LESS GREATER LESS_OR_EQUAL GREATER_OR_EQUAL
-%left '+' '-' '*' '/' '%'
+%left  OR
+%left  AND
+%left EQUALS NOT_EQUALS
+%left  '<' '>' LESS_OR_EQUAL GREATER_OR_EQUAL IS AS
+%left  '+' '-'
+%left  '*' '/' '%'
 %left NOT UPLUS UMINUS
+%left '.' '[' ']'
+%right NEW
 %right PREF_INCREMENT PREF_DECREMENT
 %left POST_INCREMENT POST_DECREMENT
-%left '.'
 %nonassoc ')'
 
 %%
