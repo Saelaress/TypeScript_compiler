@@ -16,17 +16,13 @@ using namespace std;
 %x TEMPLATE
 %x COMMENTONE
 
-decimal [0-9]+
-bin 0[bB][01]+
-octal 0[oO][0-7]+
-hex 0[xX][0-9a-fA-F]+
-float ([0-9]+\.?|\.{1}[0-9]+)[0-9]*([eE][-+]?[0-9]+)?
+DIGIT [0-9]
 
 /* Описание правил */
 %%
 %{ 
     char str[1000];
-    char comment[1000];
+    char bufferString[1000];
 %} /* Объявление локальных переменных */
 
 abstract {fprintf(yyout, "Found KW_ABSTRACT: %s\n", yytext);} 
@@ -132,7 +128,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 \} {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
 \: {fprintf(yyout, "Found COLON: %s\n", yytext);}
 \; {fprintf(yyout, "Found SEMICOLON: %s\n", yytext);}
-\n {fprintf(yyout, "Found ENDL: \\n\n", yytext);}
+\n {fprintf(yyout, "Found OPERATOR_ENTER: \\n\n", yytext);}
 
 \" { // строка с двойными кавычками
     BEGIN(STRINGD);
@@ -208,7 +204,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     }
 
 <TEMPLATE>\} {
-    printf("WARNING! Template is not supported");
+    strcat(str, yytext);
     BEGIN(STRINGB);
     }
 <TEMPLATE>[^\}]* {
@@ -234,45 +230,115 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     exit(1);
     }
 
-{decimal} { /* Число десятичное */
-    fprintf(yyout, "Число: %s\n", yytext);
-    }
 
-{float} { /* Число с плавающей запятой */
+{DIGIT}(\_?{DIGIT})* { /*Десятичное число правильное*/
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
+    int buffLen = strlen(bufferString);
+    if (bufferString[0] == '0' && buffLen > 1)
+    {
+        printf("ERROR: illegal using of zero in INT in line %d.\n", line);
+    }
+    else 
+    {
+        removeUnderline(bufferString);
+        int res = atoi(bufferString);
+        fprintf(yyout, "DECIMAL_INT: %d\n", res);
+    }
+}
+
+{DIGIT}(\_*{DIGIT})*\_* {
+    printf("ERROR: illegal underscore in INT in line %d.\n", line);
+}
+
+0(x|X)[0-9a-fA-F](_?[0-9a-fA-F]+)* { /* Число шестнадцатеричное правильное */
+    removeUnderline(bufferString);
+    char* end, numStr[20];
+    long int res = strtol(bufferString+2, &end, 16);
+    snprintf(numStr, sizeof(numStr), "%ld", res);
+    fprintf(yyout, "HEX_INT: %s\n", numStr);
+}
+
+((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X))\_* {
+    printf("ERROR: hex syntax error %d.\n", line);
+}
+
+0(o|O)[0-7](_?[0-7]+)* { /* Число восьмеричное правильное */
+    removeUnderline(bufferString);
+    char* end, numStr[20];
+    long int res = strtol(bufferString+2, &end, 8);
+    snprintf(numStr, sizeof(numStr), "%ld", res);
+    fprintf(yyout, "OCTAL_INT: %s\n", numStr);
+}
+
+((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O))\_* {
+    printf("ERROR: octal syntax error %d.\n", line);
+}
+
+0(b|B)[01](_?[01]+)* { /* Число двоичное правильное */
+    removeUnderline(bufferString);
+    char* end, numStr[20];
+    long int res = strtol(bufferString+2, &end, 8);
+    snprintf(numStr, sizeof(numStr), "%ld", res);
+    fprintf(yyout, "BIN_INT: %s\n", numStr);
+}
+
+((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B))\_* {
+    printf("ERROR: octal syntax error %d.\n", line);
+}
+
+(([0-9](\_?[0-9])*)?\.[0-9](\_?[0-9])*|([0-9](\_?[0-9])*)?[0-9](\_?[0-9])*\.)((e|E)(\+|\-)?[0-9](\_?[0-9])*)? {
+    /* Число с плавающей запятой правильное */
+    removeUnderline(bufferString);
     char numStr[20];
-    float num = strtof(yytext, NULL);
-    snprintf(numStr, sizeof(numStr), "%f", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
+    float res = strtof(bufferString, NULL);
+    snprintf(numStr, sizeof(numStr), "%f", res);
+    fprintf(yyout, "FLOAT_INT: %s\n", numStr);
+}
 
-{bin} { /* Число двоичное */
-    char* end, numStr[20];
-    long int num = strtol(yytext+2, &end, 2);
-    snprintf(numStr, sizeof(numStr), "%ld", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
+(([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.\_*)((e|E)*(\+|\-)?[0-9](\_*[0-9])*)? {
+    printf("ERROR: float syntax error %d.\n", line);
+}
 
-{octal} { /* Число восьмеричное */
-    char* end, numStr[20];
-    long int num = strtol(yytext+2, &end, 8);
-    snprintf(numStr, sizeof(numStr), "%ld", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
-
-{hex} { /* Число шестнадцатеричное */
-    char* end, numStr[20];
-    long int num = strtol(yytext+2, &end, 16);
-    snprintf(numStr, sizeof(numStr), "%ld", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
-
-[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
+[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Имя переменной: %s\n", yytext);}
 
 .|\n {/*все остальные символы пропускаем*/}
 
 %%
+int check_underscores(const char* str) {
+    int len = strlen(str);
+    if (str[0] == '_' || str[len - 1] == '_') {
+        return 1; // Подчеркивание в начале или в конце
+    }
 
-int main(int argc, char *argv[]) {TE
+    for (int i = 0; i < len - 1; i++) {
+        if (str[i] == '_' && str[i + 1] == '_') {
+            return 1; // Подряд два подчеркивания
+        }
+    }
+
+
+
+    return 0; // Нет ошибок
+}
+
+char* removeUnderline(const char* str) {
+    int len = strlen(str);
+    char* result = (char*)malloc(len + 1);
+    int result_index = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (str[i] != '_') {
+            result[result_index] = str[i];
+            result_index++;
+        }
+    }
+
+    result[result_index] = '\0';
+    return result;
+}
+
+int main(int argc, char *argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
         return 1;
