@@ -280,7 +280,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     fprintf(yyout, "HEX_INT: %s\n", numStr);
 }
 
-((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X))\_* {
+((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X){2,})\_* {
     printf("ERROR: hex syntax error %d.\n");
 }
 
@@ -294,7 +294,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     fprintf(yyout, "OCTAL_INT: %s\n", numStr);
 }
 
-((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O))\_* {
+((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O){2,})\_* {
     printf("ERROR: octal syntax error %d.\n");
 }
 
@@ -308,7 +308,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     fprintf(yyout, "BIN_INT: %s\n", numStr);
 }
 
-((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B))\_* {
+((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B){2,})\_* {
     printf("ERROR: octal syntax error %d.\n");
 }
 
@@ -323,7 +323,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     fprintf(yyout, "FLOAT_INT: %s\n", numStr);
 }
 
-(([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.\_*)((e|E)*(\+|\-)?[0-9](\_*[0-9])*)? {
+(([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.?\_*)((e|E)*\_*((\+|\-)?[0-9](\_*[0-9])*)?)? {
     printf("ERROR: float syntax error %d.\n");
 }
 
