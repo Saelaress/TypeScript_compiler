@@ -1,8 +1,7 @@
 %{ /*Пролог*/ %}
 
-%token ABSTRACT 
 %token INTERFACE
-
+%token IMPLEMENTS
 %token CONSTRUCTOR
 %token NEW
 %token EXTENDS
@@ -14,6 +13,7 @@
 %token PUBLIC
 %token PROTECTED
 %token PRIVATE
+%token READONLY
 
 %token DO
 %token IF
@@ -56,23 +56,58 @@
 
 %%
 
-program : class_list
+class_: CLASS ID modifier_decl '{' class_body '}'
 ;
 
-class_list: /* пусто */
-| class
-| class_list class
+modifier_decl: /* пусто */
+| extends_decl
+| implements_decl
+| extends_decl implements_decl
 ;
 
-class: CLASS ID '{' class_body '}'
+extends_decl: EXTENDS ID
+;
+
+implements_decl: IMPLEMENTS ID
+| implements_decl ',' ID
 ;
 
 class_body: /* пусто */
-| attribute
-| method
-| attribute method
+| class_member_decl_list
 ;
 
+class_member_decl_list: class_member_decl
+| class_member_decl_list class_member_decl
+;
+
+class_member_declaration: property_declaration
+| method_declaration
+| constructor_declaration
+| class_declaration
+;
+
+property_declaration: property_modifier type ID ';'
+                 | property_modifier type ID '=' expr ';'
+                 | property_modifier type_name ID ';'
+                 | property_modifier type_name ID '=' expr ';'
+                 | property_modifier array_type ID ';'
+                 | property_modifier array_type ID '=' expr ';'
+                 ;
+
+property_modifier: visibility
+| visibility READONLY
+| READONLY
+| visibility STATIC
+| STATIC
+| visibility STATIC READONLY
+;
+
+visibility: PRIVATE
+| PROTECTED
+| PUBLIC
+;
+
+---------------------
 attribute: ID ':' type ';'
 ;
 
