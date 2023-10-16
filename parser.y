@@ -2,7 +2,6 @@
 
 %token INTERFACE
 %token IMPLEMENTS
-%token ABSTRACT 
 
 %token CONSTRUCTOR
 %token NEW
