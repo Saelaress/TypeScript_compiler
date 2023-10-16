@@ -172,11 +172,25 @@ var_declaration: LET ID ':' type // Объявление переменной с
 | LET ID '=' expr // Объявление переменной с инициализацией
 ;
 
-expr: assignment_expr
-| arithmetic_expr
-| logical_expr
-| conditional_expr
-| comparison_expr
+expr: 
+| expr '+' expr
+| expr '-' expr
+| expr '*' expr
+| expr '/' expr
+| expr '%' expr
+| '-' SimpleExpression %prec UMINUS
+| '+' SimpleExpression %prec UPLUS
+| expr AND expr
+| expr OR expr
+| NOT expr
+| expr '?' expr ':' expr
+| expr LESS expr
+| expr GREATER expr
+| expr LESS_OR_EQUAL expr
+| expr GREATER_OR_EQUAL expr
+| expr EQUALS expr
+| expr NOT_EQUALS expr
+| expr '(' expr ')'
 ;
 
 assignment_expr: left_hand_side_expr ASSIGN expr
@@ -192,26 +206,16 @@ left_hand_side_expr: primary_expr
 | left_hand_side_expr '[' expr ']'
 ;
 
-arithmetic_expr: expr '+' expr
-| expr '-' expr
-| expr '*' expr
-| expr '/' expr
-| expr '%' expr
+arithmetic_expr: 
 | PREF_DECREMENT left_hand_side_expr
 | PREF_INCREMENT left_hand_side_expr
 | left_hand_side_expr POST_DECREMENT
 | left_hand_side_expr POST_INCREMENT
-| '-' SimpleExpression %prec UMINUS
-| '+' SimpleExpression %prec UPLUS
 ;
 
-logical_expr: expr AND expr
-| expr OR expr
-| NOT expr
-;
 
-conditional_expr: expr '?' expr ':' expr
-;
+
+
 
 primary_expr: NUMBER_VAL
 | STRING_VAL
@@ -219,13 +223,7 @@ primary_expr: NUMBER_VAL
 | ID
 ;
 
-comparison_expr: expr LESS expr
-| expr GREATER expr
-| expr LESS_OR_EQUAL expr
-| expr GREATER_OR_EQUAL expr
-| expr EQUALS expr
-| expr NOT_EQUALS expr
-;
+
 
 %%
 {/*Секция пользовательского кода*/}
