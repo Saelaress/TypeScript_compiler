@@ -4,10 +4,28 @@
 %{
 /* Объявление глобальных переменных */
 #include <stdio.h>
+#include <string.h>
 #include <typeinfo>
 #include <iostream>
 using namespace std;
+char* removeUnderline(const char* str) {
+    int len = strlen(str);
+    char* result = (char*)malloc(len + 1);
+    int result_index = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (str[i] != '_') {
+            result[result_index] = str[i];
+            result_index++;
+        }
+    }
+
+    result[result_index] = '\0';
+    return result;
+}
 %}
+
+
 
 %x COMMENT
 %x STRINGD
@@ -68,6 +86,7 @@ new {fprintf(yyout, "Found KW_NEW: %s\n", yytext);}
 null {fprintf(yyout, "Found KW_NULL: %s\n", yytext);} 
 number {fprintf(yyout, "Found TYPE_NUMBER: %s\n", yytext);} 
 object {fprintf(yyout, "Found TYPE_OBJECT: %s\n", yytext);} 
+of {fprintf(yyout, "Found KW_OF: %s\n", yytext);} 
 package {fprintf(yyout, "Found KW_PACKAGE: %s\n", yytext);} 
 private {fprintf(yyout, "Found KW_PRIVATE: %s\n", yytext);} 
 protected {fprintf(yyout, "Found KW_PROTECTED: %s\n", yytext);} 
@@ -134,7 +153,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     BEGIN(STRINGD);
     str[0] = 0; // зануляем переменную
     }
-<STRINGD,STRINGS,STRINGB>\\[xX][^0-9a-fA-F] {printf("ERROR! Invalid hexadecimal escape sequence.");}
+<STRINGD,STRINGS,STRINGB>\\[xX][^0-9a-fA-F] {printf("ERROR! Invalid hexadecimal escape sequence. \n");}
 <STRINGD,STRINGS,STRINGB>\\[xX][0-9a-fA-F]{1,2} {
     char* end;
     long int num = strtol(yytext+2, &end, 16);
@@ -159,11 +178,11 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     BEGIN(INITIAL);
     }
 <STRINGD,STRINGS>\n {
-    printf("ERROR! Line break inside literal.");
+    printf("ERROR! Line break inside literal.\n");
     exit(1);
     }
 <STRINGD,STRINGS,STRINGB><<EOF>> {
-    printf("ERROR! Unterminated string literal.");
+    printf("ERROR! Unterminated string literal. \n");
     exit(1);
     }
 
@@ -188,12 +207,12 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     BEGIN(TEMPLATE);
     }
 <STRINGB>\$\{\s*\} {
-    printf("ERROR! Unexpected '}'.");
+    printf("ERROR! Unexpected '}'. \n");
     exit(1);
     }
 <STRINGB>[\${]+ {strcat(str, yytext);}
 <STRINGB>\\[0-7]{2} {
-    printf("ERROR! Octal escape sequences are not allowed in template strings.");
+    printf("ERROR! Octal escape sequences are not allowed in template strings. \n");
     exit(1);
     }
 <STRINGB>[^\\\`\n\t] {strcat(str, yytext);}
@@ -204,14 +223,14 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     }
 
 <TEMPLATE>\} {
-    printf("WARNING! Template is not supported");
+    printf("WARNING! Template is not supported. \n");
     BEGIN(STRINGB);
     }
 <TEMPLATE>[^\}]* {
     strcat(str, yytext);
 }
 <TEMPLATE><<EOF>> {
-    printf("ERROR! Missing } in template expression.");
+    printf("ERROR! Missing } in template expression. \n");
     exit(1);
     }
 
@@ -226,7 +245,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 <COMMENT>"*"+[^*/] {}
 <COMMENT>"*"+"/" {BEGIN(INITIAL);}
 <COMMENT><<EOF>> {
-    printf("ERROR! No closing comment at the end.");
+    printf("ERROR! No closing comment at the end. \n");
     exit(1);
     }
 
@@ -237,7 +256,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     int buffLen = strlen(bufferString);
     if (bufferString[0] == '0' && buffLen > 1)
     {
-        printf("ERROR: illegal using of zero in INT in line %d.\n", line);
+        printf("ERROR: illegal using of zero in INT in line %d.\n");
     }
     else 
     {
@@ -248,10 +267,12 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 }
 
 {DIGIT}(\_*{DIGIT})*\_* {
-    printf("ERROR: illegal underscore in INT in line %d.\n", line);
+    printf("ERROR: illegal underscore in INT in line %d.\n");
 }
 
 0(x|X)[0-9a-fA-F](_?[0-9a-fA-F]+)* { /* Число шестнадцатеричное правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
     removeUnderline(bufferString);
     char* end, numStr[20];
     long int res = strtol(bufferString+2, &end, 16);
@@ -260,10 +281,12 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 }
 
 ((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X))\_* {
-    printf("ERROR: hex syntax error %d.\n", line);
+    printf("ERROR: hex syntax error %d.\n");
 }
 
 0(o|O)[0-7](_?[0-7]+)* { /* Число восьмеричное правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
     removeUnderline(bufferString);
     char* end, numStr[20];
     long int res = strtol(bufferString+2, &end, 8);
@@ -272,23 +295,27 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 }
 
 ((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O))\_* {
-    printf("ERROR: octal syntax error %d.\n", line);
+    printf("ERROR: octal syntax error %d.\n");
 }
 
 0(b|B)[01](_?[01]+)* { /* Число двоичное правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
     removeUnderline(bufferString);
     char* end, numStr[20];
-    long int res = strtol(bufferString+2, &end, 8);
+    long int res = strtol(bufferString+2, &end, 2);
     snprintf(numStr, sizeof(numStr), "%ld", res);
     fprintf(yyout, "BIN_INT: %s\n", numStr);
 }
 
 ((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B))\_* {
-    printf("ERROR: octal syntax error %d.\n", line);
+    printf("ERROR: octal syntax error %d.\n");
 }
 
-(([0-9](\_?[0-9])*)?\.[0-9](\_?[0-9])*|([0-9](\_?[0-9])*)?[0-9](\_?[0-9])*\.)((e|E)(\+|\-)?[0-9](\_?[0-9])*)? {
+(([0-9](\_?[0-9])*)?\.[0-9](\_?[0-9])*|([0-9](\_?[0-9])*)?[0-9](\_?[0-9])*\.?)((e|E)(\+|\-)?[0-9](\_?[0-9])*)? {
     /* Число с плавающей запятой правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
     removeUnderline(bufferString);
     char numStr[20];
     float res = strtof(bufferString, NULL);
@@ -297,7 +324,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 }
 
 (([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.\_*)((e|E)*(\+|\-)?[0-9](\_*[0-9])*)? {
-    printf("ERROR: float syntax error %d.\n", line);
+    printf("ERROR: float syntax error %d.\n");
 }
 
 [_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
@@ -305,37 +332,6 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 .|\n {/*все остальные символы пропускаем*/}
 
 %%
-int check_underscores(const char* str) {
-    int len = strlen(str);
-    if (str[0] == '_' || str[len - 1] == '_') {
-        return 1; // Подчеркивание в начале или в конце
-    }
-
-    for (int i = 0; i < len - 1; i++) {
-        if (str[i] == '_' && str[i + 1] == '_') {
-            return 1; // Подряд два подчеркивания
-        }
-    }
-    
-    return 0; // Нет ошибок
-}
-
-char* removeUnderline(const char* str) {
-    int len = strlen(str);
-    char* result = (char*)malloc(len + 1);
-    int result_index = 0;
-
-    for (int i = 0; i < len; i++) {
-        if (str[i] != '_') {
-            result[result_index] = str[i];
-            result_index++;
-        }
-    }
-
-    result[result_index] = '\0';
-    return result;
-}
-
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
