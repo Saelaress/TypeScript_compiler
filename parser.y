@@ -1,4 +1,10 @@
-%{ /*Пролог*/ %}
+%{ /*Пролог*/
+#include "tree_nodes.h" %}
+
+%union {
+    char* str;
+    int num;
+}
 
 %token INTERFACE
 %token IMPLEMENTS
@@ -23,6 +29,7 @@
 %token OF
 %token IN
 %token WHILE
+%token BREAK
 
 %token LET
 %token CONST
@@ -40,6 +47,14 @@
 %token BOOLEAN_LITERAL
 
 %token ID
+
+%token CONST
+
+%token CASE DEFAULT
+%token <val> IDENTIFIER NUMBER
+
+%token <str> STR_LIT
+%token <num> INT_LIT
 
 %right ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left  OR
@@ -116,6 +131,7 @@ type: ID
 | NUMBER
 | STRING
 | BOOLEAN
+| ANY
 ;
 
 method: FUNC '(' param_list ')' ':' type block_statement
@@ -143,10 +159,19 @@ stmt: expr StatementTerminator
 | while_stmt
 | for_stmt
 | do_while_stmt StatementTerminator
+| switch_statement 
+| CONTINUE SEMICOLON
 ;
+
+CONTINUE : 'continue'
+         ;
+
+SEMICOLON : ';'
+          ;
 
 StatementTerminator: ENDL
 | ';'
+| BREAK
 ;
 
 if_stmt: IF '(' expr ')' stmt
@@ -171,6 +196,11 @@ for_iter: expr
 
 var_declaration: LET ID ':' type // Объявление переменной с типом
 | LET ID '=' expr // Объявление переменной с инициализацией
+| CONST identifier_list ':' type '=' expr SEMICOLON//объявление не изменяемой переменной
+;
+
+identifier_list : ID
+| identifier_list ',' ID
 ;
 
 expr: 
@@ -223,6 +253,41 @@ primary_expr: NUMBER_VAL
 | BOOL_VAL
 | ID
 ;
+
+try_catch_block
+    : TRY block catch_clauses
+    ;
+
+catch_clauses
+    : catch_clause
+    | catch_clauses catch_clause
+    ;
+
+catch_clause
+    : CATCH '(' error_type ID ')' block
+    ;
+
+error_type
+    : TYPE_IDENTIFIER
+    | ANY
+    ;
+
+as_expression: ID 'as' ID
+    | ID 'as' type
+
+
+
+
+switch_statement: SWITCH '(' ID ')' '{' case_list '}' ;
+
+case_list: case_list case_statement
+         | case_statement ;
+
+case_statement: CASE expression ':' stamt
+              | DEFAULT ':' stamt ;
+
+expression: STR_LIT
+          | INT_LIT ;
 
 
 
