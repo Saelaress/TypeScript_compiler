@@ -30,6 +30,8 @@
 %token IN
 %token WHILE
 %token BREAK
+%token CONTINUE
+%token CASE DEFAULT
 
 %token LET
 %token CONST
@@ -41,20 +43,13 @@
 %token STRING
 %token VOID
 %token BOOL
+%token CONST
 
 %token NUMBER_LITERAL
 %token STRING_LITERAL
 %token BOOLEAN_LITERAL
 
 %token ID
-
-%token CONST
-
-%token CASE DEFAULT
-%token <val> IDENTIFIER NUMBER
-
-%token <str> STR_LIT
-%token <num> INT_LIT
 
 %right ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left  OR
@@ -123,35 +118,11 @@ visibility: PRIVATE
 | PUBLIC
 ;
 
----------------------
-attribute: ID ':' type ';'
-;
-
 type: ID
 | NUMBER
 | STRING
 | BOOLEAN
 | ANY
-;
-
-method: FUNC '(' param_list ')' ':' type block_statement
-;
-
-param_list: /* пусто */
-| param
-| param_list ',' param
-;
-
-param: ID ':' type
-;
-
-block_statement: '{' statement_list '}'
-| '{' '}'
-;
-
-
-statement_list: /* пусто */
-| statement_list stmt
 ;
 
 stmt: expr StatementTerminator
@@ -160,14 +131,8 @@ stmt: expr StatementTerminator
 | for_stmt
 | do_while_stmt StatementTerminator
 | switch_statement 
-| CONTINUE SEMICOLON
+| CONTINUE ';'
 ;
-
-CONTINUE : 'continue'
-         ;
-
-SEMICOLON : ';'
-          ;
 
 StatementTerminator: ENDL
 | ';'
@@ -187,71 +152,13 @@ for_stmt: FOR '(' for_init ';' expr ';' for_iter ')' stmt
 do_while_stmt: DO stmt WHILE '(' expr ')'
 ;
 
-for_init: expr_stmt
-| var_declaration
-;
-
-for_iter: expr
-;
-
 var_declaration: LET ID ':' type // Объявление переменной с типом
 | LET ID '=' expr // Объявление переменной с инициализацией
-| CONST identifier_list ':' type '=' expr SEMICOLON//объявление не изменяемой переменной
+| CONST identifier_list ':' type '=' expr ';'//объявление неизменяемой переменной
 ;
 
 identifier_list : ID
 | identifier_list ',' ID
-;
-
-expr: 
-| expr '+' expr
-| expr '-' expr
-| expr '*' expr
-| expr '/' expr
-| expr '%' expr
-| '-' SimpleExpression %prec UMINUS
-| '+' SimpleExpression %prec UPLUS
-| expr AND expr
-| expr OR expr
-| NOT expr
-| expr '?' expr ':' expr
-| expr LESS expr
-| expr GREATER expr
-| expr LESS_OR_EQUAL expr
-| expr GREATER_OR_EQUAL expr
-| expr EQUALS expr
-| expr NOT_EQUALS expr
-| expr '(' expr ')'
-;
-
-assignment_expr: left_hand_side_expr ASSIGN expr
-| left_hand_side_expr PLUS_ASSIGN expr
-| left_hand_side_expr MINUS_ASSIGN expr
-| left_hand_side_expr MUL_ASSIGN expr
-| left_hand_side_expr DIV_ASSIGN expr
-| left_hand_side_expr MOD_ASSIGN expr
-;
-
-left_hand_side_expr: primary_expr
-| left_hand_side_expr '.' ID
-| left_hand_side_expr '[' expr ']'
-;
-
-arithmetic_expr: 
-| PREF_DECREMENT left_hand_side_expr
-| PREF_INCREMENT left_hand_side_expr
-| left_hand_side_expr POST_DECREMENT
-| left_hand_side_expr POST_INCREMENT
-;
-
-
-
-
-
-primary_expr: NUMBER_VAL
-| STRING_VAL
-| BOOL_VAL
-| ID
 ;
 
 try_catch_block
@@ -275,9 +182,6 @@ error_type
 as_expression: ID 'as' ID
     | ID 'as' type
 
-
-
-
 switch_statement: SWITCH '(' ID ')' '{' case_list '}' ;
 
 case_list: case_list case_statement
@@ -286,10 +190,30 @@ case_list: case_list case_statement
 case_statement: CASE expression ':' stamt
               | DEFAULT ':' stamt ;
 
-expression: STR_LIT
-          | INT_LIT ;
-
-
+expr: NUMBER_LITERAL
+| STRING_LITERAL
+| BOOL_LITERAL
+| '(' expr ')'
+| NOT expr
+| '-' expr %prec UMINUS
+| '+' expr %prec UPLUS
+| expr '+' expr
+| expr '-' expr
+| expr '*' expr
+| expr '/' expr
+| expr '%' expr
+| expr LESS expr
+| expr GREATER expr
+| expr LESS_OR_EQUAL expr
+| expr GREATER_OR_EQUAL expr
+| expr EQUALS expr
+| expr NOT_EQUALS expr
+| expr AND expr
+| expr OR expr
+| expr '?' expr ':' expr
+| expr '[' expr_list ']'
+| expr '.' ID
+;
 
 %%
 {/*Секция пользовательского кода*/}
