@@ -236,5 +236,13 @@ expr: NUMBER_LITERAL
 | expr '.' ID
 ;
 
+expr_list: expr
+| expr_list ',' expr
+;
+
+expr_list_opt: expr_list
+| /*empty*/
+;
+
 %%
 {/*Секция пользовательского кода*/}
