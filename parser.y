@@ -170,6 +170,22 @@ case_statement: CASE expression ':' stamt
               | DEFAULT ':' stamt ;
 
 /*----------------------------------------------------------------*/
+
+access: 			 ID
+| qualification_list ID
+| 					 ID '(' expr_list_opt ')'
+| qualification_list ID '(' expr_list_opt ')'
+;
+
+qualification_list: qualification
+| qualification_list qualification
+;
+
+qualification: ID '.'
+| THIS '.'
+| qualification '(' expr_list_opt ')' '.'
+;
+
 /*Оператор перевода строки*/
 endl: ENDL
 | endl ENDL
