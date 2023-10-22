@@ -252,5 +252,13 @@ assign_stmt: ID ASSIGN expr stmt_sep
 | ID MOD_ASSIGN expr stmt_sep
 ;
 
+kw: LET
+| CONST
+;
+
+param: kw ID type_mark ASSIGN expr
+| kw ID ASSIGN expr
+;
+
 %%
 {/*Секция пользовательского кода*/}
