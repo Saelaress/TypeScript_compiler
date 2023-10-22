@@ -43,7 +43,6 @@
 %token STRING
 %token VOID
 %token BOOL
-%token CONST
 
 %token NUMBER_LITERAL
 %token STRING_LITERAL
@@ -51,18 +50,19 @@
 
 %token ID
 
+%left ';' ENDL
 %right ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
+%left '[' ']'
 %left  OR
 %left  AND
-%left EQUALS NOT_EQUALS
-%left  '<' '>' LESS_OR_EQUAL GREATER_OR_EQUAL IS AS
-%left  '+' '-'
-%left  '*' '/' '%'
-%left NOT UPLUS UMINUS
-%left '.' '[' ']'
+%left EQUALS NOT_EQUALS '<' '>' LESS_OR_EQUAL GREATER_OR_EQUAL IS AS
+%left '+' '-'
+%left '*' '/' '%'
 %right NEW
 %right PREF_INCREMENT PREF_DECREMENT
 %left POST_INCREMENT POST_DECREMENT
+%left NOT UPLUS UMINUS
+%left '.'
 %nonassoc ')'
 
 %%
