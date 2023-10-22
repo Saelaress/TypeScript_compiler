@@ -244,5 +244,13 @@ expr_list_opt: expr_list
 | /*empty*/
 ;
 
+assign_stmt: ID ASSIGN expr stmt_sep
+| ID PLUS_ASSIGN expr stmt_sep
+| ID MINUS_ASSIGN expr stmt_sep
+| ID MUL_ASSIGN expr stmt_sep
+| ID DIV_ASSIGN expr stmt_sep
+| ID MOD_ASSIGN expr stmt_sep
+;
+
 %%
 {/*Секция пользовательского кода*/}
