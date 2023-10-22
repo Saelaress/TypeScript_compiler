@@ -118,27 +118,6 @@ visibility: PRIVATE
 | PUBLIC
 ;
 
-type: ID
-| NUMBER
-| STRING
-| BOOLEAN
-| ANY
-;
-
-stmt: expr StatementTerminator
-| if_stmt
-| while_stmt
-| for_stmt
-| do_while_stmt StatementTerminator
-| switch_statement 
-| CONTINUE ';'
-;
-
-StatementTerminator: ENDL
-| ';'
-| BREAK
-;
-
 if_stmt: IF '(' expr ')' stmt
 | IF '(' expr ')' stmt ELSE stmt
 ;
@@ -182,13 +161,55 @@ error_type
 as_expression: ID 'as' ID
     | ID 'as' type
 
-switch_statement: SWITCH '(' ID ')' '{' case_list '}' ;
+switch_stmt: SWITCH '(' ID ')' '{' case_list '}' ;
 
 case_list: case_list case_statement
          | case_statement ;
 
 case_statement: CASE expression ':' stamt
               | DEFAULT ':' stamt ;
+
+/*----------------------------------------------------------------*/
+/*Оператор перевода строки*/
+endl: ENDL
+| endl ENDL
+;
+
+endl_opt: /*empty*/
+| endl
+;
+
+stmt_sep: ';'
+| endl
+;
+
+// | CONTINUE ';'
+stmt: expr stmt_sep
+| assign_stmt
+| access stmt_sep
+| if_stmt
+| while_stmt
+| for_stmt
+| do_while_stmt
+| switch_stmt
+;
+
+stmt_list: stmt
+| stmt_list stmt
+;
+
+stmt_list_opt: /*empty*/
+| stmt_list
+;
+
+type: NUMBER
+| STRING
+| BOOLEAN
+| ANY
+;
+
+type_mark: ID ':' type
+;
 
 expr: NUMBER_LITERAL
 | STRING_LITERAL
