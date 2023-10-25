@@ -133,41 +133,38 @@ do_while_stmt: DO stmt WHILE '(' expr ')'
 
 var_declaration: LET ID ':' type // Объявление переменной с типом
 | LET ID '=' expr // Объявление переменной с инициализацией
-| CONST identifier_list ':' type '=' expr ';'//объявление неизменяемой переменной
+| CONST id_list ':' type '=' expr ';'//объявление неизменяемой переменной
 ;
 
-identifier_list : ID
-| identifier_list ',' ID
+id_list : ID
+| id_list ',' ID
 ;
 
-try_catch_block
-    : TRY block catch_clauses
-    ;
+try_catch_block : TRY block catch_clauses
+;
 
-catch_clauses
-    : catch_clause
-    | catch_clauses catch_clause
-    ;
+catch_clauses : catch_clause
+| catch_clauses catch_clause
+;
 
-catch_clause
-    : CATCH '(' error_type ID ')' block
-    ;
+catch_clause: CATCH '(' error_type ID ')' block
+;
 
-error_type
-    : TYPE_IDENTIFIER
-    | ANY
-    ;
+error_type : TYPE_IDENTIFIER
+| ANY
+;
 
-as_expression: ID 'as' ID
-    | ID 'as' type
+as_expr: ID 'as' ID
+| ID 'as' type
+;
 
 switch_stmt: SWITCH '(' ID ')' '{' case_list '}' ;
 
-case_list: case_list case_statement
-         | case_statement ;
+case_list: case_list case_stmt
+| case_stmt ;
 
-case_statement: CASE expression ':' stamt
-              | DEFAULT ':' stamt ;
+case_stmt: CASE expr ':' stmt
+| DEFAULT ':' stmt ;
 
 /*----------------------------------------------------------------*/
 
