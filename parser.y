@@ -16,6 +16,7 @@
 %token CLASS
 %token STATIC
 %token RETURN
+%token DELETE
 
 %token PUBLIC
 %token PROTECTED
@@ -31,11 +32,12 @@
 %token WHILE
 %token BREAK
 %token CONTINUE
-%token CASE DEFAULT
+%token DEFAULT
 
 %token LET
 %token CONST
 %token FUNC
+%token DECLARE
 
 %token UNKNOWN
 %token ANY
@@ -123,12 +125,18 @@ if_stmt: IF '(' expr ')' stmt
 ;
 
 while_stmt: WHILE '(' expr ')' stmt
+| WHILE '(' expr ')' if_stmt BREAK
+| WHILE '(' expr ')' if_stmt CONTINUE
 ;
 
 for_stmt: FOR '(' for_init ';' expr ';' for_iter ')' stmt
+| FOR '(' for_init ';' expr ';' for_iter ')' if_stmt BREAK
+| FOR '(' for_init ';' expr ';' for_iter ')' if_stmt CONTINUE
 ;
 
 do_while_stmt: DO stmt WHILE '(' expr ')'
+| DO stmt WHILE '(' expr ')' if_stmt BREAK
+| DO stmt WHILE '(' expr ')' if_stmt CONTINUE
 ;
 
 var_declaration: LET ID ':' type // Объявление переменной с типом
@@ -161,10 +169,13 @@ as_expr: ID 'as' ID
 switch_stmt: SWITCH '(' ID ')' '{' case_list '}' ;
 
 case_list: case_list case_stmt
-| case_stmt ;
+| case_stmt 
+| case_stmt BREAK
+;
 
 case_stmt: CASE expr ':' stmt
-| DEFAULT ':' stmt ;
+| DEFAULT ':' stmt 
+;
 
 /*----------------------------------------------------------------*/
 
@@ -205,6 +216,7 @@ stmt: expr stmt_sep
 | for_stmt
 | do_while_stmt
 | switch_stmt
+| DECLARE ID ';'
 ;
 
 stmt_list: stmt
