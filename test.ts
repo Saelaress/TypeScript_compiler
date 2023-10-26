@@ -4,9 +4,9 @@ const asciiChar1: string = '\43';
 /* Объявление переменных разных типов данных */
 // Числа
 const letletlet = "let";
+let myDecWithUnderline = 7687_656;
 let myDec: number = 7777753;
 let myMinusDec: number = -7777753;
-let myDecWithUnderline = 7687_656;
 let myBin: number = 0b1011;
 let myBinWithUnderline = 0b01_10;
 let myMinusBin: number = -0b1011;

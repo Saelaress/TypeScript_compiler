@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <iostream>
 using namespace std;
+
 char* removeUnderline(const char* str) {
     int len = strlen(str);
     char* result = (char*)malloc(len + 1);
@@ -98,14 +99,14 @@ set {fprintf(yyout, "Found KW_SET: %s\n", yytext);}
 static {fprintf(yyout, "Found KW_STATIC: %s\n", yytext);} 
 string {fprintf(yyout, "Found TYPE_STRING: %s\n", yytext);} 
 super {fprintf(yyout, "Found KW_SUPER: %s\n", yytext);} 
-switch {fprintf(yyout, "Found KW_SWITCH: %s\n", yytext);} 
-symbol {fprintf(yyout, "Found TYPE_SYMBOL: %s\n", yytext);} 
-this {fprintf(yyout, "Found KW_THIS: %s\n", yytext);} 
-throw {fprintf(yyout, "Found KW_THROW: %s\n", yytext);} 
-true {fprintf(yyout, "Found KW_TRUE: %s\n", yytext);} 
-try {fprintf(yyout, "Found KW_TRY: %s\n", yytext);} 
-type {fprintf(yyout, "Found KW_TYPE: %s\n", yytext);} 
-typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);} 
+switch {fprintf(yyout, "Found KW_SWITCH: %s\n", yytext);}
+symbol {fprintf(yyout, "Found TYPE_SYMBOL: %s\n", yytext);}
+this {fprintf(yyout, "Found KW_THIS: %s\n", yytext);}
+throw {fprintf(yyout, "Found KW_THROW: %s\n", yytext);}
+true {fprintf(yyout, "Found KW_TRUE: %s\n", yytext);}
+try {fprintf(yyout, "Found KW_TRY: %s\n", yytext);}
+type {fprintf(yyout, "Found KW_TYPE: %s\n", yytext);}
+typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);}
 unique {fprintf(yyout, "Found KW_UNIQUE: %s\n", yytext);} 
 unknown {fprintf(yyout, "Found TYPE_UNKNOWN: %s\n", yytext);} 
 var {fprintf(yyout, "Found KW_VAR: %s\n", yytext);}
@@ -258,10 +259,10 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     {
         printf("ERROR: illegal using of zero in INT in line %d.\n");
     }
-    else 
+    else
     {
-        removeUnderline(bufferString);
-        int res = atoi(bufferString);
+        char* buffer = removeUnderline(bufferString);
+        int res = atoi(buffer);
         fprintf(yyout, "DECIMAL_INT: %d\n", res);
     }
 }
@@ -273,9 +274,9 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 0(x|X)[0-9a-fA-F](_?[0-9a-fA-F]+)* { /* Число шестнадцатеричное правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
+    char* buffer = removeUnderline(bufferString);
     char* end, numStr[20];
-    long int res = strtol(bufferString+2, &end, 16);
+    long int res = strtol(buffer+2, &end, 16);
     snprintf(numStr, sizeof(numStr), "%ld", res);
     fprintf(yyout, "HEX_INT: %s\n", numStr);
 }
@@ -287,9 +288,9 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 0(o|O)[0-7](_?[0-7]+)* { /* Число восьмеричное правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
+    char* buffer = removeUnderline(bufferString);
     char* end, numStr[20];
-    long int res = strtol(bufferString+2, &end, 8);
+    long int res = strtol(buffer+2, &end, 8);
     snprintf(numStr, sizeof(numStr), "%ld", res);
     fprintf(yyout, "OCTAL_INT: %s\n", numStr);
 }
@@ -301,9 +302,9 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 0(b|B)[01](_?[01]+)* { /* Число двоичное правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
+    char* buffer = removeUnderline(bufferString);
     char* end, numStr[20];
-    long int res = strtol(bufferString+2, &end, 2);
+    long int res = strtol(buffer+2, &end, 2);
     snprintf(numStr, sizeof(numStr), "%ld", res);
     fprintf(yyout, "BIN_INT: %s\n", numStr);
 }
@@ -316,9 +317,9 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     /* Число с плавающей запятой правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
+    char* buffer = removeUnderline(bufferString);
     char numStr[20];
-    float res = strtof(bufferString, NULL);
+    float res = strtof(buffer, NULL);
     snprintf(numStr, sizeof(numStr), "%f", res);
     fprintf(yyout, "FLOAT_INT: %s\n", numStr);
 }
