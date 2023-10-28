@@ -227,6 +227,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 <TEMPLATE>\} {
     printf("WARNING! Template is not supported. \n");
+    strcat(str, yytext);
     BEGIN(STRINGB);
     }
 <TEMPLATE>[^\}]* {
