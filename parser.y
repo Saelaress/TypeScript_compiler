@@ -288,6 +288,11 @@ param: ID type_mark
 
 return_value: type_mark
 ;
+
+return_value_opt: return_value
+| /*empty*/
+;
+
 /*----------------------------------------------------------------*/
 kw: LET
 | CONST
