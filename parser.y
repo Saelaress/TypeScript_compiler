@@ -293,14 +293,19 @@ return_value_opt: return_value
 | /*empty*/
 ;
 
-/*----------------------------------------------------------------*/
 kw: LET
 | CONST
 ;
 
-param: kw ID type_mark ASSIGN expr
-| kw ID ASSIGN expr
+vars_declaration: kw ID type_mark
+| kw ID
+| kw id_list type_mark
+| kw id_list
 ;
-/*----------------------------------------------------------------*/
+
+id_list: ID ',' ID
+| id_list ',' ID
+;
+
 %%
 {/*Секция пользовательского кода*/}
