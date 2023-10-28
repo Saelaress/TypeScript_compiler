@@ -231,7 +231,7 @@ type: NUMBER
 | ANY
 ;
 
-type_mark: ID ':' type
+type_mark: ':' type
 ;
 
 expr: NUMBER_LITERAL
@@ -275,6 +275,20 @@ assign_stmt: ID ASSIGN expr stmt_sep
 | ID MOD_ASSIGN expr stmt_sep
 ;
 
+param_list_0_or_more: '(' param_list ')'
+| '(' ')'
+;
+
+param_list: param
+| param_list ',' param
+;
+
+param: ID type_mark
+;
+
+return_value: type_mark
+;
+/*----------------------------------------------------------------*/
 kw: LET
 | CONST
 ;
@@ -282,6 +296,6 @@ kw: LET
 param: kw ID type_mark ASSIGN expr
 | kw ID ASSIGN expr
 ;
-
+/*----------------------------------------------------------------*/
 %%
 {/*Секция пользовательского кода*/}
