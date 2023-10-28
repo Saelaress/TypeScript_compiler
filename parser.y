@@ -166,7 +166,8 @@ as_expr: ID 'as' ID
 | ID 'as' type
 ;
 
-switch_stmt: SWITCH '(' ID ')' '{' case_list '}' ;
+switch_stmt: SWITCH '(' ID ')' '{' case_list '}'
+;
 
 case_list: case_list case_stmt
 | case_stmt 
@@ -176,8 +177,6 @@ case_list: case_list case_stmt
 case_stmt: CASE expr ':' stmt
 | DEFAULT ':' stmt 
 ;
-
-/*----------------------------------------------------------------*/
 
 access: 			 ID
 | qualification_list ID
@@ -207,7 +206,6 @@ stmt_sep: ';'
 | endl
 ;
 
-// | CONTINUE ';'
 stmt: expr stmt_sep
 | assign_stmt
 | access stmt_sep
