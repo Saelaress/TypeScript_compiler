@@ -32,7 +32,10 @@ let myArray: string[] = ["apple", "banana", "orange"];
 let myTuple: [number, string] = [1, "Hello"];
 
 // Функция, возвращающая строку
-function sayHello(name: string): string {
+function sayHello(name: string, age?: number): string {
+    if (age !== undefined) {
+        console.log(`Age: ${age}`);
+    }
     return `Hello, ${name}!`;
 }
 
