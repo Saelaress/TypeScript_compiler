@@ -178,6 +178,21 @@ case_stmt: CASE expr ':' stmt
 | DEFAULT ':' stmt 
 ;
 
+function_declaration: FUNC ID '(' param_list_0_or_more ')' type_mark block_statement
+| FUNC ID '(' param_list_0_or_more ')' block_statement
+;
+
+block_statement: '{' stmt_list_opt '}'
+;
+
+stmt_list_opt: /* empty */
+| stmt_list
+;
+
+stmt_list: stmt
+| stmt_list endl_opt stmt
+;
+
 access: 			 ID
 | qualification_list ID
 | 					 ID '(' expr_list_opt ')'
@@ -193,19 +208,6 @@ qualification: ID '.'
 | qualification '(' expr_list_opt ')' '.'
 ;
 
-/*Оператор перевода строки*/
-endl: ENDL
-| endl ENDL
-;
-
-endl_opt: /*empty*/
-| endl
-;
-
-stmt_sep: ';'
-| endl
-;
-
 stmt: expr stmt_sep
 | assign_stmt stmt_sep
 | access stmt_sep
@@ -215,6 +217,7 @@ stmt: expr stmt_sep
 | do_while_stmt
 | switch_stmt
 | DECLARE ID ';'
+| function_declaration
 ;
 
 stmt_list: stmt
@@ -309,6 +312,19 @@ vars_declaration: kw param
 
 id_list: ID ',' ID
 | id_list ',' ID
+;
+
+/*Оператор перевода строки*/
+endl: ENDL
+| endl ENDL
+;
+
+endl_opt: /*empty*/
+| endl
+;
+
+stmt_sep: ';'
+| endl
 ;
 
 %%
