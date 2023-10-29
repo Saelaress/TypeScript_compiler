@@ -44,7 +44,7 @@
 %token NUMBER
 %token STRING
 %token VOID
-%token BOOL
+%token BOOLEAN
 
 %token NUMBER_LITERAL
 %token STRING_LITERAL
@@ -144,21 +144,22 @@ var_declaration: LET ID ':' type // Объявление переменной с
 | CONST id_list ':' type '=' expr ';'//объявление неизменяемой переменной
 ;
 
-id_list : ID
+id_list: ID
 | id_list ',' ID
 ;
 
-try_catch_block : TRY block catch_clauses
+try_catch_block: TRY block_statement catch_clauses
 ;
 
-catch_clauses : catch_clause
-| catch_clauses catch_clause
+catch_clauses: catch_clause
+| catch_clauses endl_opt catch_clause
 ;
 
-catch_clause: CATCH '(' error_type ID ')' block
+catch_clause: CATCH '(' ID ')' block_statement
+| CATCH '(' ID ':' error_type ')' block_statement
 ;
 
-error_type : TYPE_IDENTIFIER
+error_type: UNKNOWN
 | ANY
 ;
 
@@ -232,6 +233,8 @@ type: NUMBER
 | STRING
 | BOOLEAN
 | ANY
+| UNKNOWN
+| VOID
 ;
 
 type_mark: ':' type
