@@ -17,6 +17,7 @@
 %token STATIC
 %token RETURN
 %token DELETE
+%token EXPORT
 
 %token PUBLIC
 %token PROTECTED
@@ -34,6 +35,9 @@
 %token CONTINUE
 %token DEFAULT
 
+%token INCREMENT
+%token DECREMENT
+
 %token LET
 %token CONST
 %token FUNC
@@ -45,6 +49,7 @@
 %token STRING
 %token VOID
 %token BOOLEAN
+%token ENUM
 
 %token NUMBER_LITERAL
 %token STRING_LITERAL
@@ -194,6 +199,22 @@ stmt_list: stmt
 | stmt_list endl_opt stmt
 ;
 
+enum_declaration : ENUM ID '{' enum_body '}'
+;
+
+enum_body : enum_list
+| empty
+;
+
+enum_list : ID '=' NUMBER_LITERAL
+| enum_list ',' ID '=' NUMBER_LITERAL
+| ID '=' STRING_LITERAL
+| enum_list ',' ID '=' STRING_LITERAL
+| ID '=' BOOL_LITERAL
+| enum_list ',' ID '=' BOOL_LITERAL
+;
+
+
 access: 			 ID
 | qualification_list ID
 | 					 ID '(' expr_list_opt ')'
@@ -245,6 +266,10 @@ expr: NUMBER_LITERAL
 | BOOL_LITERAL
 | '(' expr ')'
 | NOT expr
+| expr DECREMENT
+| DECREMENT expr
+| expr INCREMENT
+| INCREMENT expr 
 | '-' expr %prec UMINUS
 | '+' expr %prec UPLUS
 | expr '+' expr
