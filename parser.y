@@ -53,12 +53,13 @@
 
 %token NUMBER_LITERAL
 %token STRING_LITERAL
-%token BOOLEAN_LITERAL
+%token TRUE_LITERAL
+%token FALSE_LITERAL
 
 %token ID
 
 %left ';' ENDL
-%right ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
+%right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left '[' ']'
 %left  OR
 %left  AND
@@ -74,36 +75,189 @@
 
 %%
 
-class_: CLASS ID modifier_decl '{' class_body '}'
+endl: ENDL
+| endl ENDL
 ;
 
-modifier_decl: /* пусто */
-| extends_decl
-| implements_decl
-| extends_decl implements_decl
+endl_opt: /*empty*/
+| endl
 ;
 
-extends_decl: EXTENDS ID
+stmt_sep: ';'
+| ENDL
 ;
 
-implements_decl: IMPLEMENTS ID
-| implements_decl ',' ID
+expr_list: expr
+| expr_list ',' expr
 ;
 
-class_body: /* пусто */
-| class_member_decl_list
+expr_list_opt: expr_list
+| /*empty*/
 ;
 
-class_member_decl_list: class_member_decl
-| class_member_decl_list class_member_decl
+expr: NUMBER_LITERAL
+| STRING_LITERAL
+| TRUE_LITERAL
+| FALSE_LITERAL
+| ID
+| '(' endl_opt expr endl_opt ')'
+| expr endl_opt '.' endl_opt ID
+| expr endl_opt '.' endl_opt ID '(' expr_list_opt ')'
+| ID '(' expr_list_opt ')'
+| expr '+' endl_opt expr
+| expr '-' endl_opt expr
+| expr '*' endl_opt expr
+| expr '/' endl_opt expr
+| expr '%' endl_opt expr
+| expr '<' endl_opt expr
+| expr '>' endl_opt expr
+| expr LESS_OR_EQUAL endl_opt expr
+| expr GREATER_OR_EQUAL endl_optexpr
+| expr EQUALS endl_opt expr
+| expr NOT_EQUALS endl_opt expr
+| expr '=' endl_opt expr
+| expr PLUS_ASSIGN endl_opt expr
+| expr MINUS_ASSIGN endl_opt expr
+| expr MUL_ASSIGN endl_opt expr
+| expr DIV_ASSIGN endl_opt expr
+| expr MOD_ASSIGN endl_opt expr
+| '-' endl_opt expr %prec UMINUS
+| '+' endl_opt expr %prec UPLUS
+| NOT endl_opt expr
+| expr DECREMENT
+| DECREMENT endl_opt expr
+| expr INCREMENT
+| INCREMENT endl_opt expr
+| expr AND endl_opt expr
+| expr OR endl_opt expr
+| expr '?' endl_opt expr endl_opt ':' endl_opt expr
+| expr '[' endl_opt expr_list endl_opt ']'
+| ID AS endl_opt type
 ;
 
-class_member_declaration: property_declaration
-| method_declaration
-| constructor_declaration
-| class_declaration
+block_statement: '{' endl_opt stmt_list_opt endl_opt '}'
 ;
 
+if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
+;
+
+while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
+| WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
+;
+
+do_while_stmt: DO endl_opt block_statement endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
+| DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
+;
+
+for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt block_statement
+| FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
+;
+
+switch_stmt: SWITCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
+;
+
+case_list: case_stmt
+| case_list endl_opt case_stmt
+;
+
+case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt endl_opt break_opt
+| DEFAULT endl_opt ':' endl_opt stmt endl_opt break_opt
+;
+
+break_opt: BREAK endl_opt stmt_sep
+;
+
+return_statement_opt: /* empty */
+| RETURN expr stmt_sep
+;
+
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt endl_opt return_statement_opt endl_opt'}'
+| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt endl_opt return_statement_opt endl_opt'}'
+;
+
+try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
+;
+
+catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt block_statement
+| CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement
+;
+
+error_type: UNKNOWN
+| ANY
+;
+
+stmt_list_opt: /* empty */
+| stmt_list
+;
+
+stmt_list: stmt
+| stmt_list endl_opt stmt
+;
+
+stmt: ';'
+| expr stmt_sep
+| if_stmt
+| while_stmt
+| for_stmt
+| do_while_stmt stmt_sep
+| switch_stmt
+| function_declaration
+| try_catch_block
+;
+
+kw: LET
+| CONST
+;
+
+type: NUMBER
+| STRING
+| BOOLEAN
+| ANY
+| UNKNOWN
+| VOID
+;
+
+type_mark: ':' endl_opt type
+;
+
+id_list: ID endl_opt ',' endl_opt ID
+| id_list endl_opt ',' endl_opt ID
+;
+
+var_declaration: kw endl_opt param
+| kw endl_opt ID
+| kw endl_opt id_list endl_opt type_mark
+| kw endl_opt id_list
+;
+
+param: ID endl_opt type_mark
+;
+
+optional_param: ID endl_opt '?' endl_opt type_mark
+;
+
+param_list: param
+| param_list endl_opt ',' endl_opt param
+| optional_param
+| param_list endl_opt ',' endl_opt optional_param
+;
+
+param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
+| '(' ')'
+;
+
+extends_decl: /* empty */
+| EXTENDS endl_opt ID
+;
+
+implements_decl: /* empty */
+| IMPLEMENTS endl_opt ID
+| implements_decl endl_opt ',' endl_opt ID
+;
+
+//----------------------------------------------------------------
 property_declaration: property_modifier type ID ';'
                  | property_modifier type ID '=' expr ';'
                  | property_modifier type_name ID ';'
@@ -125,234 +279,24 @@ visibility: PRIVATE
 | PUBLIC
 ;
 
-if_stmt: IF '(' expr ')' stmt
-| IF '(' expr ')' stmt ELSE stmt
+//----------------------------------------------------------------
+
+class_member_declaration: property_declaration
+| method_declaration
+| constructor_declaration
+| class_declaration
 ;
 
-while_stmt: WHILE '(' expr ')' stmt
-| WHILE '(' expr ')' if_stmt BREAK
-| WHILE '(' expr ')' if_stmt CONTINUE
+
+class_member_decl_list: class_member_decl
+| class_member_decl_list endl_opt class_member_decl
 ;
 
-for_stmt: FOR '(' for_init ';' expr ';' for_iter ')' stmt
-| FOR '(' for_init ';' expr ';' for_iter ')' if_stmt BREAK
-| FOR '(' for_init ';' expr ';' for_iter ')' if_stmt CONTINUE
+class_body: /* empty */
+| class_member_decl_list
 ;
 
-do_while_stmt: DO stmt WHILE '(' expr ')'
-| DO stmt WHILE '(' expr ')' if_stmt BREAK
-| DO stmt WHILE '(' expr ')' if_stmt CONTINUE
-;
-
-var_declaration: LET ID ':' type // Объявление переменной с типом
-| LET ID '=' expr // Объявление переменной с инициализацией
-| CONST id_list ':' type '=' expr ';'//объявление неизменяемой переменной
-;
-
-id_list: ID
-| id_list ',' ID
-;
-
-try_catch_block: TRY block_statement catch_clauses
-;
-
-catch_clauses: catch_clause
-| catch_clauses endl_opt catch_clause
-;
-
-catch_clause: CATCH '(' ID ')' block_statement
-| CATCH '(' ID ':' error_type ')' block_statement
-;
-
-error_type: UNKNOWN
-| ANY
-;
-
-as_expr: ID 'as' ID
-| ID 'as' type
-;
-
-switch_stmt: SWITCH '(' ID ')' '{' case_list '}'
-;
-
-case_list: case_list case_stmt
-| case_stmt 
-| case_stmt BREAK
-;
-
-case_stmt: CASE expr ':' stmt
-| DEFAULT ':' stmt 
-;
-
-function_declaration: FUNC ID param_list_0_or_more type_mark block_statement
-| FUNC ID param_list_0_or_more block_statement
-;
-
-block_statement: '{' stmt_list_opt '}'
-;
-
-stmt_list_opt: /* empty */
-| stmt_list
-;
-
-stmt_list: stmt
-| stmt_list endl_opt stmt
-;
-
-return_statement: RETURN expr stmt_sep
-;
-
-enum_declaration : ENUM ID '{' enum_body '}'
-;
-
-enum_body : enum_list
-| empty
-;
-
-enum_list : ID '=' NUMBER_LITERAL
-| enum_list ',' ID '=' NUMBER_LITERAL
-| ID '=' STRING_LITERAL
-| enum_list ',' ID '=' STRING_LITERAL
-| ID '=' BOOL_LITERAL
-| enum_list ',' ID '=' BOOL_LITERAL
-;
-
-access: 			 ID
-| qualification_list ID
-| 					 ID '(' expr_list_opt ')'
-| qualification_list ID '(' expr_list_opt ')'
-;
-
-qualification_list: qualification
-| qualification_list qualification
-;
-
-qualification: ID '.'
-| THIS '.'
-| qualification '(' expr_list_opt ')' '.'
-;
-
-stmt: expr stmt_sep
-| assign_stmt stmt_sep
-| access stmt_sep
-| if_stmt
-| while_stmt
-| for_stmt
-| do_while_stmt
-| switch_stmt
-| DECLARE ID ';'
-| function_declaration
-| return_statement
-;
-
-type: NUMBER
-| STRING
-| BOOLEAN
-| ANY
-| UNKNOWN
-| VOID
-;
-
-type_mark: ':' type
-;
-
-expr: NUMBER_LITERAL
-| STRING_LITERAL
-| BOOL_LITERAL
-| '(' expr ')'
-| NOT expr
-| expr DECREMENT
-| DECREMENT expr
-| expr INCREMENT
-| INCREMENT expr 
-| '-' expr %prec UMINUS
-| '+' expr %prec UPLUS
-| expr '+' expr
-| expr '-' expr
-| expr '*' expr
-| expr '/' expr
-| expr '%' expr
-| expr LESS expr
-| expr GREATER expr
-| expr LESS_OR_EQUAL expr
-| expr GREATER_OR_EQUAL expr
-| expr EQUALS expr
-| expr NOT_EQUALS expr
-| expr AND expr
-| expr OR expr
-| expr '?' expr ':' expr
-| expr '[' expr_list ']'
-| expr '.' ID
-;
-
-expr_list: expr
-| expr_list ',' expr
-;
-
-expr_list_opt: expr_list
-| /*empty*/
-;
-
-assign_stmt: ID assign_type expr
-| vars_declaration assign_type expr
-;
-
-assign_type: ASSIGN
-| PLUS_ASSIGN
-| MINUS_ASSIGN
-| MUL_ASSIGN
-| DIV_ASSIGN
-| MOD_ASSIGN
-;
-
-param_list_0_or_more: '(' param_list ')'
-| '(' ')'
-;
-
-param_list: param
-| param_list ',' param
-| optional_param
-| param_list ',' optional_param
-;
-
-param: ID type_mark
-;
-
-optional_param: ID '?' type_mark
-;
-
-return_value: type_mark
-;
-
-return_value_opt: return_value
-| /*empty*/
-;
-
-kw: LET
-| CONST
-;
-
-vars_declaration: kw param
-| kw ID
-| kw id_list type_mark
-| kw id_list
-;
-
-id_list: ID ',' ID
-| id_list ',' ID
-;
-
-/*Оператор перевода строки*/
-endl: ENDL
-| endl ENDL
-;
-
-endl_opt: /*empty*/
-| endl
-;
-
-stmt_sep: ';'
-| ENDL
+class: CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl endl_opt '{' endl_opt class_body endl_opt'}'
 ;
 
 %%
