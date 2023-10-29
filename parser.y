@@ -207,7 +207,7 @@ stmt_sep: ';'
 ;
 
 stmt: expr stmt_sep
-| assign_stmt
+| assign_stmt stmt_sep
 | access stmt_sep
 | if_stmt
 | while_stmt
@@ -267,12 +267,16 @@ expr_list_opt: expr_list
 | /*empty*/
 ;
 
-assign_stmt: ID ASSIGN expr stmt_sep
-| ID PLUS_ASSIGN expr stmt_sep
-| ID MINUS_ASSIGN expr stmt_sep
-| ID MUL_ASSIGN expr stmt_sep
-| ID DIV_ASSIGN expr stmt_sep
-| ID MOD_ASSIGN expr stmt_sep
+assign_stmt: ID assign_type expr
+| vars_declaration assign_type expr
+;
+
+assign_type: ASSIGN
+| PLUS_ASSIGN
+| MINUS_ASSIGN
+| MUL_ASSIGN
+| DIV_ASSIGN
+| MOD_ASSIGN
 ;
 
 param_list_0_or_more: '(' param_list ')'
@@ -297,7 +301,7 @@ kw: LET
 | CONST
 ;
 
-vars_declaration: kw ID type_mark
+vars_declaration: kw param
 | kw ID
 | kw id_list type_mark
 | kw id_list
