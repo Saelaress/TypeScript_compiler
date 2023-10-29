@@ -184,8 +184,8 @@ case_stmt: CASE expr ':' stmt
 | DEFAULT ':' stmt 
 ;
 
-function_declaration: FUNC ID '(' param_list_0_or_more ')' type_mark block_statement
-| FUNC ID '(' param_list_0_or_more ')' block_statement
+function_declaration: FUNC ID param_list_0_or_more type_mark block_statement
+| FUNC ID param_list_0_or_more block_statement
 ;
 
 block_statement: '{' stmt_list_opt '}'
@@ -197,6 +197,9 @@ stmt_list_opt: /* empty */
 
 stmt_list: stmt
 | stmt_list endl_opt stmt
+;
+
+return_statement: RETURN expr stmt_sep
 ;
 
 enum_declaration : ENUM ID '{' enum_body '}'
@@ -213,7 +216,6 @@ enum_list : ID '=' NUMBER_LITERAL
 | ID '=' BOOL_LITERAL
 | enum_list ',' ID '=' BOOL_LITERAL
 ;
-
 
 access: 			 ID
 | qualification_list ID
@@ -240,14 +242,7 @@ stmt: expr stmt_sep
 | switch_stmt
 | DECLARE ID ';'
 | function_declaration
-;
-
-stmt_list: stmt
-| stmt_list stmt
-;
-
-stmt_list_opt: /*empty*/
-| stmt_list
+| return_statement
 ;
 
 type: NUMBER
@@ -316,9 +311,14 @@ param_list_0_or_more: '(' param_list ')'
 
 param_list: param
 | param_list ',' param
+| optional_param
+| param_list ',' optional_param
 ;
 
 param: ID type_mark
+;
+
+optional_param: ID '?' type_mark
 ;
 
 return_value: type_mark
@@ -352,7 +352,7 @@ endl_opt: /*empty*/
 ;
 
 stmt_sep: ';'
-| endl
+| ENDL
 ;
 
 %%
