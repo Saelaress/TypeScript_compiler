@@ -257,15 +257,6 @@ implements_decl: /* empty */
 | implements_decl endl_opt ',' endl_opt ID
 ;
 
-//----------------------------------------------------------------
-property_declaration: property_modifier type ID ';'
-                 | property_modifier type ID '=' expr ';'
-                 | property_modifier type_name ID ';'
-                 | property_modifier type_name ID '=' expr ';'
-                 | property_modifier array_type ID ';'
-                 | property_modifier array_type ID '=' expr ';'
-                 ;
-
 property_modifier: visibility
 | visibility READONLY
 | READONLY
@@ -279,24 +270,26 @@ visibility: PRIVATE
 | PUBLIC
 ;
 
-//----------------------------------------------------------------
-
-class_member_declaration: property_declaration
-| method_declaration
-| constructor_declaration
+class_member: property_modifier expr endl_opt stmt_sep
+| function_declaration
+// | constructor_declaration
 | class_declaration
 ;
 
+сlass_visibility_member: class_member
+| visibility endl_opt class_member
+;
 
-class_member_decl_list: class_member_decl
-| class_member_decl_list endl_opt class_member_decl
+сlass_visibility_member_list: сlass_visibility_member
+| сlass_visibility_member_list endl_opt сlass_visibility_member
 ;
 
 class_body: /* empty */
-| class_member_decl_list
+| сlass_visibility_member_list
 ;
 
-class: CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl endl_opt '{' endl_opt class_body endl_opt'}'
+class_declaration: CLASS endl_opt ID
+| CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl endl_opt '{' endl_opt class_body endl_opt'}'
 ;
 
 %%
