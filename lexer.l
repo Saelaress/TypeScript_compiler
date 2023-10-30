@@ -9,21 +9,8 @@
 #include <iostream>
 using namespace std;
 
-char* removeUnderline(const char* str) {
-    int len = strlen(str);
-    char* result = (char*)malloc(len + 1);
-    int result_index = 0;
+char* removeUnderline(const char* str);
 
-    for (int i = 0; i < len; i++) {
-        if (str[i] != '_') {
-            result[result_index] = str[i];
-            result_index++;
-        }
-    }
-
-    result[result_index] = '\0';
-    return result;
-}
 %}
 
 
@@ -171,7 +158,6 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     }
 <STRINGD,STRINGS>[^\\\"\'\n]+ {strcat(str, yytext);}
 <STRINGD,STRINGS,STRINGB>\\n {strcat(str, "\n");}
-<STRINGD,STRINGS,STRINGB>\t {strcat(str, "\t");}
 <STRINGD,STRINGS,STRINGB>\\t {strcat(str, "\t");}
 <STRINGD,STRINGS,STRINGB>\\\\ {strcat(str, "\\");}
 <STRINGD,STRINGS,STRINGB>\\\" {strcat(str, "\"");}
@@ -336,6 +322,23 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 .|\n {/*все остальные символы пропускаем*/}
 
 %%
+
+char* removeUnderline(const char* str) {
+    int len = strlen(str);
+    char* result = (char*)malloc(len + 1);
+    int result_index = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (str[i] != '_') {
+            result[result_index] = str[i];
+            result_index++;
+        }
+    }
+
+    result[result_index] = '\0';
+    return result;
+}
+
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
