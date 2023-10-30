@@ -270,7 +270,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     }
 }
 
-{DIGIT}(\_*{DIGIT})*\_* {
+{DIGIT}(\_*{DIGIT})*\_+ {
     printf("ERROR: illegal underscore in INT in line %d.\n");
 }
 
