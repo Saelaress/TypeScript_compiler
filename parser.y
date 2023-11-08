@@ -138,21 +138,55 @@ expr: NUMBER_LITERAL
 block_statement: '{' endl_opt stmt_list_opt endl_opt '}'
 ;
 
-if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
+if_expr: NUMBER_LITERAL
+| STRING_LITERAL
+| TRUE_LITERAL
+| FALSE_LITERAL
+| ID
+| '(' endl_opt expr endl_opt ')'
+| expr endl_opt '.' endl_opt ID
+| expr endl_opt '.' endl_opt ID '(' expr_list_opt ')'
+| ID '(' expr_list_opt ')'
+| expr '+' endl_opt expr
+| expr '-' endl_opt expr
+| expr '*' endl_opt expr
+| expr '/' endl_opt expr
+| expr '%' endl_opt expr
+| expr '<' endl_opt expr
+| expr '>' endl_opt expr
+| expr LESS_OR_EQUAL endl_opt expr
+| expr GREATER_OR_EQUAL endl_optexpr
+| expr EQUALS endl_opt expr
+| expr NOT_EQUALS endl_opt expr
+| expr '=' endl_opt expr
+| expr PLUS_ASSIGN endl_opt expr
+| expr MINUS_ASSIGN endl_opt expr
+| expr MUL_ASSIGN endl_opt expr
+| expr DIV_ASSIGN endl_opt expr
+| expr MOD_ASSIGN endl_opt expr
+| NOT endl_opt expr
+| expr AND endl_opt expr
+| expr OR endl_opt expr
+| expr '?' endl_opt expr endl_opt ':' endl_opt expr
+| expr '[' endl_opt expr_list endl_opt ']'
+| ID AS endl_opt type
 ;
 
-while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-| WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
+if_stmt: IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement
+| IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt if_expr
+| IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
 ;
 
-do_while_stmt: DO endl_opt block_statement endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
-| DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
+while_stmt: WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt stmt
+| WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement
 ;
 
-for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt block_statement
-| FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
+do_while_stmt: DO endl_opt block_statement endl_opt WHILE endl_opt '(' endl_opt if_expr endl_opt ')'
+| DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt if_expr endl_opt ')'
+;
+
+for_stmt: FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt block_statement
+| FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt stmt
 ;
 
 switch_stmt: SWITCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
