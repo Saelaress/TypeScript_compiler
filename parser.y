@@ -84,11 +84,11 @@ endl_opt: /*empty*/
 ;
 
 stmt_sep: ';'
-| ENDL
+| endl
 ;
 
 expr_list: expr
-| expr_list ',' expr
+| expr_list endl_opt ',' endl_opt expr
 ;
 
 expr_list_opt: expr_list
@@ -189,18 +189,19 @@ for_stmt: FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_o
 | FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt stmt
 ;
 
-switch_stmt: SWITCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
+switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
 ;
 
 case_list: case_stmt
-| case_list endl_opt case_stmt
+| case_list case_stmt
 ;
 
 case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt endl_opt break_opt
 | DEFAULT endl_opt ':' endl_opt stmt endl_opt break_opt
 ;
 
-break_opt: BREAK endl_opt stmt_sep
+break_opt: /* empty */
+| BREAK stmt_sep
 ;
 
 return_statement_opt: /* empty */
@@ -227,11 +228,10 @@ stmt_list_opt: /* empty */
 ;
 
 stmt_list: stmt
-| stmt_list endl_opt stmt
+| stmt_list stmt
 ;
 
-stmt: ';'
-| expr stmt_sep
+stmt: expr stmt_sep
 | if_stmt
 | while_stmt
 | for_stmt
@@ -239,9 +239,13 @@ stmt: ';'
 | switch_stmt
 | function_declaration
 | try_catch_block
+| block_statement
 ;
 
-kw: LET
+empty_stmt: ;
+;
+
+modifier: LET
 | CONST
 ;
 
@@ -251,6 +255,7 @@ type: NUMBER
 | ANY
 | UNKNOWN
 | VOID
+| ID
 ;
 
 type_mark: ':' endl_opt type
@@ -260,10 +265,10 @@ id_list: ID endl_opt ',' endl_opt ID
 | id_list endl_opt ',' endl_opt ID
 ;
 
-var_declaration: kw endl_opt param
-| kw endl_opt ID
-| kw endl_opt id_list endl_opt type_mark
-| kw endl_opt id_list
+var_declaration: modifier endl_opt param
+| modifier endl_opt ID
+| modifier endl_opt id_list endl_opt type_mark
+| modifier endl_opt id_list
 ;
 
 param: ID endl_opt type_mark
