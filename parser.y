@@ -84,11 +84,11 @@ endl_opt: /*empty*/
 ;
 
 stmt_sep: ';'
-| ENDL
+| endl
 ;
 
 expr_list: expr
-| expr_list ',' expr
+| expr_list endl_opt ',' endl_opt expr
 ;
 
 expr_list_opt: expr_list
@@ -138,21 +138,18 @@ expr: NUMBER_LITERAL
 block_statement: '{' endl_opt stmt_list_opt endl_opt '}'
 ;
 
-if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
+if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
 | IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt stmt
 ;
 
 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-| WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
 ;
 
-do_while_stmt: DO endl_opt block_statement endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
-| DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
+do_while_stmt: DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 ;
 
-for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt block_statement
-| FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
+for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
 ;
 
 switch_stmt: SWITCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
@@ -196,8 +193,7 @@ stmt_list: stmt
 | stmt_list endl_opt stmt
 ;
 
-stmt: ';'
-| expr stmt_sep
+stmt: expr stmt_sep
 | if_stmt
 | while_stmt
 | for_stmt
@@ -205,6 +201,10 @@ stmt: ';'
 | switch_stmt
 | function_declaration
 | try_catch_block
+| block_statement
+;
+
+empty_stmt: ;
 ;
 
 kw: LET
