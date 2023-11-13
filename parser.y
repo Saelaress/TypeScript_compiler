@@ -130,9 +130,8 @@ expr: if_expr
 | expr INCREMENT
 | INCREMENT endl_opt expr
 | ID AS endl_opt type
-;
-
-block_statement: '{' endl_opt stmt_list_opt endl_opt '}'
+| '-' endl_opt expr %prec UMINUS
+| '+' endl_opt expr %prec UPLUS
 ;
 
 if_expr: NUMBER_LITERAL
@@ -168,21 +167,24 @@ if_expr: NUMBER_LITERAL
 | expr '[' endl_opt expr_list endl_opt ']'
 ;
 
+
+block_statement: '{' endl_opt stmt_list_opt '}'
+
 if_stmt: IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement
 | IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt if_expr
 | IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
 ;
 
 while_stmt: WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt stmt
-| WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement
+| WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt empty_stmt
 ;
 
-do_while_stmt: DO endl_opt block_statement endl_opt WHILE endl_opt '(' endl_opt if_expr endl_opt ')'
-| DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt if_expr endl_opt ')'
+do_while_stmt: DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
+| DO endl_opt empty_stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 ;
 
-for_stmt: FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt block_statement
-| FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt stmt
+for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt stmt
+| FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt empty_stmt
 ;
 
 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
@@ -193,7 +195,9 @@ case_list: case_stmt
 ;
 
 case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt endl_opt break_opt
+| CASE endl_opt expr endl_opt ':' endl_opt empty_stmt endl_opt break_opt
 | DEFAULT endl_opt ':' endl_opt stmt endl_opt break_opt
+| DEFAULT endl_opt ':' endl_opt empty_stmt endl_opt break_opt
 ;
 
 break_opt: /* empty */
@@ -220,11 +224,13 @@ error_type: UNKNOWN
 ;
 
 stmt_list_opt: /* empty */
-| stmt_list
+| stmt_list endl_opt
 ;
 
 stmt_list: stmt
+| empty_stmt
 | stmt_list stmt
+| stmt_list empty_stmt
 ;
 
 func_stmt_list_opt: /* empty */
