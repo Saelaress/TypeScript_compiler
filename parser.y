@@ -1,5 +1,22 @@
 %{ /*Пролог*/
-#include "tree_nodes.h" %}
+#include "tree_nodes.h"
+// Объявления предварительных функций и классов
+
+interface Console {
+    log(message: string): void;
+    readLine(): string;
+}
+
+class ConsoleImpl implements Console {
+    log(message: string): void {
+        console.log(message);
+    }
+
+    readLine(): string {
+        return prompt();
+    }
+} 
+%}
 
 %union {
     char* str;
@@ -58,6 +75,8 @@
 
 %token ID
 
+%token<Console> CONSOLE
+
 %left ';' ENDL
 %right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left '[' ']'
@@ -74,6 +93,16 @@
 %nonassoc ')'
 
 %%
+
+// Определение стартового символа
+%start program
+
+program: class_list
+| function_declaration
+| class_declaration
+| program function_declaration
+| program class_declaration
+;
 
 endl: ENDL
 | endl ENDL
@@ -175,8 +204,8 @@ return_statement_opt: /* empty */
 | RETURN expr stmt_sep
 ;
 
-function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt endl_opt return_statement_opt endl_opt'}'
-| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt endl_opt return_statement_opt endl_opt'}'
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt func_stmt_list_opt endl_opt return_statement_opt endl_opt'}'
+| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt func_stmt_list_opt endl_opt return_statement_opt endl_opt'}'
 ;
 
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
@@ -198,15 +227,32 @@ stmt_list: stmt
 | stmt_list stmt
 ;
 
+func_stmt_list_opt: /* empty */
+| func_stmt_list
+;
+
+func_stmt_list: func_stmt
+| empty_stmt
+| func_stmt_list func_stmt
+| func_stmt_list empty_stmt
+;
+
 stmt: expr stmt_sep
 | if_stmt
 | while_stmt
 | for_stmt
 | do_while_stmt stmt_sep
 | switch_stmt
-| function_declaration
 | try_catch_block
 | block_statement
+;
+
+func_stmt: return_statement
+| stmt
+;
+
+return_statement:
+| RETURN expr ';'
 ;
 
 empty_stmt: ;
