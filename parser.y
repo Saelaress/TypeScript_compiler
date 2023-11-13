@@ -95,7 +95,17 @@ expr_list_opt: expr_list
 | /*empty*/
 ;
 
-expr: NUMBER_LITERAL
+expr: if_expr
+| expr DECREMENT
+| DECREMENT endl_opt expr
+| expr INCREMENT
+| INCREMENT endl_opt expr
+| ID AS endl_opt type
+| '-' endl_opt expr %prec UMINUS
+| '+' endl_opt expr %prec UPLUS
+;
+
+if_expr: NUMBER_LITERAL
 | STRING_LITERAL
 | TRUE_LITERAL
 | FALSE_LITERAL
@@ -121,38 +131,31 @@ expr: NUMBER_LITERAL
 | expr MUL_ASSIGN endl_opt expr
 | expr DIV_ASSIGN endl_opt expr
 | expr MOD_ASSIGN endl_opt expr
-| '-' endl_opt expr %prec UMINUS
-| '+' endl_opt expr %prec UPLUS
 | NOT endl_opt expr
-| expr DECREMENT
-| DECREMENT endl_opt expr
-| expr INCREMENT
-| INCREMENT endl_opt expr
 | expr AND endl_opt expr
 | expr OR endl_opt expr
 | expr '?' endl_opt expr endl_opt ':' endl_opt expr
 | expr '[' endl_opt expr_list endl_opt ']'
-| ID AS endl_opt type
 ;
+
 
 block_statement: '{' endl_opt stmt_list_opt '}'
+
+if_stmt: IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement
+| IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt if_expr
+| IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
 ;
 
-if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt stmt
-;
-
-while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-| WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt empty_stmt
+while_stmt: WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt stmt
+| WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt empty_stmt
 ;
 
 do_while_stmt: DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 | DO endl_opt empty_stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 ;
 
-for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
-| FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt empty_stmt
+for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt stmt
+| FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt empty_stmt
 ;
 
 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
@@ -238,6 +241,7 @@ var_declaration: modifier endl_opt param
 | modifier endl_opt ID
 | modifier endl_opt id_list endl_opt type_mark
 | modifier endl_opt id_list
+| modifier ID endl_opt type_mark dimensions
 ;
 
 param: ID endl_opt type_mark
@@ -299,6 +303,10 @@ class_body: /* empty */
 class_declaration: CLASS endl_opt ID
 | CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl endl_opt '{' endl_opt class_body endl_opt'}'
 ;
+
+dimensions: '[' NUMBER_LITERAL ']' dimensions
+          | '[' NUMBER_LITERAL ']'
+          ;
 
 %%
 {/*Секция пользовательского кода*/}
