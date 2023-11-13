@@ -52,6 +52,11 @@ class ConsoleImpl implements Console {
 %token CONTINUE
 %token DEFAULT
 
+%token SWITCH
+%token CASE
+%token TRY
+%token CATCH
+
 %token INCREMENT
 %token DECREMENT
 
@@ -92,11 +97,11 @@ class ConsoleImpl implements Console {
 %left '.'
 %nonassoc ')'
 
+%start program
+
 %%
 
 // Определение стартового символа
-%start program
-
 program: class_list
 | function_declaration
 | class_declaration
@@ -120,8 +125,8 @@ expr_list: expr
 | expr_list endl_opt ',' endl_opt expr
 ;
 
-expr_list_opt: expr_list
-| /*empty*/
+expr_list_opt: /*empty*/
+| expr_list
 ;
 
 expr: if_expr
@@ -151,7 +156,7 @@ if_expr: NUMBER_LITERAL
 | expr '<' endl_opt expr
 | expr '>' endl_opt expr
 | expr LESS_OR_EQUAL endl_opt expr
-| expr GREATER_OR_EQUAL endl_optexpr
+| expr GREATER_OR_EQUAL endl_opt expr
 | expr EQUALS endl_opt expr
 | expr NOT_EQUALS endl_opt expr
 | expr '=' endl_opt expr
@@ -164,7 +169,8 @@ if_expr: NUMBER_LITERAL
 | expr AND endl_opt expr
 | expr OR endl_opt expr
 | expr '?' endl_opt expr endl_opt ':' endl_opt expr
-| expr '[' endl_opt expr_list endl_opt ']'
+| expr endl_opt '[' endl_opt expr_list endl_opt ']' // Обращение к элементу одномерного массива
+| expr endl_opt dimensions_expr // Обращение к элементу многомерного массива
 ;
 
 
@@ -251,6 +257,7 @@ stmt: expr stmt_sep
 | switch_stmt
 | try_catch_block
 | block_statement
+| var_declaration stmt_sep
 ;
 
 func_stmt: return_statement
@@ -261,7 +268,7 @@ return_statement:
 | RETURN expr ';'
 ;
 
-empty_stmt: ;
+empty_stmt: ';'
 ;
 
 modifier: LET
@@ -280,15 +287,34 @@ type: NUMBER
 type_mark: ':' endl_opt type
 ;
 
-id_list: ID endl_opt ',' endl_opt ID
-| id_list endl_opt ',' endl_opt ID
+type_mark_opt: /* empty */
+| type_mark
 ;
 
-var_declaration: modifier endl_opt param
-| modifier endl_opt ID
-| modifier endl_opt id_list endl_opt type_mark
-| modifier endl_opt id_list
-| modifier ID endl_opt type_mark dimensions
+variable: ID endl_opt type_mark_opt
+;
+
+var_init_opt: /* empty */
+| endl_opt '=' endl_opt expr
+;
+
+var_list: variable var_init_opt
+| var_list endl_opt ',' endl_opt variable var_init_opt
+;
+
+var_declaration: modifier endl_opt var_list
+| modifier ID endl_opt type_mark dimensions // Объявление многомерного массива
+| modifier ID endl_opt type_mark endl_opt '[' endl_opt ']' // Объявление одномерного массива
+| modifier ID endl_opt type_mark dimensions endl_opt '=' endl_opt '[' endl_opt expr_list_opt endl_opt ']' // Инициализация многомерного
+| modifier ID endl_opt type_mark endl_opt '[' endl_opt ']' endl_opt '=' endl_opt '[' expr_list_opt ']'// Инициализация одномерного
+;
+
+dimensions: '[' endl_opt ']'
+| dimensions '[' endl_opt ']'
+;
+
+dimensions_expr: '[' endl_opt expr endl_opt ']'
+| dimensions_expr endl_opt '[' endl_opt expr endl_opt ']'
 ;
 
 param: ID endl_opt type_mark
@@ -311,8 +337,11 @@ extends_decl: /* empty */
 | EXTENDS endl_opt ID
 ;
 
-implements_decl: /* empty */
-| IMPLEMENTS endl_opt ID
+implements_decl_opt: /* empty */
+| implements_decl
+;
+
+implements_decl: IMPLEMENTS endl_opt ID
 | implements_decl endl_opt ',' endl_opt ID
 ;
 
@@ -331,29 +360,28 @@ visibility: PRIVATE
 
 class_member: property_modifier expr endl_opt stmt_sep
 | function_declaration
-// | constructor_declaration
 | class_declaration
 ;
 
-сlass_visibility_member: class_member
+class_visibility_member: class_member
 | visibility endl_opt class_member
 ;
 
-сlass_visibility_member_list: сlass_visibility_member
-| сlass_visibility_member_list endl_opt сlass_visibility_member
+class_visibility_member_list: class_visibility_member
+| class_visibility_member_list endl_opt class_visibility_member
 ;
 
 class_body: /* empty */
-| сlass_visibility_member_list
+| class_visibility_member_list
 ;
 
 class_declaration: CLASS endl_opt ID
-| CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl endl_opt '{' endl_opt class_body endl_opt'}'
+| CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl_opt endl_opt '{' endl_opt class_body endl_opt'}'
 ;
 
-dimensions: '[' NUMBER_LITERAL ']' dimensions
-          | '[' NUMBER_LITERAL ']'
-          ;
+class_list: class_declaration
+| class_list class_declaration
+;
 
 %%
 {/*Секция пользовательского кода*/}
