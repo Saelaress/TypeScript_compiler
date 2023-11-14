@@ -258,6 +258,7 @@ stmt: expr stmt_sep
 | try_catch_block
 | block_statement
 | var_declaration stmt_sep
+| enum_declaration
 ;
 
 func_stmt: return_statement
@@ -376,11 +377,18 @@ class_body: /* empty */
 ;
 
 class_declaration: CLASS endl_opt ID
-| CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl_opt endl_opt '{' endl_opt class_body endl_opt'}'
+| CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl_opt endl_opt '{' endl_opt class_body endl_opt '}'
 ;
 
 class_list: class_declaration
 | class_list class_declaration
+;
+
+enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
+;
+
+id_list: ID var_init_opt
+| id_list endl_opt ',' endl_opt ID var_init_opt
 ;
 
 %%
