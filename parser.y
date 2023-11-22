@@ -109,6 +109,7 @@ program: program_elem
 
 program_elem: class_list
 | function_declaration
+;
 
 endl: ENDL
 | endl ENDL
@@ -215,8 +216,8 @@ return_statement_opt: /* empty */
 | RETURN expr stmt_sep
 ;
 
-function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt func_stmt_list_opt endl_opt return_statement_opt endl_opt'}'
-| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt func_stmt_list_opt endl_opt return_statement_opt endl_opt'}'
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt func_stmt_list_opt endl_opt'}'
+| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt func_stmt_list_opt endl_opt '}'
 ;
 
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
@@ -244,10 +245,12 @@ func_stmt_list_opt: /* empty */
 | func_stmt_list
 ;
 
-func_stmt_list: func_stmt
+func_stmt_list: func_elem
+| func_stmt_list func_elem
+;
+
+func_elem: func_stmt
 | empty_stmt
-| func_stmt_list func_stmt
-| func_stmt_list empty_stmt
 ;
 
 stmt: expr stmt_sep
@@ -262,12 +265,8 @@ stmt: expr stmt_sep
 | enum_declaration
 ;
 
-func_stmt: return_statement
+func_stmt: return_statement_opt
 | stmt
-;
-
-return_statement:
-| RETURN expr ';'
 ;
 
 empty_stmt: ';'
@@ -377,8 +376,7 @@ class_body: /* empty */
 | class_visibility_member_list
 ;
 
-class_declaration: CLASS endl_opt ID
-| CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl_opt endl_opt '{' endl_opt class_body endl_opt '}'
+class_declaration: CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl_opt endl_opt '{' endl_opt class_body endl_opt '}'
 ;
 
 class_list: class_declaration
