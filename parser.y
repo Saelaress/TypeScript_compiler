@@ -212,8 +212,7 @@ break_opt: /* empty */
 | BREAK stmt_sep
 ;
 
-return_statement_opt: /* empty */
-| RETURN expr stmt_sep
+return_statement: RETURN expr stmt_sep
 ;
 
 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt func_stmt_list_opt endl_opt'}'
@@ -265,7 +264,7 @@ stmt: expr stmt_sep
 | enum_declaration
 ;
 
-func_stmt: return_statement_opt
+func_stmt: return_statement
 | stmt
 ;
 
