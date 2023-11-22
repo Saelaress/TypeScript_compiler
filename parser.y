@@ -147,8 +147,8 @@ if_expr: NUMBER_LITERAL
 | FALSE_LITERAL
 | ID
 | '(' endl_opt if_expr endl_opt ')'
-| if_expr endl_opt '.' endl_opt ID
-| if_expr endl_opt '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt endl_opt ')'
+| if_expr '.' endl_opt ID
+| if_expr '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt endl_opt ')'
 | ID '(' expr_list_opt ')'
 | if_expr '+' endl_opt if_expr
 | if_expr '-' endl_opt if_expr
@@ -171,8 +171,8 @@ if_expr: NUMBER_LITERAL
 | if_expr AND endl_opt if_expr
 | if_expr OR endl_opt if_expr
 | if_expr '?' endl_opt if_expr endl_opt ':' endl_opt if_expr
-| if_expr endl_opt '[' endl_opt expr_list endl_opt ']' // Обращение к элементу одномерного массива
-| if_expr endl_opt dimensions_expr // Обращение к элементу многомерного массива
+| if_expr '[' endl_opt expr_list endl_opt ']' // Обращение к элементу одномерного массива
+| if_expr dimensions_expr_list // Обращение к элементу многомерного массива
 ;
 
 
@@ -314,7 +314,10 @@ dimensions: '[' endl_opt ']'
 ;
 
 dimensions_expr: '[' endl_opt expr endl_opt ']'
-| dimensions_expr endl_opt '[' endl_opt expr endl_opt ']'
+;
+
+dimensions_expr_list: dimensions_expr
+| dimensions_expr_list endl_opt dimensions_expr
 ;
 
 param: ID endl_opt type_mark
