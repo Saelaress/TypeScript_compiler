@@ -147,8 +147,7 @@ if_expr: NUMBER_LITERAL
 | FALSE_LITERAL
 | ID
 | '(' endl_opt if_expr endl_opt ')'
-| if_expr '.' endl_opt ID
-| if_expr '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt endl_opt ')'
+| dot_expr endl_opt dot_method_opt
 | ID '(' expr_list_opt ')'
 | if_expr '+' endl_opt if_expr
 | if_expr '-' endl_opt if_expr
@@ -171,9 +170,15 @@ if_expr: NUMBER_LITERAL
 | if_expr AND endl_opt if_expr
 | if_expr OR endl_opt if_expr
 | if_expr '?' endl_opt if_expr endl_opt ':' endl_opt if_expr
-| if_expr dimensions_expr_list // Обращение к элементу массива
+| ID dimensions_expr_list // Обращение к элементу массива
 ;
 
+dot_expr: if_expr '.' endl_opt ID
+;
+
+dot_method_opt: /* empty */
+| '(' endl_opt expr_list_opt endl_opt ')'
+;
 
 block_statement: '{' endl_opt stmt_list_opt '}'
 
