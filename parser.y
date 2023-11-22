@@ -171,8 +171,7 @@ if_expr: NUMBER_LITERAL
 | if_expr AND endl_opt if_expr
 | if_expr OR endl_opt if_expr
 | if_expr '?' endl_opt if_expr endl_opt ':' endl_opt if_expr
-| if_expr '[' endl_opt expr_list endl_opt ']' // Обращение к элементу одномерного массива
-| if_expr dimensions_expr_list // Обращение к элементу многомерного массива
+| if_expr dimensions_expr_list // Обращение к элементу массива
 ;
 
 
@@ -303,14 +302,15 @@ var_list: variable var_init_opt
 ;
 
 var_declaration: modifier endl_opt var_list
-| modifier ID endl_opt type_mark dimensions // Объявление многомерного массива
-| modifier ID endl_opt type_mark endl_opt '[' endl_opt ']' // Объявление одномерного массива
-| modifier ID endl_opt type_mark dimensions endl_opt '=' endl_opt '[' endl_opt expr_list_opt endl_opt ']' // Инициализация многомерного
-| modifier ID endl_opt type_mark endl_opt '[' endl_opt ']' endl_opt '=' endl_opt '[' expr_list_opt ']'// Инициализация одномерного
+| modifier ID endl_opt type_mark endl_opt dimensions_list // Объявление массива
+| modifier ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt endl_opt ']' // Инициализация массива
 ;
 
 dimensions: '[' endl_opt ']'
-| dimensions '[' endl_opt ']'
+;
+
+dimensions_list: dimensions
+| dimensions_list dimensions
 ;
 
 dimensions_expr: '[' endl_opt expr endl_opt ']'
