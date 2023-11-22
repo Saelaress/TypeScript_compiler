@@ -85,6 +85,7 @@ class ConsoleImpl implements Console {
 %left ';' ENDL
 %right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left '[' ']'
+%left '?'
 %left  OR
 %left  AND
 %left EQUALS NOT_EQUALS '<' '>' LESS_OR_EQUAL GREATER_OR_EQUAL IS AS
@@ -102,12 +103,12 @@ class ConsoleImpl implements Console {
 %%
 
 // Определение стартового символа
-program: class_list
-| function_declaration
-| class_declaration
-| program function_declaration
-| program class_declaration
+program: program_elem
+| program program_elem
 ;
+
+program_elem: class_list
+| function_declaration
 
 endl: ENDL
 | endl ENDL
@@ -144,33 +145,33 @@ if_expr: NUMBER_LITERAL
 | TRUE_LITERAL
 | FALSE_LITERAL
 | ID
-| '(' endl_opt expr endl_opt ')'
-| expr endl_opt '.' endl_opt ID
-| expr endl_opt '.' endl_opt ID '(' expr_list_opt ')'
+| '(' endl_opt if_expr endl_opt ')'
+| if_expr endl_opt '.' endl_opt ID
+| if_expr endl_opt '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt endl_opt ')'
 | ID '(' expr_list_opt ')'
-| expr '+' endl_opt expr
-| expr '-' endl_opt expr
-| expr '*' endl_opt expr
-| expr '/' endl_opt expr
-| expr '%' endl_opt expr
-| expr '<' endl_opt expr
-| expr '>' endl_opt expr
-| expr LESS_OR_EQUAL endl_opt expr
-| expr GREATER_OR_EQUAL endl_opt expr
-| expr EQUALS endl_opt expr
-| expr NOT_EQUALS endl_opt expr
-| expr '=' endl_opt expr
-| expr PLUS_ASSIGN endl_opt expr
-| expr MINUS_ASSIGN endl_opt expr
-| expr MUL_ASSIGN endl_opt expr
-| expr DIV_ASSIGN endl_opt expr
-| expr MOD_ASSIGN endl_opt expr
-| NOT endl_opt expr
-| expr AND endl_opt expr
-| expr OR endl_opt expr
-| expr '?' endl_opt expr endl_opt ':' endl_opt expr
-| expr endl_opt '[' endl_opt expr_list endl_opt ']' // Обращение к элементу одномерного массива
-| expr endl_opt dimensions_expr // Обращение к элементу многомерного массива
+| if_expr '+' endl_opt if_expr
+| if_expr '-' endl_opt if_expr
+| if_expr '*' endl_opt if_expr
+| if_expr '/' endl_opt if_expr
+| if_expr '%' endl_opt if_expr
+| if_expr '<' endl_opt if_expr
+| if_expr '>' endl_opt if_expr
+| if_expr LESS_OR_EQUAL endl_opt if_expr
+| if_expr GREATER_OR_EQUAL endl_opt if_expr
+| if_expr EQUALS endl_opt if_expr
+| if_expr NOT_EQUALS endl_opt if_expr
+| if_expr '=' endl_opt if_expr
+| if_expr PLUS_ASSIGN endl_opt if_expr
+| if_expr MINUS_ASSIGN endl_opt if_expr
+| if_expr MUL_ASSIGN endl_opt if_expr
+| if_expr DIV_ASSIGN endl_opt if_expr
+| if_expr MOD_ASSIGN endl_opt if_expr
+| NOT endl_opt if_expr
+| if_expr AND endl_opt if_expr
+| if_expr OR endl_opt if_expr
+| if_expr '?' endl_opt if_expr endl_opt ':' endl_opt if_expr
+| if_expr endl_opt '[' endl_opt expr_list endl_opt ']' // Обращение к элементу одномерного массива
+| if_expr endl_opt dimensions_expr // Обращение к элементу многомерного массива
 ;
 
 
