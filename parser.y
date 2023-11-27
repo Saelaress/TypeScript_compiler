@@ -161,8 +161,11 @@ expr: expr DECREMENT
 block_statement: '{' endl_opt stmt_list_opt '}'
 
 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr stmt_sep
 | IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt expr stmt_sep
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr stmt_sep endl_opt ELSE endl_opt block_statement
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr stmt_sep endl_opt ELSE endl_opt expr stmt_sep
 ;
 
 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
