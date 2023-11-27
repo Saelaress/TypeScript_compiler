@@ -118,72 +118,63 @@ expr_list_opt: /*empty*/
 | expr_list
 ;
 
-expr: if_expr
-| expr DECREMENT
+expr: expr DECREMENT
 | DECREMENT endl_opt expr
 | expr INCREMENT
 | INCREMENT endl_opt expr
 | ID AS endl_opt type
 | '-' endl_opt expr %prec UMINUS
 | '+' endl_opt expr %prec UPLUS
-;
-
-if_expr: NUMBER_LITERAL
+| NUMBER_LITERAL
 | STRING_LITERAL
 | TRUE_LITERAL
 | FALSE_LITERAL
 | ID
-| '(' endl_opt if_expr endl_opt ')'
-| dot_expr endl_opt dot_method_opt
+| '(' endl_opt expr endl_opt ')'
 | ID '(' expr_list_opt ')'
-| if_expr '+' endl_opt if_expr
-| if_expr '-' endl_opt if_expr
-| if_expr '*' endl_opt if_expr
-| if_expr '/' endl_opt if_expr
-| if_expr '%' endl_opt if_expr
-| if_expr '<' endl_opt if_expr
-| if_expr '>' endl_opt if_expr
-| if_expr LESS_OR_EQUAL endl_opt if_expr
-| if_expr GREATER_OR_EQUAL endl_opt if_expr
-| if_expr EQUALS endl_opt if_expr
-| if_expr NOT_EQUALS endl_opt if_expr
-| if_expr '=' endl_opt if_expr
-| if_expr PLUS_ASSIGN endl_opt if_expr
-| if_expr MINUS_ASSIGN endl_opt if_expr
-| if_expr MUL_ASSIGN endl_opt if_expr
-| if_expr DIV_ASSIGN endl_opt if_expr
-| if_expr MOD_ASSIGN endl_opt if_expr
-| NOT endl_opt if_expr
-| if_expr AND endl_opt if_expr
-| if_expr OR endl_opt if_expr
-| if_expr '?' endl_opt if_expr endl_opt ':' endl_opt if_expr
+| expr '+' endl_opt expr
+| expr '-' endl_opt expr
+| expr '*' endl_opt expr
+| expr '/' endl_opt expr
+| expr '%' endl_opt expr
+| expr '<' endl_opt expr
+| expr '>' endl_opt expr
+| expr LESS_OR_EQUAL endl_opt expr
+| expr GREATER_OR_EQUAL endl_opt expr
+| expr EQUALS endl_opt expr
+| expr NOT_EQUALS endl_opt expr
+| expr '=' endl_opt expr
+| expr PLUS_ASSIGN endl_opt expr
+| expr MINUS_ASSIGN endl_opt expr
+| expr MUL_ASSIGN endl_opt expr
+| expr DIV_ASSIGN endl_opt expr
+| expr MOD_ASSIGN endl_opt expr
+| NOT endl_opt expr
+| expr AND endl_opt expr
+| expr OR endl_opt expr
+| expr '?' endl_opt expr endl_opt ':' endl_opt expr
 | ID dimensions_expr_list // Обращение к элементу массива
-;
-
-dot_expr: if_expr '.' endl_opt ID
-;
-
-dot_method_opt: /* empty */
-| '(' endl_opt expr_list_opt endl_opt ')'
+| expr '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt endl_opt ')'
+| expr '.' endl_opt ID
 ;
 
 block_statement: '{' endl_opt stmt_list_opt '}'
 
-if_stmt: IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement
-| IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt if_expr
-| IF endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
+if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
 ;
 
-while_stmt: WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt stmt
-| WHILE endl_opt '(' endl_opt if_expr endl_opt ')' endl_opt empty_stmt
+while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
+| WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt empty_stmt
 ;
 
 do_while_stmt: DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 | DO endl_opt empty_stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 ;
 
-for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt if_expr endl_opt ')' endl_opt stmt
-| FOR endl_opt '(' endl_opt if_expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt empty_stmt
+for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
+| FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt empty_stmt
 ;
 
 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
