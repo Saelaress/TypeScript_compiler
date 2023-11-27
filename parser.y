@@ -94,7 +94,7 @@ program: program_elem
 | program program_elem
 ;
 
-program_elem: class_list
+program_elem: class_declaration
 | function_declaration
 ;
 
@@ -118,10 +118,10 @@ expr_list_opt: /*empty*/
 | expr_list
 ;
 
-expr: expr DECREMENT
-| DECREMENT endl_opt expr
-| expr INCREMENT
-| INCREMENT endl_opt expr
+expr: expr POST_DECREMENT
+| PREF_DECREMENT endl_opt expr
+| expr POST_INCREMENT
+| PREF_INCREMENT endl_opt expr
 | ID AS endl_opt type
 | '-' endl_opt expr %prec UMINUS
 | '+' endl_opt expr %prec UPLUS
@@ -343,10 +343,6 @@ class_body: /* empty */
 ;
 
 class_declaration: CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl_opt endl_opt '{' endl_opt class_body endl_opt '}'
-;
-
-class_list: class_declaration
-| class_list class_declaration
 ;
 
 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
