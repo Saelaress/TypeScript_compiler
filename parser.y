@@ -200,8 +200,8 @@ break_opt: /* empty */
 return_statement: RETURN expr stmt_sep
 ;
 
-function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt func_stmt_list_opt endl_opt'}'
-| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt func_stmt_list_opt endl_opt '}'
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt endl_opt'}'
+| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt endl_opt '}'
 ;
 
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
@@ -225,18 +225,6 @@ stmt_list: stmt
 | stmt_list empty_stmt
 ;
 
-func_stmt_list_opt: /* empty */
-| func_stmt_list
-;
-
-func_stmt_list: func_elem
-| func_stmt_list func_elem
-;
-
-func_elem: func_stmt
-| empty_stmt
-;
-
 stmt: expr stmt_sep
 | if_stmt
 | while_stmt
@@ -247,10 +235,7 @@ stmt: expr stmt_sep
 | block_statement
 | var_declaration stmt_sep
 | enum_declaration
-;
-
-func_stmt: return_statement
-| stmt
+| return_statement
 ;
 
 empty_stmt: ';'
