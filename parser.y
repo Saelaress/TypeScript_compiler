@@ -153,7 +153,7 @@ expr: expr DECREMENT
 | expr AND endl_opt expr
 | expr OR endl_opt expr
 | expr '?' endl_opt expr endl_opt ':' endl_opt expr
-| ID dimensions_expr_list // Обращение к элементу массива
+| expr '[' endl_opt expr endl_opt ']' // Обращение к элементу массива
 | expr '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt endl_opt ')'
 | expr '.' endl_opt ID
 ;
@@ -297,13 +297,6 @@ dimensions: '[' endl_opt ']'
 
 dimensions_list: dimensions
 | dimensions_list dimensions
-;
-
-dimensions_expr: '[' endl_opt expr endl_opt ']'
-;
-
-dimensions_expr_list: dimensions_expr
-| dimensions_expr_list endl_opt dimensions_expr
 ;
 
 param: ID endl_opt type_mark
