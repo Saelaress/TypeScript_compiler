@@ -2,20 +2,7 @@
 #include "tree_nodes.h"
 // Объявления предварительных функций и классов
 
-interface Console {
-    log(message: string): void;
-    readLine(): string;
-}
 
-class ConsoleImpl implements Console {
-    log(message: string): void {
-        console.log(message);
-    }
-
-    readLine(): string {
-        return prompt();
-    }
-} 
 %}
 
 %union {
@@ -80,7 +67,7 @@ class ConsoleImpl implements Console {
 
 %token ID
 
-%token<Console> CONSOLE
+
 
 %left ';' ENDL
 %right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
