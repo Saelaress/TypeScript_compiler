@@ -302,16 +302,12 @@ implements_decl: IMPLEMENTS endl_opt ID
 | implements_decl endl_opt ',' endl_opt ID
 ;
 
-property_modifier: visibility
-| visibility READONLY
-| READONLY
-| visibility STATIC
-| STATIC
-| visibility STATIC READONLY
+readonly_opt: /* empty */
+| READONLY endl_opt
 ;
 
-property_modifier_opt: /* empty */
-| property_modifier endl_opt
+static_opt: /* empty */
+| STATIC endl_opt
 ;
 
 visibility: PRIVATE
@@ -323,10 +319,10 @@ visibility_opt: /* empty */
 | visibility endl_opt
 ;
 
-class_member: property_modifier_opt var_declaration // Объявление переменной
-| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
-| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
-| visibility_opt class_declaration // Объявление класса
+class_member: visibility_opt static_opt readonly_opt var_declaration // Объявление переменной
+| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
+| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
+| visibility_opt static_opt class_declaration // Объявление класса
 ;
 
 class_member_list: class_member
