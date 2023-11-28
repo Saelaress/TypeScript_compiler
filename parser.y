@@ -102,7 +102,7 @@ endl: ENDL
 | endl ENDL
 ;
 
-endl_opt: /*empty*/
+endl_opt: /* empty */
 | endl
 ;
 
@@ -114,7 +114,7 @@ expr_list: expr
 | expr_list endl_opt ',' endl_opt expr
 ;
 
-expr_list_opt: /*empty*/
+expr_list_opt: /* empty */
 | expr_list
 ;
 
@@ -131,7 +131,7 @@ expr: expr POST_DECREMENT
 | FALSE_LITERAL
 | ID
 | '(' endl_opt expr endl_opt ')'
-| ID '(' expr_list_opt ')'
+| ID endl_opt '(' endl_opt expr_list_opt ')'
 | expr '+' endl_opt expr
 | expr '-' endl_opt expr
 | expr '*' endl_opt expr
@@ -154,7 +154,7 @@ expr: expr POST_DECREMENT
 | expr OR endl_opt expr
 | expr '?' endl_opt expr endl_opt ':' endl_opt expr
 | expr '[' endl_opt expr endl_opt ']' // Обращение к элементу массива
-| expr '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt endl_opt ')'
+| expr '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt ')'
 | expr '.' endl_opt ID
 ;
 
@@ -180,28 +180,26 @@ for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';'
 | FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt empty_stmt
 ;
 
-switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list endl_opt '}'
+switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}'
 ;
 
 case_list: case_stmt
 | case_list case_stmt
 ;
 
-case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt endl_opt break_opt
-| CASE endl_opt expr endl_opt ':' endl_opt empty_stmt endl_opt break_opt
-| DEFAULT endl_opt ':' endl_opt stmt endl_opt break_opt
-| DEFAULT endl_opt ':' endl_opt empty_stmt endl_opt break_opt
+case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt
+| DEFAULT endl_opt ':' endl_opt stmt_list_opt break_opt
 ;
 
 break_opt: /* empty */
-| BREAK stmt_sep
+| BREAK stmt_sep endl_opt
 ;
 
 return_statement: RETURN expr stmt_sep
 ;
 
-function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt endl_opt'}'
-| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt endl_opt '}'
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
+| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
 ;
 
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
@@ -258,10 +256,10 @@ type_mark: ':' endl_opt type
 ;
 
 type_mark_opt: /* empty */
-| type_mark
+| endl_opt type_mark
 ;
 
-variable: ID endl_opt type_mark_opt
+variable: ID type_mark_opt
 ;
 
 var_init_opt: /* empty */
@@ -273,8 +271,8 @@ var_list: variable var_init_opt
 ;
 
 var_declaration: modifier endl_opt var_list
-| modifier ID endl_opt type_mark endl_opt dimensions_list // Объявление массива
-| modifier ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt endl_opt ']' // Инициализация массива
+| modifier endl_opt ID endl_opt type_mark endl_opt dimensions_list // Объявление массива
+| modifier endl_opt ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' // Инициализация массива
 ;
 
 dimensions: '[' endl_opt ']'
@@ -300,14 +298,6 @@ param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
 | '(' ')'
 ;
 
-extends_decl: /* empty */
-| EXTENDS endl_opt ID
-;
-
-implements_decl_opt: /* empty */
-| implements_decl
-;
-
 implements_decl: IMPLEMENTS endl_opt ID
 | implements_decl endl_opt ',' endl_opt ID
 ;
@@ -320,29 +310,40 @@ property_modifier: visibility
 | visibility STATIC READONLY
 ;
 
+property_modifier_opt: /* empty */
+| property_modifier endl_opt
+;
+
+
 visibility: PRIVATE
 | PROTECTED
 | PUBLIC
 ;
 
-class_member: property_modifier expr endl_opt stmt_sep
-| function_declaration
+visibility_opt: /* empty */
+| visibility endl_opt
+;
+
+class_member: property_modifier endl_opt var_list stmt_sep
+| property_modifier endl_opt ID endl_opt type_mark endl_opt dimensions_list stmt_sep // Объявление массива
+| property_modifier endl_opt ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
+| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
+| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
 | class_declaration
 ;
 
-class_visibility_member: class_member
-| visibility endl_opt class_member
-;
-
-class_visibility_member_list: class_visibility_member
-| class_visibility_member_list endl_opt class_visibility_member
+class_visibility_member_list: visibility_opt class_member
+| class_visibility_member_list endl_opt visibility_opt class_member
 ;
 
 class_body: /* empty */
-| class_visibility_member_list
+| class_visibility_member_list endl_opt
 ;
 
-class_declaration: CLASS endl_opt ID endl_opt extends_decl endl_opt implements_decl_opt endl_opt '{' endl_opt class_body endl_opt '}'
+class_declaration: CLASS endl_opt ID endl_opt '{' endl_opt class_body '}'
+| CLASS endl_opt ID endl_opt EXTENDS endl_opt ID endl_opt '{' endl_opt class_body '}'
+| CLASS endl_opt ID endl_opt implements_decl endl_opt '{' endl_opt class_body '}'
+| CLASS endl_opt ID endl_opt EXTENDS endl_opt ID implements_decl endl_opt '{' endl_opt class_body '}'
 ;
 
 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
