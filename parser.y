@@ -231,7 +231,7 @@ stmt: expr stmt_sep
 | switch_stmt
 | try_catch_block
 | block_statement
-| var_declaration stmt_sep
+| modifier endl_opt var_declaration stmt_sep
 | enum_declaration
 | return_statement
 ;
@@ -270,9 +270,9 @@ var_list: variable var_init_opt
 | var_list endl_opt ',' endl_opt variable var_init_opt
 ;
 
-var_declaration: modifier endl_opt var_list
-| modifier endl_opt ID endl_opt type_mark endl_opt dimensions_list // Объявление массива
-| modifier endl_opt ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' // Инициализация массива
+var_declaration: var_list
+| ID endl_opt type_mark endl_opt dimensions_list // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' // Инициализация массива
 ;
 
 dimensions: '[' endl_opt ']'
@@ -314,7 +314,6 @@ property_modifier_opt: /* empty */
 | property_modifier endl_opt
 ;
 
-
 visibility: PRIVATE
 | PROTECTED
 | PUBLIC
@@ -324,20 +323,18 @@ visibility_opt: /* empty */
 | visibility endl_opt
 ;
 
-class_member: property_modifier endl_opt var_list stmt_sep
-| property_modifier endl_opt ID endl_opt type_mark endl_opt dimensions_list stmt_sep // Объявление массива
-| property_modifier endl_opt ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
-| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
-| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
-| class_declaration
+class_member: property_modifier_opt var_declaration // Объявление переменной
+| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
+| property_modifier_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
+| visibility_opt class_declaration // Объявление класса
 ;
 
-class_visibility_member_list: visibility_opt class_member
-| class_visibility_member_list endl_opt visibility_opt class_member
+class_member_list: class_member
+| class_member_list endl_opt class_member
 ;
 
 class_body: /* empty */
-| class_visibility_member_list endl_opt
+| class_member_list endl_opt
 ;
 
 class_declaration: CLASS endl_opt ID endl_opt '{' endl_opt class_body '}'
