@@ -72,7 +72,7 @@
 %left ';' ENDL
 %right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left '[' ']'
-%left '?'
+%left '?' ':'
 %left  OR
 %left  AND
 %left EQUALS NOT_EQUALS '<' '>' LESS_OR_EQUAL GREATER_OR_EQUAL IS AS
@@ -80,7 +80,7 @@
 %left '*' '/' '%'
 %right NEW
 %right PREF_INCREMENT PREF_DECREMENT
-%left POST_INCREMENT POST_DECREMENT
+%right POST_INCREMENT POST_DECREMENT
 %left NOT UPLUS UMINUS
 %left '.'
 %nonassoc ')'
