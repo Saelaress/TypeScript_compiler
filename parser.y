@@ -106,7 +106,7 @@ endl_opt: /* empty */
 | endl
 ;
 
-stmt_sep: ';'
+stmt_sep: ';' endl_opt
 | endl
 ;
 
@@ -115,7 +115,7 @@ expr_list: expr
 ;
 
 expr_list_opt: /* empty */
-| expr_list
+| expr_list endl_opt
 ;
 
 expr: expr POST_DECREMENT
@@ -159,24 +159,20 @@ expr: expr POST_DECREMENT
 
 block_statement: '{' endl_opt stmt_list_opt '}'
 
-if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr stmt_sep
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt block_statement
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement endl_opt ELSE endl_opt expr stmt_sep
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr stmt_sep endl_opt ELSE endl_opt block_statement
-| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt expr stmt_sep endl_opt ELSE endl_opt expr stmt_sep
+if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt 
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE endl_opt stmt
 ;
 
 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
 ;
 
-do_while_stmt: DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
+do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 ;
 
 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
 ;
 
-switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}'
+switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}' endl_opt
 ;
 
 case_list: case_stmt
@@ -188,21 +184,21 @@ case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt
 ;
 
 break_opt: /* empty */
-| BREAK stmt_sep endl_opt
+| BREAK stmt_sep
 ;
 
 return_statement: RETURN expr stmt_sep
 ;
 
-function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more type_mark endl_opt '{' endl_opt stmt_list_opt '}'
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
 | FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
 ;
 
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
 ;
 
-catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt block_statement
-| CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement
+catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt block_statement endl_opt
+| CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
 ;
 
 error_type: UNKNOWN
@@ -210,7 +206,7 @@ error_type: UNKNOWN
 ;
 
 stmt_list_opt: /* empty */
-| stmt_list endl_opt
+| stmt_list 
 ;
 
 stmt_list: stmt
@@ -224,12 +220,12 @@ stmt: expr stmt_sep
 | do_while_stmt stmt_sep
 | switch_stmt
 | try_catch_block
-| block_statement
+| block_statement endl_opt
 | modifier endl_opt var_stmt
 | modifier endl_opt var_list stmt_sep
 | enum_declaration
 | return_statement
-| ';'
+| ';' endl_opt
 ;
 
 modifier: LET
@@ -245,18 +241,20 @@ type: NUMBER
 | ID
 ;
 
-type_mark: endl_opt ':' endl_opt type
+type_mark:  ':' endl_opt type
 ;
 
 type_mark_opt: /* empty */
 | type_mark
 ;
 
-variable: ID type_mark_opt var_init_opt
+variable: ID endl_opt type_mark endl_opt var_init
+| ID
+| ID endl_opt type_mark
+| ID endl_opt var_init
 ;
 
-var_init_opt: /* empty */
-| endl_opt '=' endl_opt expr
+var_init: '=' endl_opt expr
 ;
 
 var_list: variable endl_opt ',' endl_opt variable
@@ -264,8 +262,8 @@ var_list: variable endl_opt ',' endl_opt variable
 ;
 
 var_stmt: variable stmt_sep
-| ID type_mark endl_opt dimensions_list stmt_sep // Объявление массива
-| ID type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
+| ID endl_opt type_mark dimensions_list stmt_sep // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
 ;
 
 dimensions: '[' endl_opt ']'
@@ -275,8 +273,8 @@ dimensions_list: dimensions
 | dimensions_list dimensions
 ;
 
-param: ID type_mark
-| ID endl_opt '?' type_mark
+param: ID endl_opt type_mark
+| ID endl_opt '?' endl_opt type_mark
 ;
 
 param_list: param
@@ -309,16 +307,16 @@ visibility_opt: /* empty */
 ;
 
 class_member: visibility_opt static_opt readonly_opt var_stmt // Объявление переменной
-| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more type_mark_opt endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
-| visibility_opt static_opt class_declaration // Объявление класса
+| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more type_mark_opt endl_opt '{' endl_opt stmt_list_opt '}' endl_opt// Объявление метода
+| visibility_opt static_opt class_declaration endl_opt // Объявление класса
 ;
 
 class_member_list: class_member
-| class_member_list endl_opt class_member
+| class_member_list class_member
 ;
 
 class_body: /* empty */
-| class_member_list endl_opt
+| class_member_list
 ;
 
 class_declaration: CLASS endl_opt ID endl_opt '{' endl_opt class_body '}'
@@ -330,8 +328,10 @@ class_declaration: CLASS endl_opt ID endl_opt '{' endl_opt class_body '}'
 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
 ;
 
-id_list: ID var_init_opt
-| id_list endl_opt ',' endl_opt ID var_init_opt
+id_list: ID endl_opt var_init
+| ID
+| id_list endl_opt ',' endl_opt ID
+| id_list endl_opt ',' endl_opt ID endl_opt var_init
 ;
 
 %%
