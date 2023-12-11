@@ -122,7 +122,7 @@ expr: expr POST_DECREMENT
 | PREF_DECREMENT endl_opt expr
 | expr POST_INCREMENT
 | PREF_INCREMENT endl_opt expr
-| ID AS endl_opt type
+| expr AS endl_opt type
 | '-' endl_opt expr %prec UMINUS
 | '+' endl_opt expr %prec UPLUS
 | NUMBER_LITERAL
@@ -130,8 +130,7 @@ expr: expr POST_DECREMENT
 | TRUE_LITERAL
 | FALSE_LITERAL
 | ID
-| '(' endl_opt expr endl_opt ')'
-| ID endl_opt '(' endl_opt expr_list_opt ')'
+| '(' endl_opt expr_list_opt ')'
 | expr '+' endl_opt expr
 | expr '-' endl_opt expr
 | expr '*' endl_opt expr
@@ -169,15 +168,12 @@ if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt block_statement
 ;
 
 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-| WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt empty_stmt
 ;
 
 do_while_stmt: DO endl_opt stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
-| DO endl_opt empty_stmt endl_opt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 ;
 
 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
-| FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt empty_stmt
 ;
 
 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}'
@@ -198,7 +194,7 @@ break_opt: /* empty */
 return_statement: RETURN expr stmt_sep
 ;
 
-function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more type_mark endl_opt '{' endl_opt stmt_list_opt '}'
 | FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
 ;
 
@@ -218,9 +214,7 @@ stmt_list_opt: /* empty */
 ;
 
 stmt_list: stmt
-| empty_stmt
 | stmt_list stmt
-| stmt_list empty_stmt
 ;
 
 stmt: expr stmt_sep
@@ -231,12 +225,11 @@ stmt: expr stmt_sep
 | switch_stmt
 | try_catch_block
 | block_statement
-| modifier endl_opt var_declaration stmt_sep
+| modifier endl_opt var_stmt
+| modifier endl_opt var_list stmt_sep
 | enum_declaration
 | return_statement
-;
-
-empty_stmt: ';'
+| ';'
 ;
 
 modifier: LET
@@ -252,27 +245,27 @@ type: NUMBER
 | ID
 ;
 
-type_mark: ':' endl_opt type
+type_mark: endl_opt ':' endl_opt type
 ;
 
 type_mark_opt: /* empty */
-| endl_opt type_mark
+| type_mark
 ;
 
-variable: ID type_mark_opt
+variable: ID type_mark_opt var_init_opt
 ;
 
 var_init_opt: /* empty */
 | endl_opt '=' endl_opt expr
 ;
 
-var_list: variable var_init_opt
-| var_list endl_opt ',' endl_opt variable var_init_opt
+var_list: variable endl_opt ',' endl_opt variable
+| var_list endl_opt ',' endl_opt variable
 ;
 
-var_declaration: var_list
-| ID endl_opt type_mark endl_opt dimensions_list // Объявление массива
-| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' // Инициализация массива
+var_stmt: variable stmt_sep
+| ID type_mark endl_opt dimensions_list stmt_sep // Объявление массива
+| ID type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
 ;
 
 dimensions: '[' endl_opt ']'
@@ -282,16 +275,12 @@ dimensions_list: dimensions
 | dimensions_list dimensions
 ;
 
-param: ID endl_opt type_mark
-;
-
-optional_param: ID endl_opt '?' endl_opt type_mark
+param: ID type_mark
+| ID endl_opt '?' type_mark
 ;
 
 param_list: param
 | param_list endl_opt ',' endl_opt param
-| optional_param
-| param_list endl_opt ',' endl_opt optional_param
 ;
 
 param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
@@ -319,9 +308,8 @@ visibility_opt: /* empty */
 | visibility endl_opt
 ;
 
-class_member: visibility_opt static_opt readonly_opt var_declaration // Объявление переменной
-| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
-| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
+class_member: visibility_opt static_opt readonly_opt var_stmt // Объявление переменной
+| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more type_mark_opt endl_opt '{' endl_opt stmt_list_opt '}' // Объявление метода
 | visibility_opt static_opt class_declaration // Объявление класса
 ;
 
