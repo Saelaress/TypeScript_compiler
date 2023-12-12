@@ -252,6 +252,8 @@ variable: ID endl_opt type_mark endl_opt var_init
 | ID
 | ID endl_opt type_mark
 | ID endl_opt var_init
+| ID endl_opt type_mark dimensions_list // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' // Инициализация массива
 ;
 
 var_init: '=' endl_opt expr
@@ -262,8 +264,6 @@ var_list: variable endl_opt ',' endl_opt variable
 ;
 
 var_stmt: variable stmt_sep
-| ID endl_opt type_mark dimensions_list stmt_sep // Объявление массива
-| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
 ;
 
 dimensions: '[' endl_opt ']'
@@ -307,7 +307,7 @@ visibility_opt: /* empty */
 ;
 
 class_member: visibility_opt static_opt readonly_opt var_stmt // Объявление переменной
-| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more type_mark_opt endl_opt '{' endl_opt stmt_list_opt '}' endl_opt// Объявление метода
+| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more type_mark_opt endl_opt '{' endl_opt stmt_list_opt '}' endl_opt // Объявление метода
 | visibility_opt static_opt class_declaration endl_opt // Объявление класса
 ;
 
