@@ -11,15 +11,6 @@
 
 %define lr.type ielr
 
-%token INTERFACE
-%token IMPLEMENTS
-
-%token CONSTRUCTOR
-%token NEW
-%token EXTENDS
-%token THIS
-%token CLASS
-%token STATIC
 %token RETURN
 %token DELETE
 %token EXPORT
@@ -95,7 +86,7 @@ program: program_elem
 | program program_elem
 ;
 
-program_elem: class_declaration
+program_elem: stmt
 | function_declaration
 ;
 
@@ -107,7 +98,7 @@ endl_opt: /* empty */
 | endl
 ;
 
-stmt_sep: ';'
+stmt_sep: ';' endl
 | endl
 ;
 
@@ -154,8 +145,6 @@ expr: expr POST_DECREMENT
 | expr OR endl_opt expr
 | expr '?' endl_opt expr endl_opt ':' endl_opt expr
 | expr '[' endl_opt expr endl_opt ']' // Обращение к элементу массива
-| expr '.' endl_opt ID endl_opt '(' endl_opt expr_list_opt ')'
-| expr '.' endl_opt ID
 ;
 
 block_statement: '{' endl_opt stmt_list_opt '}'
@@ -246,10 +235,6 @@ type: NUMBER
 type_mark:  ':' endl_opt type
 ;
 
-type_mark_opt: /* empty */
-| type_mark
-;
-
 variable: ID endl_opt type_mark endl_opt var_init
 | ID endl_opt type_mark
 | ID endl_opt var_init
@@ -286,58 +271,15 @@ param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
 | '(' ')'
 ;
 
-implements_decl: IMPLEMENTS endl_opt ID
-| implements_decl endl_opt ',' endl_opt ID
-;
-
-readonly_opt: /* empty */
-| READONLY endl_opt
-;
-
-static_opt: /* empty */
-| STATIC endl_opt
-;
-
-visibility: PRIVATE
-| PROTECTED
-| PUBLIC
-;
-
-visibility_opt: /* empty */
-| visibility endl_opt
-;
-
-class_member: visibility_opt static_opt readonly_opt ID endl_opt type_mark endl_opt var_init stmt_sep
-| visibility_opt static_opt readonly_opt ID stmt_sep
-| visibility_opt static_opt readonly_opt ID endl_opt type_mark stmt_sep
-| visibility_opt static_opt readonly_opt ID endl_opt var_init stmt_sep
-| visibility_opt static_opt readonly_opt ID endl_opt type_mark dimensions_list stmt_sep // Объявление массива
-| visibility_opt static_opt readonly_opt ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
-| visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more type_mark_opt endl_opt '{' endl_opt stmt_list_opt '}' endl_opt // Объявление метода
-| visibility_opt static_opt class_declaration endl_opt // Объявление класса
-;
-
-class_member_list: class_member
-| class_member_list class_member
-;
-
-class_body: /* empty */
-| class_member_list
-;
-
-class_declaration: CLASS endl_opt ID endl_opt '{' endl_opt class_body '}'
-| CLASS endl_opt ID endl_opt EXTENDS endl_opt ID endl_opt '{' endl_opt class_body '}'
-| CLASS endl_opt ID endl_opt implements_decl endl_opt '{' endl_opt class_body '}'
-| CLASS endl_opt ID endl_opt EXTENDS endl_opt ID implements_decl endl_opt '{' endl_opt class_body '}'
-;
-
 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
 ;
 
-id_list: ID endl_opt var_init
-| ID
-| id_list endl_opt ',' endl_opt ID
-| id_list endl_opt ',' endl_opt ID endl_opt var_init
+var_init_opt: /* empty */
+| endl_opt var_init
+;
+
+id_list: ID var_init_opt
+| id_list endl_opt ',' endl_opt ID var_init_opt
 ;
 
 %%
