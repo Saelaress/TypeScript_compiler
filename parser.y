@@ -2,13 +2,14 @@
 #include "tree_nodes.h"
 // Объявления предварительных функций и классов
 
-
 %}
 
 %union {
     char* str;
     int num;
 }
+
+%define lr.type ielr
 
 %token INTERFACE
 %token IMPLEMENTS
@@ -106,7 +107,7 @@ endl_opt: /* empty */
 | endl
 ;
 
-stmt_sep: ';' endl_opt
+stmt_sep: ';'
 | endl
 ;
 
@@ -130,7 +131,7 @@ expr: expr POST_DECREMENT
 | TRUE_LITERAL
 | FALSE_LITERAL
 | ID
-| '(' endl_opt expr_list_opt ')'
+| '(' endl_opt expr ')'
 | expr '+' endl_opt expr
 | expr '-' endl_opt expr
 | expr '*' endl_opt expr
@@ -221,7 +222,8 @@ stmt: expr stmt_sep
 | switch_stmt
 | try_catch_block
 | block_statement endl_opt
-| modifier endl_opt var_stmt
+| modifier endl_opt variable stmt_sep
+| modifier endl_opt ID stmt_sep
 | modifier endl_opt var_list stmt_sep
 | enum_declaration
 | return_statement
@@ -249,7 +251,6 @@ type_mark_opt: /* empty */
 ;
 
 variable: ID endl_opt type_mark endl_opt var_init
-| ID
 | ID endl_opt type_mark
 | ID endl_opt var_init
 | ID endl_opt type_mark dimensions_list // Объявление массива
@@ -260,10 +261,10 @@ var_init: '=' endl_opt expr
 ;
 
 var_list: variable endl_opt ',' endl_opt variable
+| ID endl_opt ',' endl_opt variable
+| variable endl_opt ',' endl_opt ID
+| ID endl_opt ',' endl_opt ID
 | var_list endl_opt ',' endl_opt variable
-;
-
-var_stmt: variable stmt_sep
 ;
 
 dimensions: '[' endl_opt ']'
@@ -306,7 +307,12 @@ visibility_opt: /* empty */
 | visibility endl_opt
 ;
 
-class_member: visibility_opt static_opt readonly_opt var_stmt // Объявление переменной
+class_member: visibility_opt static_opt readonly_opt ID endl_opt type_mark endl_opt var_init stmt_sep
+| visibility_opt static_opt readonly_opt ID stmt_sep
+| visibility_opt static_opt readonly_opt ID endl_opt type_mark stmt_sep
+| visibility_opt static_opt readonly_opt ID endl_opt var_init stmt_sep
+| visibility_opt static_opt readonly_opt ID endl_opt type_mark dimensions_list stmt_sep // Объявление массива
+| visibility_opt static_opt readonly_opt ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
 | visibility_opt static_opt readonly_opt ID endl_opt param_list_0_or_more type_mark_opt endl_opt '{' endl_opt stmt_list_opt '}' endl_opt // Объявление метода
 | visibility_opt static_opt class_declaration endl_opt // Объявление класса
 ;
