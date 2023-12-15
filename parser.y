@@ -310,10 +310,6 @@ id_list_init: ID endl_opt var_init
 | id_list_init endl_opt ',' endl_opt ID endl_opt var_init 
 ;
 
-// id_list: ID
-// | id_list endl_opt ',' endl_opt ID 
-// ;
-
 id_list_endl: ID endl_opt
 | ID endl_opt ',' endl_opt ID endl_opt
 ;
