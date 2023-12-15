@@ -98,7 +98,7 @@ endl_opt: /* empty */
 | endl
 ;
 
-stmt_sep: ';' endl
+stmt_sep: ';'
 | endl
 ;
 
@@ -211,10 +211,9 @@ stmt: expr stmt_sep
 | switch_stmt
 | try_catch_block
 | block_statement endl_opt
-| modifier endl_opt variable stmt_sep
+| modifier endl_opt variable_stmt
 | modifier endl_opt ID stmt_sep
-| modifier endl_opt var_list stmt_sep
-| enum_declaration
+| modifier endl_opt var_list_stmt
 | return_statement
 | ';' endl_opt
 ;
@@ -235,21 +234,37 @@ type: NUMBER
 type_mark:  ':' endl_opt type
 ;
 
-variable: ID endl_opt type_mark endl_opt var_init
-| ID endl_opt type_mark
-| ID endl_opt var_init
-| ID endl_opt type_mark dimensions_list // Объявление массива
-| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' // Инициализация массива
+
+
+variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt
+| ID endl_opt type_mark endl_opt
+| ID endl_opt var_init endl_opt
+| ID endl_opt type_mark dimensions_list endl_opt // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' endl_opt // Инициализация массива
+;
+
+variable_stmt: ID endl_opt type_mark endl_opt var_init stmt_sep
+| ID endl_opt type_mark stmt_sep
+| ID endl_opt var_init stmt_sep
+| ID endl_opt type_mark dimensions_list stmt_sep // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
 ;
 
 var_init: '=' endl_opt expr
 ;
 
-var_list: variable endl_opt ',' endl_opt variable
-| ID endl_opt ',' endl_opt variable
-| variable endl_opt ',' endl_opt ID
-| ID endl_opt ',' endl_opt ID
-| var_list endl_opt ',' endl_opt variable
+var_list: variable_endl ',' endl_opt variable_endl
+| ID endl_opt ',' endl_opt variable_endl
+| variable_endl ',' endl_opt ID endl_opt
+| ID endl_opt ',' endl_opt ID endl_opt
+| var_list ',' endl_opt variable_endl
+;
+
+var_list_stmt: variable_endl ',' endl_opt variable_stmt
+| ID endl_opt ',' endl_opt variable_stmt
+| variable_endl ',' endl_opt ID stmt_sep
+| ID endl_opt ',' endl_opt ID stmt_sep
+| var_list ',' endl_opt variable_stmt
 ;
 
 dimensions: '[' endl_opt ']'
@@ -271,19 +286,6 @@ param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
 | '(' ')'
 ;
 
-enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
-| ENUM endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt '}'
-;
-
-
-
-id_list_init: ID endl_opt var_init
-| id_list_init endl_opt ',' endl_opt ID endl_opt var_init 
-;
-
-id_list: ID
-| id_list endl_opt ',' endl_opt ID 
-;
 
 
 %%
