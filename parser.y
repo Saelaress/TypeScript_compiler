@@ -162,11 +162,25 @@ do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')'
 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
 ;
 
-switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}' endl_opt
+switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list_break '}' endl_opt
 ;
 
 case_list: case_stmt
 | case_list case_stmt
+;
+
+case_list_break: case_stmt_break
+| case_list case_stmt_break
+;
+
+case_stmt_break: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt_special
+| DEFAULT endl_opt ':' endl_opt stmt_list_opt break_opt_special
+;
+
+break_opt_special:/* empty */
+| BREAK endl
+| BREAK ';' endl_opt
+| BREAK
 ;
 
 case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt
@@ -174,7 +188,8 @@ case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt
 ;
 
 break_opt: /* empty */
-| BREAK stmt_sep
+| BREAK endl
+| BREAK ';' endl_opt
 ;
 
 return_statement: RETURN expr stmt_sep
@@ -215,6 +230,7 @@ stmt: expr stmt_sep
 | modifier endl_opt ID stmt_sep
 | modifier endl_opt var_list_stmt
 | return_statement
+| enum_declaration
 | ';' endl_opt
 ;
 
@@ -286,7 +302,21 @@ param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
 | '(' ')'
 ;
 
+enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list_endl '}'
+| ENUM endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt '}'
+;
 
+id_list_init: ID endl_opt var_init
+| id_list_init endl_opt ',' endl_opt ID endl_opt var_init 
+;
+
+// id_list: ID
+// | id_list endl_opt ',' endl_opt ID 
+// ;
+
+id_list_endl: ID endl_opt
+| ID endl_opt ',' endl_opt ID endl_opt
+;
 
 %%
 {/*Секция пользовательского кода*/}
