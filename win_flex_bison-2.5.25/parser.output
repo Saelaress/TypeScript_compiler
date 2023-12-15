@@ -20,10 +20,9 @@ Terminals unused in grammar
 State 198 conflicts: 1 shift/reduce
 State 220 conflicts: 1 shift/reduce
 State 234 conflicts: 1 shift/reduce
-State 239 conflicts: 1 shift/reduce
-State 245 conflicts: 1 shift/reduce
-State 267 conflicts: 1 shift/reduce
-State 304 conflicts: 1 shift/reduce
+State 240 conflicts: 1 shift/reduce
+State 246 conflicts: 1 shift/reduce
+State 268 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -185,12 +184,13 @@ Grammar
   118                     | '(' ')'
 
   119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
+  120                 | ENUM endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt '}'
 
-  120 var_init_opt: %empty
-  121             | endl_opt var_init
+  121 id_list_init: ID endl_opt var_init
+  122             | id_list_init endl_opt ',' endl_opt ID endl_opt var_init
 
-  122 id_list: ID var_init_opt
-  123        | id_list endl_opt ',' endl_opt ID var_init_opt
+  123 id_list: ID
+  124        | id_list endl_opt ',' endl_opt ID
 
 
 Terminals, with rules where they appear
@@ -201,7 +201,7 @@ Terminals, with rules where they appear
     ')' (41) 27 51 52 53 54 55 56 67 68 117 118
     '*' (42) 30
     '+' (43) 21 28
-    ',' (44) 12 105 106 107 108 109 116 123
+    ',' (44) 12 105 106 107 108 109 116 122 124
     '-' (45) 20 29
     '.' (46)
     '/' (47) 31
@@ -213,8 +213,8 @@ Terminals, with rules where they appear
     '?' (63) 48 114
     '[' (91) 49 103 110
     ']' (93) 49 103 110
-    '{' (123) 50 56 64 65 119
-    '}' (125) 50 56 64 65 119
+    '{' (123) 50 56 64 65 119 120
+    '}' (125) 50 56 64 65 119 120
     error (256)
     RETURN (258) 63
     DELETE (259)
@@ -249,12 +249,12 @@ Terminals, with rules where they appear
     STRING (288) 92
     VOID (289) 96
     BOOLEAN (290) 93
-    ENUM (291) 119
+    ENUM (291) 119 120
     NUMBER_LITERAL (292) 22
     STRING_LITERAL (293) 23
     TRUE_LITERAL (294) 24
     FALSE_LITERAL (295) 25
-    ID (296) 26 64 65 67 68 84 97 99 100 101 102 103 106 107 108 113 114 119 122 123
+    ID (296) 26 64 65 67 68 84 97 99 100 101 102 103 106 107 108 113 114 119 120 121 122 123 124
     ENDL (297) 5 6
     PLUS_ASSIGN (298) 40
     MINUS_ASSIGN (299) 41
@@ -294,7 +294,7 @@ Nonterminals, with rules where they appear
         on right: 6 8 9 10
     endl_opt (87)
         on left: 7 8
-        on right: 12 14 16 18 19 20 21 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 59 60 64 65 66 67 68 82 83 84 85 88 98 99 100 101 102 103 104 105 106 107 108 109 110 113 114 116 117 119 121 123
+        on right: 12 14 16 18 19 20 21 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 59 60 64 65 66 67 68 82 83 84 85 88 98 99 100 101 102 103 104 105 106 107 108 109 110 113 114 116 117 119 120 121 122 124
     stmt_sep (88)
         on left: 9 10
         on right: 62 63 75 79 83 84 85
@@ -372,7 +372,7 @@ Nonterminals, with rules where they appear
         on right: 83 105 106 107 109
     var_init (113)
         on left: 104
-        on right: 99 101 121
+        on right: 99 101 121 122
     var_list (114)
         on left: 105 106 107 108 109
         on right: 85 109
@@ -392,14 +392,14 @@ Nonterminals, with rules where they appear
         on left: 117 118
         on right: 64 65
     enum_declaration (120)
-        on left: 119
+        on left: 119 120
         on right: 86
-    var_init_opt (121)
-        on left: 120 121
-        on right: 122 123
+    id_list_init (121)
+        on left: 121 122
+        on right: 120 122
     id_list (122)
-        on left: 122 123
-        on right: 119 123
+        on left: 123 124
+        on right: 119 124
 
 
 State 0
@@ -570,6 +570,7 @@ State 10
 State 11
 
   119 enum_declaration: ENUM . endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
+  120                 | ENUM . endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt '}'
 
     ENDL  shift, and go to state 41
 
@@ -1090,6 +1091,7 @@ State 49
 State 50
 
   119 enum_declaration: ENUM endl_opt . ID endl_opt '{' endl_opt id_list endl_opt '}'
+  120                 | ENUM endl_opt . ID endl_opt '{' endl_opt id_list_init endl_opt '}'
 
     ID  shift, and go to state 100
 
@@ -1703,6 +1705,7 @@ State 99
 State 100
 
   119 enum_declaration: ENUM endl_opt ID . endl_opt '{' endl_opt id_list endl_opt '}'
+  120                 | ENUM endl_opt ID . endl_opt '{' endl_opt id_list_init endl_opt '}'
 
     ENDL  shift, and go to state 41
 
@@ -2574,6 +2577,7 @@ State 142
 State 143
 
   119 enum_declaration: ENUM endl_opt ID endl_opt . '{' endl_opt id_list endl_opt '}'
+  120                 | ENUM endl_opt ID endl_opt . '{' endl_opt id_list_init endl_opt '}'
 
     '{'  shift, and go to state 192
 
@@ -3980,6 +3984,7 @@ State 191
 State 192
 
   119 enum_declaration: ENUM endl_opt ID endl_opt '{' . endl_opt id_list endl_opt '}'
+  120                 | ENUM endl_opt ID endl_opt '{' . endl_opt id_list_init endl_opt '}'
 
     ENDL  shift, and go to state 41
 
@@ -4062,19 +4067,24 @@ State 198
     shift/reduce conflict on token ENDL:
       100 variable: ID endl_opt type_mark .
         5 endl: . ENDL
-      First example: ID endl_opt type_mark . ENDL endl_opt var_init stmt_sep
+      First example: modifier endl_opt ID endl_opt type_mark . ENDL var_init stmt_sep $end
       Shift derivation
-        stmt
-        `-> 83: ID endl_opt variable                                                 stmt_sep
-                            `-> 99: type_mark endl_opt             endl_opt var_init
-                                              `-> 8: endl
-                                                     `-> 5: . ENDL
-      Second example: modifier ID endl_opt type_mark . ENDL
+        $accept
+        `-> 0: program                                                                                               $end
+               `-> 1: stmt
+                      `-> 83: modifier endl_opt variable                                                    stmt_sep
+                                                `-> 99: ID endl_opt type_mark endl_opt             var_init
+                                                                              `-> 8: endl
+                                                                                     `-> 5: . ENDL
+      Second example: modifier endl_opt ID endl_opt type_mark . ENDL $end
       Reduce derivation
-        stmt
-        `-> 83: modifier variable                         stmt_sep
-                         `-> 100: ID endl_opt type_mark . `-> 10: endl
-                                                                  `-> 5: ENDL
+        $accept
+        `-> 0: program                                                                                      $end
+               `-> 1: program_elem
+                      `-> 3: stmt
+                             `-> 83: modifier endl_opt variable                         stmt_sep
+                                                       `-> 100: ID endl_opt type_mark . `-> 10: endl
+                                                                                                `-> 5: ENDL
 
 
 
@@ -4190,10 +4200,12 @@ State 210
 State 211
 
   119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt . id_list endl_opt '}'
+  120                 | ENUM endl_opt ID endl_opt '{' endl_opt . id_list_init endl_opt '}'
 
     ID  shift, and go to state 234
 
-    id_list  go to state 235
+    id_list_init  go to state 235
+    id_list       go to state 236
 
 
 State 212
@@ -4212,7 +4224,7 @@ State 213
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 236
+    endl_opt  go to state 237
 
 
 State 214
@@ -4231,7 +4243,7 @@ State 214
     NOT             shift, and go to state 22
     '('             shift, and go to state 23
 
-    expr  go to state 237
+    expr  go to state 238
 
 
 State 215
@@ -4246,7 +4258,7 @@ State 215
     BOOLEAN  shift, and go to state 168
     ID       shift, and go to state 169
 
-    type  go to state 238
+    type  go to state 239
 
 
 State 216
@@ -4254,9 +4266,9 @@ State 216
   106 var_list: ID endl_opt ',' endl_opt . variable
   108         | ID endl_opt ',' endl_opt . ID
 
-    ID  shift, and go to state 239
+    ID  shift, and go to state 240
 
-    variable  go to state 240
+    variable  go to state 241
 
 
 State 217
@@ -4268,7 +4280,7 @@ State 217
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 241
+    endl_opt  go to state 242
 
 
 State 218
@@ -4277,7 +4289,7 @@ State 218
 
     '='  shift, and go to state 195
 
-    var_init  go to state 242
+    var_init  go to state 243
 
 
 State 219
@@ -4301,25 +4313,30 @@ State 220
     $default  reduce using rule 102 (variable)
 
     endl        go to state 42
-    endl_opt    go to state 243
-    dimensions  go to state 244
+    endl_opt    go to state 244
+    dimensions  go to state 245
 
     shift/reduce conflict on token ENDL:
       102 variable: ID endl_opt type_mark dimensions_list .
         5 endl: . ENDL
-      First example: ID endl_opt type_mark dimensions_list . ENDL endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep
+      First example: modifier endl_opt ID endl_opt type_mark dimensions_list . ENDL '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep $end
       Shift derivation
-        stmt
-        `-> 83: ID endl_opt variable                                                                                                     stmt_sep
-                            `-> 103: type_mark dimensions_list endl_opt             endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']'
-                                                               `-> 8: endl
-                                                                      `-> 5: . ENDL
-      Second example: modifier ID endl_opt type_mark dimensions_list . ENDL
+        $accept
+        `-> 0: program                                                                                                                                                   $end
+               `-> 1: stmt
+                      `-> 83: modifier endl_opt variable                                                                                                        stmt_sep
+                                                `-> 103: ID endl_opt type_mark dimensions_list endl_opt             '=' endl_opt '[' endl_opt expr_list_opt ']'
+                                                                                               `-> 8: endl
+                                                                                                      `-> 5: . ENDL
+      Second example: modifier endl_opt ID endl_opt type_mark dimensions_list . ENDL $end
       Reduce derivation
-        stmt
-        `-> 83: modifier variable                                         stmt_sep
-                         `-> 102: ID endl_opt type_mark dimensions_list . `-> 10: endl
-                                                                                  `-> 5: ENDL
+        $accept
+        `-> 0: program                                                                                                      $end
+               `-> 1: program_elem
+                      `-> 3: stmt
+                             `-> 83: modifier endl_opt variable                                         stmt_sep
+                                                       `-> 102: ID endl_opt type_mark dimensions_list . `-> 10: endl
+                                                                                                                `-> 5: ENDL
 
 
 
@@ -4328,18 +4345,18 @@ State 221
   105 var_list: variable endl_opt ',' endl_opt . variable
   107         | variable endl_opt ',' endl_opt . ID
 
-    ID  shift, and go to state 245
+    ID  shift, and go to state 246
 
-    variable  go to state 246
+    variable  go to state 247
 
 
 State 222
 
   109 var_list: var_list endl_opt ',' endl_opt . variable
 
-    ID  shift, and go to state 247
+    ID  shift, and go to state 248
 
-    variable  go to state 248
+    variable  go to state 249
 
 
 State 223
@@ -4358,7 +4375,7 @@ State 223
     NOT             shift, and go to state 22
     '('             shift, and go to state 23
 
-    expr  go to state 249
+    expr  go to state 250
 
 
 State 224
@@ -4371,7 +4388,7 @@ State 224
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 250
+    endl_opt  go to state 251
 
 
 State 225
@@ -4383,7 +4400,7 @@ State 225
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 251
+    endl_opt  go to state 252
 
 
 State 226
@@ -4395,7 +4412,7 @@ State 226
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 252
+    endl_opt  go to state 253
 
 
 State 227
@@ -4407,7 +4424,7 @@ State 227
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 253
+    endl_opt  go to state 254
 
 
 State 228
@@ -4420,7 +4437,7 @@ State 228
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 254
+    endl_opt  go to state 255
 
 
 State 229
@@ -4433,7 +4450,7 @@ State 229
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 255
+    endl_opt  go to state 256
 
 
 State 230
@@ -4453,7 +4470,7 @@ State 231
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 256
+    endl_opt  go to state 257
 
 
 State 232
@@ -4465,7 +4482,7 @@ State 232
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 257
+    endl_opt  go to state 258
 
 
 State 233
@@ -4477,55 +4494,54 @@ State 233
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 258
+    endl_opt  go to state 259
 
 
 State 234
 
-  122 id_list: ID . var_init_opt
+  121 id_list_init: ID . endl_opt var_init
+  123 id_list: ID .
 
     ENDL  shift, and go to state 41
 
-    ENDL      [reduce using rule 120 (var_init_opt)]
+    ENDL      [reduce using rule 123 (id_list)]
     '='       reduce using rule 7 (endl_opt)
-    $default  reduce using rule 120 (var_init_opt)
+    $default  reduce using rule 123 (id_list)
 
-    endl          go to state 42
-    endl_opt      go to state 259
-    var_init_opt  go to state 260
+    endl      go to state 42
+    endl_opt  go to state 260
 
     shift/reduce conflict on token ENDL:
-      120 var_init_opt: %empty .
+      123 id_list: ID .
         5 endl: . ENDL
-      First example: ENUM endl_opt ID endl_opt '{' ID . ENDL var_init id_list endl_opt '}' $end
+      First example: ENUM endl_opt ID endl_opt '{' endl_opt ID . ENDL var_init endl_opt '}' $end
       Shift derivation
         $accept
-        `-> 0: program                                                                                                                              $end
+        `-> 0: program                                                                                                                      $end
                `-> 1: program_elem
                       `-> 3: stmt
                              `-> 86: enum_declaration
-                                     `-> 119: ENUM endl_opt ID endl_opt '{' id_list                                            id_list endl_opt '}'
-                                                                            `-> 122: ID var_init_opt
-                                                                                        `-> 121: endl_opt             var_init
+                                     `-> 120: ENUM endl_opt ID endl_opt '{' endl_opt id_list_init                              endl_opt '}'
+                                                                                     `-> 121: ID endl_opt             var_init
                                                                                                  `-> 8: endl
                                                                                                         `-> 5: . ENDL
       Second example: ENUM endl_opt ID endl_opt '{' endl_opt ID . ENDL '}' $end
       Reduce derivation
         $accept
-        `-> 0: program                                                                                                                    $end
+        `-> 0: program                                                                                                    $end
                `-> 1: program_elem
                       `-> 3: stmt
                              `-> 86: enum_declaration
-                                     `-> 119: ENUM endl_opt ID endl_opt '{' endl_opt id_list                       endl_opt           '}'
-                                                                                     `-> 122: ID var_init_opt      `-> 8: endl
-                                                                                                 `-> 120: %empty .        `-> 5: ENDL
+                                     `-> 119: ENUM endl_opt ID endl_opt '{' endl_opt id_list       endl_opt           '}'
+                                                                                     `-> 123: ID . `-> 8: endl
+                                                                                                          `-> 5: ENDL
 
 
 
 State 235
 
-  119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list . endl_opt '}'
-  123 id_list: id_list . endl_opt ',' endl_opt ID var_init_opt
+  120 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list_init . endl_opt '}'
+  122 id_list_init: id_list_init . endl_opt ',' endl_opt ID endl_opt var_init
 
     ENDL  shift, and go to state 41
 
@@ -4536,6 +4552,19 @@ State 235
 
 
 State 236
+
+  119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list . endl_opt '}'
+  124 id_list: id_list . endl_opt ',' endl_opt ID
+
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 262
+
+
+State 237
 
    48 expr: expr '?' endl_opt expr endl_opt ':' endl_opt . expr
 
@@ -4551,10 +4580,10 @@ State 236
     NOT             shift, and go to state 22
     '('             shift, and go to state 23
 
-    expr  go to state 262
+    expr  go to state 263
 
 
-State 237
+State 238
 
    15 expr: expr . POST_DECREMENT
    17     | expr . POST_INCREMENT
@@ -4610,14 +4639,14 @@ State 237
     $default  reduce using rule 104 (var_init)
 
 
-State 238
+State 239
 
    98 type_mark: ':' endl_opt type .
 
     $default  reduce using rule 98 (type_mark)
 
 
-State 239
+State 240
 
    99 variable: ID . endl_opt type_mark endl_opt var_init
   100         | ID . endl_opt type_mark
@@ -4634,62 +4663,69 @@ State 239
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 263
+    endl_opt  go to state 264
 
     shift/reduce conflict on token ENDL:
       108 var_list: ID endl_opt ',' endl_opt ID .
         5 endl: . ENDL
-      First example: ID endl_opt ',' endl_opt ID . ENDL stmt_sep
+      First example: modifier endl_opt ID endl_opt ',' endl_opt ID . ENDL type_mark endl_opt var_init stmt_sep $end
       Shift derivation
-        stmt
-        `-> 85: ID endl_opt var_list                               stmt_sep
-                            `-> 106: ',' endl_opt ID endl
-                                                     `-> 5: . ENDL
-      Second example: modifier ID endl_opt ',' endl_opt ID . ENDL
+        $accept
+        `-> 0: program                                                                                                                                 $end
+               `-> 1: stmt
+                      `-> 85: modifier endl_opt var_list                                                                                      stmt_sep
+                                                `-> 106: ID endl_opt ',' endl_opt variable
+                                                                                  `-> 99: ID endl_opt             type_mark endl_opt var_init
+                                                                                             `-> 8: endl
+                                                                                                    `-> 5: . ENDL
+      Second example: modifier endl_opt ID endl_opt ',' endl_opt ID . ENDL $end
       Reduce derivation
-        stmt
-        `-> 85: modifier var_list                               stmt_sep
-                         `-> 108: ID endl_opt ',' endl_opt ID . `-> 10: endl
-                                                                        `-> 5: ENDL
+        $accept
+        `-> 0: program                                                                                            $end
+               `-> 1: program_elem
+                      `-> 3: stmt
+                             `-> 85: modifier endl_opt var_list                               stmt_sep
+                                                       `-> 108: ID endl_opt ',' endl_opt ID . `-> 10: endl
+                                                                                                      `-> 5: ENDL
 
 
 
-State 240
+State 241
 
   106 var_list: ID endl_opt ',' endl_opt variable .
 
     $default  reduce using rule 106 (var_list)
 
 
-State 241
+State 242
 
   110 dimensions: '[' endl_opt . ']'
 
-    ']'  shift, and go to state 264
+    ']'  shift, and go to state 265
 
 
-State 242
+State 243
 
    99 variable: ID endl_opt type_mark endl_opt var_init .
 
     $default  reduce using rule 99 (variable)
 
 
-State 243
+State 244
 
   103 variable: ID endl_opt type_mark dimensions_list endl_opt . '=' endl_opt '[' endl_opt expr_list_opt ']'
 
-    '='  shift, and go to state 265
+    '='  shift, and go to state 266
 
 
-State 244
+State 245
 
   112 dimensions_list: dimensions_list dimensions .
 
     $default  reduce using rule 112 (dimensions_list)
 
 
-State 245
+State 246
 
    99 variable: ID . endl_opt type_mark endl_opt var_init
   100         | ID . endl_opt type_mark
@@ -4706,34 +4742,41 @@ State 245
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 263
+    endl_opt  go to state 264
 
     shift/reduce conflict on token ENDL:
       107 var_list: variable endl_opt ',' endl_opt ID .
         5 endl: . ENDL
-      First example: variable endl_opt ',' endl_opt ID . ENDL stmt_sep
+      First example: modifier endl_opt variable endl_opt ',' endl_opt ID . ENDL type_mark endl_opt var_init stmt_sep $end
       Shift derivation
-        stmt
-        `-> 85: variable endl_opt var_list                               stmt_sep
-                                  `-> 105: ',' endl_opt ID endl
-                                                           `-> 5: . ENDL
-      Second example: modifier variable endl_opt ',' endl_opt ID . ENDL
+        $accept
+        `-> 0: program                                                                                                                                       $end
+               `-> 1: stmt
+                      `-> 85: modifier endl_opt var_list                                                                                            stmt_sep
+                                                `-> 105: variable endl_opt ',' endl_opt variable
+                                                                                        `-> 99: ID endl_opt             type_mark endl_opt var_init
+                                                                                                   `-> 8: endl
+                                                                                                          `-> 5: . ENDL
+      Second example: modifier endl_opt variable endl_opt ',' endl_opt ID . ENDL $end
       Reduce derivation
-        stmt
-        `-> 85: modifier var_list                                     stmt_sep
-                         `-> 107: variable endl_opt ',' endl_opt ID . `-> 10: endl
-                                                                              `-> 5: ENDL
+        $accept
+        `-> 0: program                                                                                                  $end
+               `-> 1: program_elem
+                      `-> 3: stmt
+                             `-> 85: modifier endl_opt var_list                                     stmt_sep
+                                                       `-> 107: variable endl_opt ',' endl_opt ID . `-> 10: endl
+                                                                                                            `-> 5: ENDL
 
 
 
-State 246
+State 247
 
   105 var_list: variable endl_opt ',' endl_opt variable .
 
     $default  reduce using rule 105 (var_list)
 
 
-State 247
+State 248
 
    99 variable: ID . endl_opt type_mark endl_opt var_init
   100         | ID . endl_opt type_mark
@@ -4746,17 +4789,17 @@ State 247
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 263
+    endl_opt  go to state 264
 
 
-State 248
+State 249
 
   109 var_list: var_list endl_opt ',' endl_opt variable .
 
     $default  reduce using rule 109 (var_list)
 
 
-State 249
+State 250
 
    15 expr: expr . POST_DECREMENT
    17     | expr . POST_INCREMENT
@@ -4813,10 +4856,10 @@ State 249
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 266
+    endl_opt  go to state 267
 
 
-State 250
+State 251
 
    51 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt . stmt
    52        | IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt . stmt ELSE endl_opt stmt
@@ -4854,12 +4897,12 @@ State 250
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt              go to state 267
+    stmt              go to state 268
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 251
+State 252
 
    55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt . expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
 
@@ -4875,10 +4918,10 @@ State 251
     NOT             shift, and go to state 22
     '('             shift, and go to state 23
 
-    expr  go to state 268
+    expr  go to state 269
 
 
-State 252
+State 253
 
    53 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt . stmt
 
@@ -4915,47 +4958,47 @@ State 252
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt              go to state 269
+    stmt              go to state 270
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 253
+State 254
 
    56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt . '{' endl_opt case_list '}' endl_opt
 
-    '{'  shift, and go to state 270
-
-
-State 254
-
-   67 catch_clause: CATCH endl_opt '(' endl_opt . ID endl_opt ')' endl_opt block_statement endl_opt
-   68             | CATCH endl_opt '(' endl_opt . ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
-
-    ID  shift, and go to state 271
+    '{'  shift, and go to state 271
 
 
 State 255
 
-  113 param: ID endl_opt . type_mark
-  114      | ID endl_opt . '?' endl_opt type_mark
+   67 catch_clause: CATCH endl_opt '(' endl_opt . ID endl_opt ')' endl_opt block_statement endl_opt
+   68             | CATCH endl_opt '(' endl_opt . ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
 
-    '?'  shift, and go to state 272
-    ':'  shift, and go to state 196
-
-    type_mark  go to state 273
+    ID  shift, and go to state 272
 
 
 State 256
 
-  116 param_list: param_list endl_opt . ',' endl_opt param
-  117 param_list_0_or_more: '(' endl_opt param_list endl_opt . ')'
+  113 param: ID endl_opt . type_mark
+  114      | ID endl_opt . '?' endl_opt type_mark
 
-    ')'  shift, and go to state 274
-    ','  shift, and go to state 275
+    '?'  shift, and go to state 273
+    ':'  shift, and go to state 196
+
+    type_mark  go to state 274
 
 
 State 257
+
+  116 param_list: param_list endl_opt . ',' endl_opt param
+  117 param_list_0_or_more: '(' endl_opt param_list endl_opt . ')'
+
+    ')'  shift, and go to state 275
+    ','  shift, and go to state 276
+
+
+State 258
 
    65 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt . stmt_list_opt '}'
 
@@ -4994,46 +5037,48 @@ State 257
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt_list_opt     go to state 276
+    stmt_list_opt     go to state 277
     stmt_list         go to state 108
     stmt              go to state 109
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 258
+State 259
 
    64 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt . '{' endl_opt stmt_list_opt '}'
 
-    '{'  shift, and go to state 277
-
-
-State 259
-
-  121 var_init_opt: endl_opt . var_init
-
-    '='  shift, and go to state 195
-
-    var_init  go to state 278
+    '{'  shift, and go to state 278
 
 
 State 260
 
-  122 id_list: ID var_init_opt .
+  121 id_list_init: ID endl_opt . var_init
 
-    $default  reduce using rule 122 (id_list)
+    '='  shift, and go to state 195
+
+    var_init  go to state 279
 
 
 State 261
 
-  119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt . '}'
-  123 id_list: id_list endl_opt . ',' endl_opt ID var_init_opt
+  120 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt . '}'
+  122 id_list_init: id_list_init endl_opt . ',' endl_opt ID endl_opt var_init
 
-    ','  shift, and go to state 279
-    '}'  shift, and go to state 280
+    ','  shift, and go to state 280
+    '}'  shift, and go to state 281
 
 
 State 262
+
+  119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt . '}'
+  124 id_list: id_list endl_opt . ',' endl_opt ID
+
+    ','  shift, and go to state 282
+    '}'  shift, and go to state 283
+
+
+State 263
 
    15 expr: expr . POST_DECREMENT
    17     | expr . POST_INCREMENT
@@ -5081,7 +5126,7 @@ State 262
     $default  reduce using rule 48 (expr)
 
 
-State 263
+State 264
 
    99 variable: ID endl_opt . type_mark endl_opt var_init
   100         | ID endl_opt . type_mark
@@ -5096,14 +5141,14 @@ State 263
     var_init   go to state 199
 
 
-State 264
+State 265
 
   110 dimensions: '[' endl_opt ']' .
 
     $default  reduce using rule 110 (dimensions)
 
 
-State 265
+State 266
 
   103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' . endl_opt '[' endl_opt expr_list_opt ']'
 
@@ -5112,22 +5157,22 @@ State 265
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 281
-
-
-State 266
-
-   54 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt . ')'
-
-    ')'  shift, and go to state 282
+    endl_opt  go to state 284
 
 
 State 267
 
+   54 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt . ')'
+
+    ')'  shift, and go to state 285
+
+
+State 268
+
    51 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt .
    52        | IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt . ELSE endl_opt stmt
 
-    ELSE  shift, and go to state 283
+    ELSE  shift, and go to state 286
 
     ELSE      [reduce using rule 51 (if_stmt)]
     $default  reduce using rule 51 (if_stmt)
@@ -5135,22 +5180,30 @@ State 267
     shift/reduce conflict on token ELSE:
        51 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt .
        52 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt . ELSE endl_opt stmt
-      Example: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt . ELSE stmt
+      First example: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt . ELSE endl_opt stmt $end
       Shift derivation
-        if_stmt
-        `-> 51: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-                                                                    `-> 76: if_stmt
-                                                                            `-> 52: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt . ELSE endl_opt       stmt
-                                                                                                                                                    `-> 52: %empty
+        $accept
+        `-> 0: program                                                                                                                                                                         $end
+               `-> 1: program_elem
+                      `-> 3: stmt
+                             `-> 76: if_stmt
+                                     `-> 51: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
+                                                                                                 `-> 76: if_stmt
+                                                                                                         `-> 52: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt . ELSE endl_opt stmt
+      Second example: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt . ELSE endl_opt stmt $end
       Reduce derivation
-        if_stmt
-        `-> 52: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt                                                                       ELSE endl_opt       stmt
-                                                                    `-> 76: if_stmt                                                                 `-> 52: %empty
-                                                                            `-> 51: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt .
+        $accept
+        `-> 0: program                                                                                                                                                                         $end
+               `-> 1: program_elem
+                      `-> 3: stmt
+                             `-> 76: if_stmt
+                                     `-> 52: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt                                                                       ELSE endl_opt stmt
+                                                                                                 `-> 76: if_stmt
+                                                                                                         `-> 51: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt .
 
 
 
-State 268
+State 269
 
    15 expr: expr . POST_DECREMENT
    17     | expr . POST_INCREMENT
@@ -5207,70 +5260,19 @@ State 268
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 284
+    endl_opt  go to state 287
 
 
-State 269
+State 270
 
    53 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt .
 
     $default  reduce using rule 53 (while_stmt)
 
 
-State 270
-
-   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' . endl_opt case_list '}' endl_opt
-
-    ENDL  shift, and go to state 41
-
-    $default  reduce using rule 7 (endl_opt)
-
-    endl      go to state 42
-    endl_opt  go to state 285
-
-
 State 271
 
-   67 catch_clause: CATCH endl_opt '(' endl_opt ID . endl_opt ')' endl_opt block_statement endl_opt
-   68             | CATCH endl_opt '(' endl_opt ID . endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
-
-    ENDL  shift, and go to state 41
-
-    $default  reduce using rule 7 (endl_opt)
-
-    endl      go to state 42
-    endl_opt  go to state 286
-
-
-State 272
-
-  114 param: ID endl_opt '?' . endl_opt type_mark
-
-    ENDL  shift, and go to state 41
-
-    $default  reduce using rule 7 (endl_opt)
-
-    endl      go to state 42
-    endl_opt  go to state 287
-
-
-State 273
-
-  113 param: ID endl_opt type_mark .
-
-    $default  reduce using rule 113 (param)
-
-
-State 274
-
-  117 param_list_0_or_more: '(' endl_opt param_list endl_opt ')' .
-
-    $default  reduce using rule 117 (param_list_0_or_more)
-
-
-State 275
-
-  116 param_list: param_list endl_opt ',' . endl_opt param
+   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' . endl_opt case_list '}' endl_opt
 
     ENDL  shift, and go to state 41
 
@@ -5280,16 +5282,22 @@ State 275
     endl_opt  go to state 288
 
 
-State 276
+State 272
 
-   65 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt . '}'
+   67 catch_clause: CATCH endl_opt '(' endl_opt ID . endl_opt ')' endl_opt block_statement endl_opt
+   68             | CATCH endl_opt '(' endl_opt ID . endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
 
-    '}'  shift, and go to state 289
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 289
 
 
-State 277
+State 273
 
-   64 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' . endl_opt stmt_list_opt '}'
+  114 param: ID endl_opt '?' . endl_opt type_mark
 
     ENDL  shift, and go to state 41
 
@@ -5299,16 +5307,23 @@ State 277
     endl_opt  go to state 290
 
 
-State 278
+State 274
 
-  121 var_init_opt: endl_opt var_init .
+  113 param: ID endl_opt type_mark .
 
-    $default  reduce using rule 121 (var_init_opt)
+    $default  reduce using rule 113 (param)
 
 
-State 279
+State 275
 
-  123 id_list: id_list endl_opt ',' . endl_opt ID var_init_opt
+  117 param_list_0_or_more: '(' endl_opt param_list endl_opt ')' .
+
+    $default  reduce using rule 117 (param_list_0_or_more)
+
+
+State 276
+
+  116 param_list: param_list endl_opt ',' . endl_opt param
 
     ENDL  shift, and go to state 41
 
@@ -5318,30 +5333,16 @@ State 279
     endl_opt  go to state 291
 
 
-State 280
+State 277
 
-  119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}' .
+   65 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt . '}'
 
-    $default  reduce using rule 119 (enum_declaration)
-
-
-State 281
-
-  103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt . '[' endl_opt expr_list_opt ']'
-
-    '['  shift, and go to state 292
+    '}'  shift, and go to state 292
 
 
-State 282
+State 278
 
-   54 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' .
-
-    $default  reduce using rule 54 (do_while_stmt)
-
-
-State 283
-
-   52 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE . endl_opt stmt
+   64 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' . endl_opt stmt_list_opt '}'
 
     ENDL  shift, and go to state 41
 
@@ -5351,59 +5352,130 @@ State 283
     endl_opt  go to state 293
 
 
+State 279
+
+  121 id_list_init: ID endl_opt var_init .
+
+    $default  reduce using rule 121 (id_list_init)
+
+
+State 280
+
+  122 id_list_init: id_list_init endl_opt ',' . endl_opt ID endl_opt var_init
+
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 294
+
+
+State 281
+
+  120 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt '}' .
+
+    $default  reduce using rule 120 (enum_declaration)
+
+
+State 282
+
+  124 id_list: id_list endl_opt ',' . endl_opt ID
+
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 295
+
+
+State 283
+
+  119 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}' .
+
+    $default  reduce using rule 119 (enum_declaration)
+
+
 State 284
 
-   55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt . ';' endl_opt expr endl_opt ')' endl_opt stmt
+  103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt . '[' endl_opt expr_list_opt ']'
 
-    ';'  shift, and go to state 294
+    '['  shift, and go to state 296
 
 
 State 285
 
-   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt . case_list '}' endl_opt
+   54 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' .
 
-    DEFAULT  shift, and go to state 295
-    CASE     shift, and go to state 296
-
-    case_list  go to state 297
-    case_stmt  go to state 298
+    $default  reduce using rule 54 (do_while_stmt)
 
 
 State 286
 
-   67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt . ')' endl_opt block_statement endl_opt
-   68             | CATCH endl_opt '(' endl_opt ID endl_opt . ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
+   52 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE . endl_opt stmt
 
-    ':'  shift, and go to state 299
-    ')'  shift, and go to state 300
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 297
 
 
 State 287
+
+   55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt . ';' endl_opt expr endl_opt ')' endl_opt stmt
+
+    ';'  shift, and go to state 298
+
+
+State 288
+
+   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt . case_list '}' endl_opt
+
+    DEFAULT  shift, and go to state 299
+    CASE     shift, and go to state 300
+
+    case_list  go to state 301
+    case_stmt  go to state 302
+
+
+State 289
+
+   67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt . ')' endl_opt block_statement endl_opt
+   68             | CATCH endl_opt '(' endl_opt ID endl_opt . ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
+
+    ':'  shift, and go to state 303
+    ')'  shift, and go to state 304
+
+
+State 290
 
   114 param: ID endl_opt '?' endl_opt . type_mark
 
     ':'  shift, and go to state 196
 
-    type_mark  go to state 301
+    type_mark  go to state 305
 
 
-State 288
+State 291
 
   116 param_list: param_list endl_opt ',' endl_opt . param
 
     ID  shift, and go to state 229
 
-    param  go to state 302
+    param  go to state 306
 
 
-State 289
+State 292
 
    65 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}' .
 
     $default  reduce using rule 65 (function_declaration)
 
 
-State 290
+State 293
 
    64 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt . stmt_list_opt '}'
 
@@ -5442,21 +5514,28 @@ State 290
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt_list_opt     go to state 303
+    stmt_list_opt     go to state 307
     stmt_list         go to state 108
     stmt              go to state 109
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 291
+State 294
 
-  123 id_list: id_list endl_opt ',' endl_opt . ID var_init_opt
+  122 id_list_init: id_list_init endl_opt ',' endl_opt . ID endl_opt var_init
 
-    ID  shift, and go to state 304
+    ID  shift, and go to state 308
 
 
-State 292
+State 295
+
+  124 id_list: id_list endl_opt ',' endl_opt . ID
+
+    ID  shift, and go to state 309
+
+
+State 296
 
   103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' . endl_opt expr_list_opt ']'
 
@@ -5465,10 +5544,10 @@ State 292
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 305
+    endl_opt  go to state 310
 
 
-State 293
+State 297
 
    52 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE endl_opt . stmt
 
@@ -5505,69 +5584,14 @@ State 293
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt              go to state 306
+    stmt              go to state 311
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 294
-
-   55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' . endl_opt expr endl_opt ')' endl_opt stmt
-
-    ENDL  shift, and go to state 41
-
-    $default  reduce using rule 7 (endl_opt)
-
-    endl      go to state 42
-    endl_opt  go to state 307
-
-
-State 295
-
-   60 case_stmt: DEFAULT . endl_opt ':' endl_opt stmt_list_opt break_opt
-
-    ENDL  shift, and go to state 41
-
-    $default  reduce using rule 7 (endl_opt)
-
-    endl      go to state 42
-    endl_opt  go to state 308
-
-
-State 296
-
-   59 case_stmt: CASE . endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt
-
-    ENDL  shift, and go to state 41
-
-    $default  reduce using rule 7 (endl_opt)
-
-    endl      go to state 42
-    endl_opt  go to state 309
-
-
-State 297
-
-   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list . '}' endl_opt
-   58 case_list: case_list . case_stmt
-
-    DEFAULT  shift, and go to state 295
-    CASE     shift, and go to state 296
-    '}'      shift, and go to state 310
-
-    case_stmt  go to state 311
-
-
 State 298
 
-   57 case_list: case_stmt .
-
-    $default  reduce using rule 57 (case_list)
-
-
-State 299
-
-   68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' . endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
+   55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' . endl_opt expr endl_opt ')' endl_opt stmt
 
     ENDL  shift, and go to state 41
 
@@ -5577,9 +5601,9 @@ State 299
     endl_opt  go to state 312
 
 
-State 300
+State 299
 
-   67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' . endl_opt block_statement endl_opt
+   60 case_stmt: DEFAULT . endl_opt ':' endl_opt stmt_list_opt break_opt
 
     ENDL  shift, and go to state 41
 
@@ -5589,70 +5613,102 @@ State 300
     endl_opt  go to state 313
 
 
+State 300
+
+   59 case_stmt: CASE . endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt
+
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 314
+
+
 State 301
+
+   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list . '}' endl_opt
+   58 case_list: case_list . case_stmt
+
+    DEFAULT  shift, and go to state 299
+    CASE     shift, and go to state 300
+    '}'      shift, and go to state 315
+
+    case_stmt  go to state 316
+
+
+State 302
+
+   57 case_list: case_stmt .
+
+    $default  reduce using rule 57 (case_list)
+
+
+State 303
+
+   68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' . endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
+
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 317
+
+
+State 304
+
+   67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' . endl_opt block_statement endl_opt
+
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 318
+
+
+State 305
 
   114 param: ID endl_opt '?' endl_opt type_mark .
 
     $default  reduce using rule 114 (param)
 
 
-State 302
+State 306
 
   116 param_list: param_list endl_opt ',' endl_opt param .
 
     $default  reduce using rule 116 (param_list)
 
 
-State 303
+State 307
 
    64 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt . '}'
 
-    '}'  shift, and go to state 314
+    '}'  shift, and go to state 319
 
 
-State 304
+State 308
 
-  123 id_list: id_list endl_opt ',' endl_opt ID . var_init_opt
+  122 id_list_init: id_list_init endl_opt ',' endl_opt ID . endl_opt var_init
 
     ENDL  shift, and go to state 41
 
-    ENDL      [reduce using rule 120 (var_init_opt)]
-    '='       reduce using rule 7 (endl_opt)
-    $default  reduce using rule 120 (var_init_opt)
+    $default  reduce using rule 7 (endl_opt)
 
-    endl          go to state 42
-    endl_opt      go to state 259
-    var_init_opt  go to state 315
-
-    shift/reduce conflict on token ENDL:
-      120 var_init_opt: %empty .
-        5 endl: . ENDL
-      First example: ENUM endl_opt ID endl_opt '{' id_list endl_opt ',' endl_opt ID . ENDL var_init id_list endl_opt '}' $end
-      Shift derivation
-        $accept
-        `-> 0: program                                                                                                                                                            $end
-               `-> 1: program_elem
-                      `-> 3: stmt
-                             `-> 86: enum_declaration
-                                     `-> 119: ENUM endl_opt ID endl_opt '{' id_list                                                                          id_list endl_opt '}'
-                                                                            `-> 123: id_list endl_opt ',' endl_opt ID var_init_opt
-                                                                                                                      `-> 121: endl_opt             var_init
-                                                                                                                               `-> 8: endl
-                                                                                                                                      `-> 5: . ENDL
-      Second example: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt ',' endl_opt ID . ENDL '}' $end
-      Reduce derivation
-        $accept
-        `-> 0: program                                                                                                                                                  $end
-               `-> 1: program_elem
-                      `-> 3: stmt
-                             `-> 86: enum_declaration
-                                     `-> 119: ENUM endl_opt ID endl_opt '{' endl_opt id_list                                                     endl_opt           '}'
-                                                                                     `-> 123: id_list endl_opt ',' endl_opt ID var_init_opt      `-> 8: endl
-                                                                                                                               `-> 120: %empty .        `-> 5: ENDL
+    endl      go to state 42
+    endl_opt  go to state 320
 
 
+State 309
 
-State 305
+  124 id_list: id_list endl_opt ',' endl_opt ID .
+
+    $default  reduce using rule 124 (id_list)
+
+
+State 310
 
   103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt . expr_list_opt ']'
 
@@ -5670,19 +5726,19 @@ State 305
 
     $default  reduce using rule 13 (expr_list_opt)
 
-    expr_list      go to state 316
-    expr_list_opt  go to state 317
-    expr           go to state 318
+    expr_list      go to state 321
+    expr_list_opt  go to state 322
+    expr           go to state 323
 
 
-State 306
+State 311
 
    52 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE endl_opt stmt .
 
     $default  reduce using rule 52 (if_stmt)
 
 
-State 307
+State 312
 
    55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt . expr endl_opt ')' endl_opt stmt
 
@@ -5698,17 +5754,17 @@ State 307
     NOT             shift, and go to state 22
     '('             shift, and go to state 23
 
-    expr  go to state 319
+    expr  go to state 324
 
 
-State 308
+State 313
 
    60 case_stmt: DEFAULT endl_opt . ':' endl_opt stmt_list_opt break_opt
 
-    ':'  shift, and go to state 320
+    ':'  shift, and go to state 325
 
 
-State 309
+State 314
 
    59 case_stmt: CASE endl_opt . expr endl_opt ':' endl_opt stmt_list_opt break_opt
 
@@ -5724,65 +5780,12 @@ State 309
     NOT             shift, and go to state 22
     '('             shift, and go to state 23
 
-    expr  go to state 321
-
-
-State 310
-
-   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}' . endl_opt
-
-    ENDL  shift, and go to state 41
-
-    $default  reduce using rule 7 (endl_opt)
-
-    endl      go to state 42
-    endl_opt  go to state 322
-
-
-State 311
-
-   58 case_list: case_list case_stmt .
-
-    $default  reduce using rule 58 (case_list)
-
-
-State 312
-
-   68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt . error_type endl_opt ')' endl_opt block_statement endl_opt
-
-    UNKNOWN  shift, and go to state 323
-    ANY      shift, and go to state 324
-
-    error_type  go to state 325
-
-
-State 313
-
-   67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt . block_statement endl_opt
-
-    '{'  shift, and go to state 24
-
-    block_statement  go to state 326
-
-
-State 314
-
-   64 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' .
-
-    $default  reduce using rule 64 (function_declaration)
+    expr  go to state 326
 
 
 State 315
 
-  123 id_list: id_list endl_opt ',' endl_opt ID var_init_opt .
-
-    $default  reduce using rule 123 (id_list)
-
-
-State 316
-
-   12 expr_list: expr_list . endl_opt ',' endl_opt expr
-   14 expr_list_opt: expr_list . endl_opt
+   56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}' . endl_opt
 
     ENDL  shift, and go to state 41
 
@@ -5792,14 +5795,69 @@ State 316
     endl_opt  go to state 327
 
 
+State 316
+
+   58 case_list: case_list case_stmt .
+
+    $default  reduce using rule 58 (case_list)
+
+
 State 317
 
-  103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt . ']'
+   68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt . error_type endl_opt ')' endl_opt block_statement endl_opt
 
-    ']'  shift, and go to state 328
+    UNKNOWN  shift, and go to state 328
+    ANY      shift, and go to state 329
+
+    error_type  go to state 330
 
 
 State 318
+
+   67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt . block_statement endl_opt
+
+    '{'  shift, and go to state 24
+
+    block_statement  go to state 331
+
+
+State 319
+
+   64 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' .
+
+    $default  reduce using rule 64 (function_declaration)
+
+
+State 320
+
+  122 id_list_init: id_list_init endl_opt ',' endl_opt ID endl_opt . var_init
+
+    '='  shift, and go to state 195
+
+    var_init  go to state 332
+
+
+State 321
+
+   12 expr_list: expr_list . endl_opt ',' endl_opt expr
+   14 expr_list_opt: expr_list . endl_opt
+
+    ENDL  shift, and go to state 41
+
+    $default  reduce using rule 7 (endl_opt)
+
+    endl      go to state 42
+    endl_opt  go to state 333
+
+
+State 322
+
+  103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt . ']'
+
+    ']'  shift, and go to state 334
+
+
+State 323
 
    11 expr_list: expr .
    15 expr: expr . POST_DECREMENT
@@ -5855,7 +5913,7 @@ State 318
     $default  reduce using rule 11 (expr_list)
 
 
-State 319
+State 324
 
    15 expr: expr . POST_DECREMENT
    17     | expr . POST_INCREMENT
@@ -5912,10 +5970,10 @@ State 319
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 329
+    endl_opt  go to state 335
 
 
-State 320
+State 325
 
    60 case_stmt: DEFAULT endl_opt ':' . endl_opt stmt_list_opt break_opt
 
@@ -5924,10 +5982,10 @@ State 320
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 330
+    endl_opt  go to state 336
 
 
-State 321
+State 326
 
    15 expr: expr . POST_DECREMENT
    17     | expr . POST_INCREMENT
@@ -5984,31 +6042,31 @@ State 321
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 331
+    endl_opt  go to state 337
 
 
-State 322
+State 327
 
    56 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list '}' endl_opt .
 
     $default  reduce using rule 56 (switch_stmt)
 
 
-State 323
+State 328
 
    69 error_type: UNKNOWN .
 
     $default  reduce using rule 69 (error_type)
 
 
-State 324
+State 329
 
    70 error_type: ANY .
 
     $default  reduce using rule 70 (error_type)
 
 
-State 325
+State 330
 
    68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type . endl_opt ')' endl_opt block_statement endl_opt
 
@@ -6017,10 +6075,10 @@ State 325
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 332
+    endl_opt  go to state 338
 
 
-State 326
+State 331
 
    67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt block_statement . endl_opt
 
@@ -6029,34 +6087,41 @@ State 326
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 333
+    endl_opt  go to state 339
 
 
-State 327
+State 332
+
+  122 id_list_init: id_list_init endl_opt ',' endl_opt ID endl_opt var_init .
+
+    $default  reduce using rule 122 (id_list_init)
+
+
+State 333
 
    12 expr_list: expr_list endl_opt . ',' endl_opt expr
    14 expr_list_opt: expr_list endl_opt .
 
-    ','  shift, and go to state 334
+    ','  shift, and go to state 340
 
     $default  reduce using rule 14 (expr_list_opt)
 
 
-State 328
+State 334
 
   103 variable: ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' .
 
     $default  reduce using rule 103 (variable)
 
 
-State 329
+State 335
 
    55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt . ')' endl_opt stmt
 
-    ')'  shift, and go to state 335
+    ')'  shift, and go to state 341
 
 
-State 330
+State 336
 
    60 case_stmt: DEFAULT endl_opt ':' endl_opt . stmt_list_opt break_opt
 
@@ -6095,35 +6160,35 @@ State 330
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt_list_opt     go to state 336
+    stmt_list_opt     go to state 342
     stmt_list         go to state 108
     stmt              go to state 109
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 331
+State 337
 
    59 case_stmt: CASE endl_opt expr endl_opt . ':' endl_opt stmt_list_opt break_opt
 
-    ':'  shift, and go to state 337
+    ':'  shift, and go to state 343
 
 
-State 332
+State 338
 
    68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt . ')' endl_opt block_statement endl_opt
 
-    ')'  shift, and go to state 338
+    ')'  shift, and go to state 344
 
 
-State 333
+State 339
 
    67 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt block_statement endl_opt .
 
     $default  reduce using rule 67 (catch_clause)
 
 
-State 334
+State 340
 
    12 expr_list: expr_list endl_opt ',' . endl_opt expr
 
@@ -6132,10 +6197,10 @@ State 334
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 339
+    endl_opt  go to state 345
 
 
-State 335
+State 341
 
    55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' . endl_opt stmt
 
@@ -6144,21 +6209,21 @@ State 335
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 340
+    endl_opt  go to state 346
 
 
-State 336
+State 342
 
    60 case_stmt: DEFAULT endl_opt ':' endl_opt stmt_list_opt . break_opt
 
-    BREAK  shift, and go to state 341
+    BREAK  shift, and go to state 347
 
     $default  reduce using rule 61 (break_opt)
 
-    break_opt  go to state 342
+    break_opt  go to state 348
 
 
-State 337
+State 343
 
    59 case_stmt: CASE endl_opt expr endl_opt ':' . endl_opt stmt_list_opt break_opt
 
@@ -6167,10 +6232,10 @@ State 337
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 343
+    endl_opt  go to state 349
 
 
-State 338
+State 344
 
    68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' . endl_opt block_statement endl_opt
 
@@ -6179,10 +6244,10 @@ State 338
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 344
+    endl_opt  go to state 350
 
 
-State 339
+State 345
 
    12 expr_list: expr_list endl_opt ',' endl_opt . expr
 
@@ -6198,10 +6263,10 @@ State 339
     NOT             shift, and go to state 22
     '('             shift, and go to state 23
 
-    expr  go to state 345
+    expr  go to state 351
 
 
-State 340
+State 346
 
    55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt . stmt
 
@@ -6238,12 +6303,12 @@ State 340
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt              go to state 346
+    stmt              go to state 352
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 341
+State 347
 
    62 break_opt: BREAK . stmt_sep
 
@@ -6251,17 +6316,17 @@ State 341
     ENDL  shift, and go to state 41
 
     endl      go to state 86
-    stmt_sep  go to state 347
+    stmt_sep  go to state 353
 
 
-State 342
+State 348
 
    60 case_stmt: DEFAULT endl_opt ':' endl_opt stmt_list_opt break_opt .
 
     $default  reduce using rule 60 (case_stmt)
 
 
-State 343
+State 349
 
    59 case_stmt: CASE endl_opt expr endl_opt ':' endl_opt . stmt_list_opt break_opt
 
@@ -6300,23 +6365,23 @@ State 343
     switch_stmt       go to state 33
     return_statement  go to state 34
     try_catch_block   go to state 36
-    stmt_list_opt     go to state 348
+    stmt_list_opt     go to state 354
     stmt_list         go to state 108
     stmt              go to state 109
     modifier          go to state 38
     enum_declaration  go to state 39
 
 
-State 344
+State 350
 
    68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt . block_statement endl_opt
 
     '{'  shift, and go to state 24
 
-    block_statement  go to state 349
+    block_statement  go to state 355
 
 
-State 345
+State 351
 
    12 expr_list: expr_list endl_opt ',' endl_opt expr .
    15 expr: expr . POST_DECREMENT
@@ -6372,32 +6437,32 @@ State 345
     $default  reduce using rule 12 (expr_list)
 
 
-State 346
+State 352
 
    55 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt .
 
     $default  reduce using rule 55 (for_stmt)
 
 
-State 347
+State 353
 
    62 break_opt: BREAK stmt_sep .
 
     $default  reduce using rule 62 (break_opt)
 
 
-State 348
+State 354
 
    59 case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt . break_opt
 
-    BREAK  shift, and go to state 341
+    BREAK  shift, and go to state 347
 
     $default  reduce using rule 61 (break_opt)
 
-    break_opt  go to state 350
+    break_opt  go to state 356
 
 
-State 349
+State 355
 
    68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement . endl_opt
 
@@ -6406,17 +6471,17 @@ State 349
     $default  reduce using rule 7 (endl_opt)
 
     endl      go to state 42
-    endl_opt  go to state 351
+    endl_opt  go to state 357
 
 
-State 350
+State 356
 
    59 case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt .
 
     $default  reduce using rule 59 (case_stmt)
 
 
-State 351
+State 357
 
    68 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt .
 

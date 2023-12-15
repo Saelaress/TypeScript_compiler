@@ -272,15 +272,19 @@ param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
 ;
 
 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list endl_opt '}'
+| ENUM endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt '}'
 ;
 
-var_init_opt: /* empty */
-| endl_opt var_init
+
+
+id_list_init: ID endl_opt var_init
+| id_list_init endl_opt ',' endl_opt ID endl_opt var_init 
 ;
 
-id_list: ID var_init_opt
-| id_list endl_opt ',' endl_opt ID var_init_opt
+id_list: ID
+| id_list endl_opt ',' endl_opt ID 
 ;
+
 
 %%
 {/*Секция пользовательского кода*/}
