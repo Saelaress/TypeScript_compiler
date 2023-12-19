@@ -35,6 +35,7 @@
 %token CASE
 %token TRY
 %token CATCH
+%token THROW
 
 %token INCREMENT
 %token DECREMENT
@@ -77,16 +78,19 @@
 %left '.'
 %nonassoc ')'
 
-%start program
+%start prog
 
 %%
 
 // Определение стартового символа
+prog: program
+;
+
 program: program_elem
 | program program_elem
 ;
 
-program_elem: stmt
+program_elem: stmt_top
 | function_declaration
 ;
 
@@ -98,7 +102,7 @@ endl_opt: /* empty */
 | endl
 ;
 
-stmt_sep: ';'
+stmt_sep: ';' endl_opt
 | endl
 ;
 
@@ -106,8 +110,11 @@ expr_list: expr
 | expr_list endl_opt ',' endl_opt expr
 ;
 
-expr_list_opt: /* empty */
-| expr_list endl_opt
+expr_list_endl_opt: /* empty */
+| expr_list_endl
+;
+
+expr_list_endl: expr_list endl_opt
 ;
 
 expr: expr POST_DECREMENT
@@ -122,7 +129,7 @@ expr: expr POST_DECREMENT
 | TRUE_LITERAL
 | FALSE_LITERAL
 | ID
-| '(' endl_opt expr ')'
+| '(' endl_opt expr endl_opt ')'
 | expr '+' endl_opt expr
 | expr '-' endl_opt expr
 | expr '*' endl_opt expr
@@ -145,6 +152,8 @@ expr: expr POST_DECREMENT
 | expr OR endl_opt expr
 | expr '?' endl_opt expr endl_opt ':' endl_opt expr
 | expr '[' endl_opt expr endl_opt ']' // Обращение к элементу массива
+| ID '(' endl_opt expr_list_endl_opt ')' // Вызов функции
+| '[' endl_opt expr_list_endl_opt ']'
 ;
 
 block_statement: '{' endl_opt stmt_list_opt '}'
@@ -156,7 +165,7 @@ if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
 ;
 
-do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')'
+do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep
 ;
 
 for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
@@ -218,20 +227,23 @@ stmt_list: stmt
 | stmt_list stmt
 ;
 
-stmt: expr stmt_sep
+stmt_top: expr stmt_sep
 | if_stmt
 | while_stmt
 | for_stmt
-| do_while_stmt stmt_sep
+| do_while_stmt
 | switch_stmt
 | try_catch_block
 | block_statement endl_opt
-| modifier endl_opt variable_stmt
 | modifier endl_opt ID stmt_sep
 | modifier endl_opt var_list_stmt
-| return_statement
 | enum_declaration
 | ';' endl_opt
+| THROW expr stmt_sep
+;
+
+stmt: stmt_top
+| return_statement
 ;
 
 modifier: LET
@@ -250,20 +262,18 @@ type: NUMBER
 type_mark:  ':' endl_opt type
 ;
 
-
-
 variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt
 | ID endl_opt type_mark endl_opt
 | ID endl_opt var_init endl_opt
 | ID endl_opt type_mark dimensions_list endl_opt // Объявление массива
-| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' endl_opt // Инициализация массива
+| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' endl_opt // Инициализация массива
 ;
 
 variable_stmt: ID endl_opt type_mark endl_opt var_init stmt_sep
 | ID endl_opt type_mark stmt_sep
 | ID endl_opt var_init stmt_sep
 | ID endl_opt type_mark dimensions_list stmt_sep // Объявление массива
-| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_opt ']' stmt_sep // Инициализация массива
+| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' stmt_sep // Инициализация массива
 ;
 
 var_init: '=' endl_opt expr
@@ -276,7 +286,8 @@ var_list: variable_endl ',' endl_opt variable_endl
 | var_list ',' endl_opt variable_endl
 ;
 
-var_list_stmt: variable_endl ',' endl_opt variable_stmt
+var_list_stmt: variable_stmt
+| variable_endl ',' endl_opt variable_stmt
 | ID endl_opt ',' endl_opt variable_stmt
 | variable_endl ',' endl_opt ID stmt_sep
 | ID endl_opt ',' endl_opt ID stmt_sep
@@ -299,11 +310,13 @@ param_list: param
 ;
 
 param_list_0_or_more: '(' endl_opt param_list endl_opt ')'
-| '(' ')'
+| '(' endl_opt ')'
 ;
 
 enum_declaration: ENUM endl_opt ID endl_opt '{' endl_opt id_list_endl '}'
 | ENUM endl_opt ID endl_opt '{' endl_opt id_list_init endl_opt '}'
+| ENUM endl_opt ID endl_opt '{' endl_opt id_list_endl ',' endl_opt id_list_init endl_opt '}'
+| ENUM endl_opt ID endl_opt '{' endl_opt '}'
 ;
 
 id_list_init: ID endl_opt var_init
@@ -311,7 +324,7 @@ id_list_init: ID endl_opt var_init
 ;
 
 id_list_endl: ID endl_opt
-| ID endl_opt ',' endl_opt ID endl_opt
+| id_list_endl ',' endl_opt ID endl_opt
 ;
 
 %%
