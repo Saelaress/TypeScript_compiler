@@ -3,13 +3,9 @@
 #include "modifier_head.h"
 #include "parsing_tree.h"
 
-
 %}
 
 %union {
-
-    char * ident;
-    struct stringBuffer * stringLit;
 }
 
 %define lr.type ielr
@@ -19,9 +15,9 @@
 %token LET CONST FUNC DECLARE
 %token UNKNOWN ANY NUMBER STRING VOID BOOLEAN ENUM
 
-%token <numLit> NUMBER_LITERAL
-%token <stringLit> STRING_LITERAL
-%token <ident> ID
+%token NUMBER_LITERAL
+%token STRING_LITERAL
+%token ID
 %token TRUE_LITERAL FALSE_LITERAL
 
 %left ';' ENDL
@@ -41,16 +37,6 @@
 %nonassoc ')'
 
 %start TSFile
-
-%type <expression> expr
-%type <exprList> expr_list
-%type <statement> stmt if_stmt while_stmt for_stmt do_while_stmt switch_stmt try_catch_block enum_declaration return_statement
-%type <stmtList> stmt_list block_statement
-%type <file> TSFile
-%type <elemList> program_elem_list
-%type <elem> program_elem
-%type <function> function_declaration
-
 
 %%
 
@@ -96,11 +82,11 @@ expr: expr POST_DECREMENT
 | expr AS endl_opt type
 | '-' endl_opt expr %prec UMINUS
 | '+' endl_opt expr %prec UPLUS
-| NUMBER_LITERAL {$$ = createNumLiteralExpressionNode($1);}
-| STRING_LITERAL {$$ = createStringLiteralExpressionNode($1);}
-| TRUE_LITERAL {$$ = createTrueLiteralExpressionNode();}
-| FALSE_LITERAL {$$ = createFalseLiteralExpressionNode();}
-| ID {$$ = createIDExpressionNode($1);}
+| NUMBER_LITERAL
+| STRING_LITERAL
+| TRUE_LITERAL
+| FALSE_LITERAL
+| ID
 | '(' endl_opt expr endl_opt ')'
 | expr '+' endl_opt expr
 | expr '-' endl_opt expr
