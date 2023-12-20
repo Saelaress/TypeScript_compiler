@@ -1,5 +1,5 @@
-%{ /*Пролог*/
-// Объявления предварительных функций и классов
+%{
+
 #include "modifier_head.h"
 #include "parsing_tree.h"
 
@@ -15,11 +15,13 @@
 %token LET CONST FUNC DECLARE
 %token UNKNOWN ANY NUMBER STRING VOID BOOLEAN ENUM
 
-%token NUMBER_LITERAL
+%token INT_LITERAL
+%token FLOAT_LITERAL
 %token STRING_LITERAL
 %token ID
 %token TRUE_LITERAL FALSE_LITERAL
 
+%nonassoc INCREMENT DECREMENT
 %left ';' ENDL
 %right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left '[' ']'
@@ -31,7 +33,7 @@
 %left '*' '/' '%'
 %right NEW
 %right PREF_INCREMENT PREF_DECREMENT
-%right POST_INCREMENT POST_DECREMENT
+%left POST_INCREMENT POST_DECREMENT
 %left NOT UPLUS UMINUS
 %left '.'
 %nonassoc ')'
@@ -75,14 +77,15 @@ expr_list_endl_opt: /* empty */
 expr_list_endl: expr_list endl_opt
 ;
 
-expr: expr POST_DECREMENT
-| PREF_DECREMENT endl_opt expr
-| expr POST_INCREMENT
-| PREF_INCREMENT endl_opt expr
+expr: expr DECREMENT %prec POST_DECREMENT
+| DECREMENT endl_opt expr %prec PREF_DECREMENT
+| expr INCREMENT %prec POST_INCREMENT
+| INCREMENT endl_opt expr %prec PREF_INCREMENT
 | expr AS endl_opt type
 | '-' endl_opt expr %prec UMINUS
 | '+' endl_opt expr %prec UPLUS
-| NUMBER_LITERAL
+| INT_LITERAL
+| FLOAT_LITERAL
 | STRING_LITERAL
 | TRUE_LITERAL
 | FALSE_LITERAL
@@ -214,7 +217,7 @@ type: NUMBER
 | ANY
 | UNKNOWN
 | VOID
-| ID
+// | ID
 ;
 
 type_mark:  ':' endl_opt type

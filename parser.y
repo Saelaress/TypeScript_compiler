@@ -1,15 +1,17 @@
-%{ /*Пролог*/
-// Объявления предварительных функций и классов
-#include "modifier_head.h"
-#include "parsing_tree.h"
-
-
+%{
+    #include "modifier_head.h"
+    #include "parsing_tree.h"
+    void yyerror(char const * s);
+    extern int yylex(void);
 %}
 
 %union {
-
-    char * ident;
+    int intLit;
+    float floatLit;
     struct stringBuffer * stringLit;
+    struct ModifierHead * modHead;
+    char * ident;
+    struct TSFileNode * file;
 }
 
 %define lr.type ielr
@@ -19,11 +21,13 @@
 %token LET CONST FUNC DECLARE
 %token UNKNOWN ANY NUMBER STRING VOID BOOLEAN ENUM
 
-%token <numLit> NUMBER_LITERAL
+%token <intLit> INT_LITERAL
+%token <floatLit> FLOAT_LITERAL
 %token <stringLit> STRING_LITERAL
 %token <ident> ID
 %token TRUE_LITERAL FALSE_LITERAL
 
+%nonassoc INCREMENT DECREMENT
 %left ';' ENDL
 %right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left '[' ']'
@@ -35,7 +39,7 @@
 %left '*' '/' '%'
 %right NEW
 %right PREF_INCREMENT PREF_DECREMENT
-%right POST_INCREMENT POST_DECREMENT
+%left POST_INCREMENT POST_DECREMENT
 %left NOT UPLUS UMINUS
 %left '.'
 %nonassoc ')'
@@ -89,43 +93,44 @@ expr_list_endl_opt: /* empty */
 expr_list_endl: expr_list endl_opt
 ;
 
-expr: expr POST_DECREMENT
-| PREF_DECREMENT endl_opt expr
-| expr POST_INCREMENT
-| PREF_INCREMENT endl_opt expr
-| expr AS endl_opt type
-| '-' endl_opt expr %prec UMINUS
-| '+' endl_opt expr %prec UPLUS
-| NUMBER_LITERAL {$$ = createNumLiteralExpressionNode($1);}
+expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNode($1);}
+| DECREMENT endl_opt expr %prec PREF_DECREMENT {$$ = createPrefDecrementExpressionNode($3);}
+| expr INCREMENT %prec POST_INCREMENT {$$ = createPostIncrementExpressionNode($1);}
+| INCREMENT endl_opt expr %prec PREF_INCREMENT {$$ = createPrefIncrementExpressionNode($3);}
+| expr AS endl_opt type {$$ = createAsTypeConversionExpressionNode($1, $4);}
+| '-' endl_opt expr %prec UMINUS {$$ = createUnaryMinusExpressionNode($3);}
+| '+' endl_opt expr %prec UPLUS {$$ = createUnaryPlusExpressionNode($3);}
+| INT_LITERAL {$$ = createIntLiteralExpressionNode($1);}
+| FLOAT_LITERAL {$$ = createFloatLiteralExpressionNode($1);}
 | STRING_LITERAL {$$ = createStringLiteralExpressionNode($1);}
 | TRUE_LITERAL {$$ = createTrueLiteralExpressionNode();}
 | FALSE_LITERAL {$$ = createFalseLiteralExpressionNode();}
 | ID {$$ = createIDExpressionNode($1);}
-| '(' endl_opt expr endl_opt ')'
-| expr '+' endl_opt expr
-| expr '-' endl_opt expr
-| expr '*' endl_opt expr
-| expr '/' endl_opt expr
-| expr '%' endl_opt expr
-| expr '<' endl_opt expr
-| expr '>' endl_opt expr
-| expr LESS_OR_EQUAL endl_opt expr
-| expr GREATER_OR_EQUAL endl_opt expr
-| expr EQUALS endl_opt expr
-| expr NOT_EQUALS endl_opt expr
-| expr '=' endl_opt expr
-| expr PLUS_ASSIGN endl_opt expr
-| expr MINUS_ASSIGN endl_opt expr
-| expr MUL_ASSIGN endl_opt expr
-| expr DIV_ASSIGN endl_opt expr
-| expr MOD_ASSIGN endl_opt expr
-| NOT endl_opt expr
-| expr AND endl_opt expr
-| expr OR endl_opt expr
-| expr '?' endl_opt expr endl_opt ':' endl_opt expr
-| expr '[' endl_opt expr endl_opt ']' // Обращение к элементу массива
-| ID '(' endl_opt expr_list_endl_opt ')' // Вызов функции
-| '[' endl_opt expr_list_endl_opt ']'
+| '(' endl_opt expr endl_opt ')' {$$ = createBracketExpressionNode($3);}
+| expr '+' endl_opt expr {$$ = createPlusExpressionNode($1, $4);}
+| expr '-' endl_opt expr {$$ = createMinusExpressionNode($1, $4);}
+| expr '*' endl_opt expr {$$ = createMulExpressionNode($1, $4);}
+| expr '/' endl_opt expr {$$ = createDivExpressionNode($1, $4);}
+| expr '%' endl_opt expr {$$ = createModExpressionNode($1, $4);}
+| expr '<' endl_opt expr {$$ = createLessExpressionNode($1, $4);}
+| expr '>' endl_opt expr {$$ = createGreatExpressionNode($1, $4);}
+| expr LESS_OR_EQUAL endl_opt expr {$$ = createLessEqualExpressionNode($1, $4);}
+| expr GREATER_OR_EQUAL endl_opt expr {$$ = createGreatEqualExpressionNode($1, $4);}
+| expr EQUALS endl_opt expr {$$ = createEqualExpressionNode($1, $4);}
+| expr NOT_EQUALS endl_opt expr {$$ = createNotEqualExpressionNode($1, $4);}
+| expr '=' endl_opt expr {$$ = createAssignmentExpressionNode($1, $4);}
+| expr PLUS_ASSIGN endl_opt expr {$$ = createPlusAssignmentExpressionNode($1, $4);}
+| expr MINUS_ASSIGN endl_opt expr {$$ = createMinusAssignmentExpressionNode($1, $4);}
+| expr MUL_ASSIGN endl_opt expr {$$ = createMulAssignmentExpressionNode($1, $4);}
+| expr DIV_ASSIGN endl_opt expr {$$ = createDivAssignmentExpressionNode($1, $4);}
+| expr MOD_ASSIGN endl_opt expr {$$ = createModAssignmentExpressionNode($1, $4);}
+| NOT endl_opt expr {$$ = createNotExpressionNode($3);}
+| expr AND endl_opt expr {$$ = createAndExpressionNode($1, $4);}
+| expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
+| expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
+| expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
+| ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
+| '[' endl_opt expr_list_endl_opt ']' {$$ = createSquareBracketExpressionNode($3);}
 ;
 
 block_statement: '{' endl_opt stmt_list_opt '}'
@@ -228,7 +233,7 @@ type: NUMBER
 | ANY
 | UNKNOWN
 | VOID
-| ID
+// | ID
 ;
 
 type_mark:  ':' endl_opt type
