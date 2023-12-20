@@ -16,8 +16,8 @@
 
 %define lr.type ielr
 
-%token RETURN DO IF ELSE FOR OF IN WHILE BREAK CONTINUE DEFAULT
-%token SWITCH CASE TRY CATCH THROW
+%token RETURN DO IF ELSE FOR IN WHILE BREAK CONTINUE DEFAULT
+%token SWITCH CASE TRY CATCH THROW FINALLY INSTANCEOF
 %token LET CONST FUNC DECLARE
 %token UNKNOWN ANY NUMBER STRING VOID BOOLEAN ENUM
 
@@ -54,6 +54,7 @@
 %type <elemList> program_elem_list
 %type <elem> program_elem
 %type <function> function_declaration
+
 
 
 %%
@@ -145,7 +146,13 @@ while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep
 ;
 
-for_stmt: FOR endl_opt '(' endl_opt expr endl_opt ';' endl_opt expr endl_opt ';' endl_opt expr endl_opt ')' endl_opt stmt
+expr_opt: /*empty*/
+| endl_opt expr endl_opt
+;
+
+for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt
+| FOR endl_opt '(' endl_opt modifier endl_opt var_list ';' expr_opt ';' expr_opt ')' endl_opt stmt
+| FOR endl_opt '(' endl_opt modifier endl_opt ID ';' expr_opt ';' expr_opt ')' endl_opt stmt
 ;
 
 switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list_break '}' endl_opt
@@ -185,11 +192,23 @@ function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt ty
 | FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
 ;
 
+// if_stmt_catch: IF endl_opt '(' endl_opt ID endl_opt INSTANCEOF endl_opt type endl_opt')' endl_opt stmt 
+// | IF endl_opt '(' endl_opt ID endl_opt INSTANCEOF endl_opt type endl_opt ')' endl_opt stmt ELSE endl_opt if_stmt_catch
+// | IF endl_opt '(' endl_opt ID endl_opt INSTANCEOF endl_opt type endl_opt')' endl_opt if_stmt_catch 
+// | IF endl_opt '(' endl_opt ID endl_opt INSTANCEOF endl_opt type endl_opt ')' endl_opt if_stmt_catch ELSE endl_opt if_stmt_catch
+// | IF endl_opt '(' endl_opt ID endl_opt INSTANCEOF endl_opt type endl_opt ')' endl_opt if_stmt_catch ELSE endl_opt stmt
+// | IF endl_opt '(' endl_opt ID endl_opt INSTANCEOF endl_opt type endl_opt ')' endl_opt stmt ELSE endl_opt stmt
+// ;
+
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
+|TRY endl_opt block_statement endl_opt catch_clause FINALLY endl_opt block_statement
+|TRY endl_opt block_statement endl_opt FINALLY endl_opt block_statement
 ;
 
 catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt block_statement endl_opt
 | CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
+//| CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt '{' endl_opt if_stmt_catch '}' endl_opt
+//| CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt '{' endl_opt if_stmt_catch '}' endl_opt
 ;
 
 error_type: UNKNOWN
@@ -224,6 +243,8 @@ stmt: stmt_top
 ;
 
 modifier: LET
+| DECLARE LET
+| DECLARE CONST
 | CONST
 ;
 
