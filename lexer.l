@@ -1,8 +1,4 @@
-%option noyywrap
-%option never-interactive
-
 %{
-/* Объявление глобальных переменных */
 #include <stdio.h>
 #include <string.h>
 #include <typeinfo>
@@ -12,7 +8,8 @@ using namespace std;
 char* removeUnderline(const char* str);
 
 %}
-
+%option noyywrap
+%option never-interactive
 
 
 %x COMMENT
@@ -125,10 +122,10 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 "/=" {fprintf(yyout, "Found OPERATOR_DIV_ASSIGNMENT: %s\n", yytext);}
 "^" {fprintf(yyout, "Found OPERATOR_BIT_XOR: %s\n", yytext);}
 "~" {fprintf(yyout, "Унарный оператор побитового НЕ: %s\n", yytext);}
-"&" {fprintf(yyout, "Found OPERATOR_AMPERSAND: %s\n", yytext);}
-"&&" {fprintf(yyout, "Found OPERATOR_AND: %s\n", yytext);}
+"&" {fprintf(yyout, "Found OPERATOR_BIT_AND: %s\n", yytext);}
+"&&" {fprintf(yyout, "AND: %s\n", yytext);}
 "|" {fprintf(yyout, "Found OPERATOR_BIT_OR: %s\n", yytext);}
-"||" {fprintf(yyout, "Found OPERATOR_OR: %s\n", yytext);}
+"||" {fprintf(yyout, "OR: %s\n", yytext);}
 "[" {fprintf(yyout, "Found LEFT_SQUARE_BRACKET: %s\n", yytext);}
 "]" {fprintf(yyout, "Found RIGHT_SQUARE_BRACKET: %s\n", yytext);}
 "(" {fprintf(yyout, "Found LEFT_ROUND_BRACKET: %s\n", yytext);}
@@ -252,7 +249,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     {
         char* buffer = removeUnderline(bufferString);
         int res = atoi(buffer);
-        fprintf(yyout, "DECIMAL_INT: %d\n", res);
+        fprintf(yyout, "INT: %d\n", res);
     }
 }
 
@@ -267,7 +264,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 16);
     snprintf(numStr, sizeof(numStr), "%ld", res);
-    fprintf(yyout, "HEX_INT: %s\n", numStr);
+    fprintf(yyout, "INT: %s\n", numStr);
 }
 
 ((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X){2,})\_* {
@@ -281,7 +278,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 8);
     snprintf(numStr, sizeof(numStr), "%ld", res);
-    fprintf(yyout, "OCTAL_INT: %s\n", numStr);
+    fprintf(yyout, "INT: %s\n", numStr);
 }
 
 ((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O){2,})\_* {
@@ -295,7 +292,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 2);
     snprintf(numStr, sizeof(numStr), "%ld", res);
-    fprintf(yyout, "BIN_INT: %s\n", numStr);
+    fprintf(yyout, "INT: %s\n", numStr);
 }
 
 ((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B){2,})\_* {
@@ -310,7 +307,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char numStr[20];
     float res = strtof(buffer, NULL);
     snprintf(numStr, sizeof(numStr), "%f", res);
-    fprintf(yyout, "FLOAT_INT: %s\n", numStr);
+    fprintf(yyout, "FLOAT: %s\n", numStr);
 }
 
 (([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.?\_*)((e|E)*\_*((\+|\-)?[0-9](\_*[0-9])*)?)? {
@@ -361,7 +358,13 @@ int main(int argc, char *argv[]) {
 
     yyin = input_file;
     yyout = output_file;
-    yylex();        
+    yylex();
+
+    // printf("The parsing process has started.\n");
+	// yyparse();
+    // printf("The parsing process is completed.\n");
+    // tree_print();
+    // getch();
 
 	// Закрываем файлы
 	fclose(input_file);
