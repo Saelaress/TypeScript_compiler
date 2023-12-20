@@ -4,10 +4,16 @@
 %{
 /* Объявление глобальных переменных */
 #include <stdio.h>
+#include <string.h>
 #include <typeinfo>
 #include <iostream>
 using namespace std;
+
+char* removeUnderline(const char* str);
+
 %}
+
+
 
 %x COMMENT
 %x STRINGD
@@ -16,17 +22,13 @@ using namespace std;
 %x TEMPLATE
 %x COMMENTONE
 
-decimal [0-9]+
-bin 0[bB][01]+
-octal 0[oO][0-7]+
-hex 0[xX][0-9a-fA-F]+
-float ([0-9]+\.?|\.{1}[0-9]+)[0-9]*([eE][-+]?[0-9]+)?
+DIGIT [0-9]
 
 /* Описание правил */
 %%
 %{ 
     char str[1000];
-    char comment[1000];
+    char bufferString[1000];
 %} /* Объявление локальных переменных */
 
 abstract {fprintf(yyout, "Found KW_ABSTRACT: %s\n", yytext);} 
@@ -72,6 +74,7 @@ new {fprintf(yyout, "Found KW_NEW: %s\n", yytext);}
 null {fprintf(yyout, "Found KW_NULL: %s\n", yytext);} 
 number {fprintf(yyout, "Found TYPE_NUMBER: %s\n", yytext);} 
 object {fprintf(yyout, "Found TYPE_OBJECT: %s\n", yytext);} 
+of {fprintf(yyout, "Found KW_OF: %s\n", yytext);} 
 package {fprintf(yyout, "Found KW_PACKAGE: %s\n", yytext);} 
 private {fprintf(yyout, "Found KW_PRIVATE: %s\n", yytext);} 
 protected {fprintf(yyout, "Found KW_PROTECTED: %s\n", yytext);} 
@@ -83,62 +86,64 @@ set {fprintf(yyout, "Found KW_SET: %s\n", yytext);}
 static {fprintf(yyout, "Found KW_STATIC: %s\n", yytext);} 
 string {fprintf(yyout, "Found TYPE_STRING: %s\n", yytext);} 
 super {fprintf(yyout, "Found KW_SUPER: %s\n", yytext);} 
-switch {fprintf(yyout, "Found KW_SWITCH: %s\n", yytext);} 
-symbol {fprintf(yyout, "Found TYPE_SYMBOL: %s\n", yytext);} 
-this {fprintf(yyout, "Found KW_THIS: %s\n", yytext);} 
-throw {fprintf(yyout, "Found KW_THROW: %s\n", yytext);} 
-true {fprintf(yyout, "Found KW_TRUE: %s\n", yytext);} 
-try {fprintf(yyout, "Found KW_TRY: %s\n", yytext);} 
-type {fprintf(yyout, "Found KW_TYPE: %s\n", yytext);} 
-typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);} 
+switch {fprintf(yyout, "Found KW_SWITCH: %s\n", yytext);}
+symbol {fprintf(yyout, "Found TYPE_SYMBOL: %s\n", yytext);}
+this {fprintf(yyout, "Found KW_THIS: %s\n", yytext);}
+throw {fprintf(yyout, "Found KW_THROW: %s\n", yytext);}
+true {fprintf(yyout, "Found KW_TRUE: %s\n", yytext);}
+try {fprintf(yyout, "Found KW_TRY: %s\n", yytext);}
+type {fprintf(yyout, "Found KW_TYPE: %s\n", yytext);}
+typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);}
 unique {fprintf(yyout, "Found KW_UNIQUE: %s\n", yytext);} 
 unknown {fprintf(yyout, "Found TYPE_UNKNOWN: %s\n", yytext);} 
 var {fprintf(yyout, "Found KW_VAR: %s\n", yytext);}
 while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
+undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
-\% {fprintf(yyout, "Found OPERATOR_MOD: %s\n", yytext);} 
-\%\= {fprintf(yyout, "Found OPERATOR_MOD_ASSIGNMENT: %s\n", yytext);} 
-\+ {fprintf(yyout, "Found OPERATOR_PLUS: %s\n", yytext);} 
-\+\= {fprintf(yyout, "Found OPERATOR_PLUS_ASSIGNMENT: %s\n", yytext);} 
-\+\+ {fprintf(yyout, "Found OPERATOR_INCREMENT: %s\n", yytext);} 
-\- {fprintf(yyout, "Found OPERATOR_MINUS: %s\n", yytext);} 
-\-\= {fprintf(yyout, "Found OPERATOR_MINUS_ASSIGNMENT: %s\n", yytext);} 
-\-\- {fprintf(yyout, "Found OPERATOR_DICREMENT: %s\n", yytext);} 
-\* {fprintf(yyout, "Found OPERATOR_MUL: %s\n", yytext);} 
-\*\= {fprintf(yyout, "Found OPERATOR_MUL_ASSIGNMENT: %s\n", yytext);} 
-\= {fprintf(yyout, "Found OPERATOR_ASSIGNMENT: %s\n", yytext);} 
-\=\= {fprintf(yyout, "Found OPERATOR_EQUAL: %s\n", yytext);} 
-\=\=\= {fprintf(yyout, "Found OPERATOR_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);} 
-\! {fprintf(yyout, "Found OPERATOR_BIT_NOT: %s\n", yytext);} 
-\!\= {fprintf(yyout, "Found OPERATOR_NOT_EQUAL: %s\n", yytext);} 
-\!\=\= {fprintf(yyout, "Found OPERATOR_NOT_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);} 
-\> {fprintf(yyout, "Found OPERATOR_MORE: %s\n", yytext);} 
-\>\= {fprintf(yyout, "Found OPERATOR_MORE_OR_EQUAL: %s\n", yytext);} 
-\< {fprintf(yyout, "Found OPERATOR_LESS: %s\n", yytext);} 
-\<\= {fprintf(yyout, "Found OPERATOR_LESS_OR_EQUA: %s\n", yytext);} 
-\/ {fprintf(yyout, "Found OPERATOR_DIV: %s\n", yytext);} 
-\/\= {fprintf(yyout, "Found OPERATOR_DIV_ASSIGNMENT: %s\n", yytext);} 
-\^ {fprintf(yyout, "Found OPERATOR_BIT_XOR: %s\n", yytext);} 
-\~ {fprintf(yyout, "Унарный оператор побитового НЕ: %s\n", yytext);} 
-\& {fprintf(yyout, "Found OPERATOR_AMPERSAND: %s\n", yytext);} 
-\&\& {fprintf(yyout, "Found OPERATOR_AND: %s\n", yytext);} 
-\| {fprintf(yyout, "Found OPERATOR_BIT_OR: %s\n", yytext);} 
-\|\| {fprintf(yyout, "Found OPERATOR_OR: %s\n", yytext);} 
-\[ {fprintf(yyout, "Found LEFT_SQUARE_BRACKET: %s\n", yytext);} 
-\] {fprintf(yyout, "Found RIGHT_SQUARE_BRACKET: %s\n", yytext);} 
-\( {fprintf(yyout, "Found LEFT_ROUND_BRACKET: %s\n", yytext);} 
-\) {fprintf(yyout, "Found RIGHT_ROUND_BRACKET: %s\n", yytext);} 
-\{ {fprintf(yyout, "Found LEFT_FIGURE_BRACKET: %s\n", yytext);} 
-\} {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
-\: {fprintf(yyout, "Found COLON: %s\n", yytext);}
-\; {fprintf(yyout, "Found SEMICOLON: %s\n", yytext);}
-\n {fprintf(yyout, "Found OPERATOR_ENTER: \\n\n", yytext);}
+"?" {fprintf(yyout, "Found OPERATOR_OPT_PARAM: %s\n", yytext);}
+"%" {fprintf(yyout, "Found OPERATOR_MOD: %s\n", yytext);}
+"%=" {fprintf(yyout, "Found OPERATOR_MOD_ASSIGNMENT: %s\n", yytext);}
+"+" {fprintf(yyout, "Found OPERATOR_PLUS: %s\n", yytext);}
+"+=" {fprintf(yyout, "Found OPERATOR_PLUS_ASSIGNMENT: %s\n", yytext);}
+"++" {fprintf(yyout, "Found OPERATOR_INCREMENT: %s\n", yytext);}
+"-" {fprintf(yyout, "Found OPERATOR_MINUS: %s\n", yytext);}
+"-=" {fprintf(yyout, "Found OPERATOR_MINUS_ASSIGNMENT: %s\n", yytext);}
+"--" {fprintf(yyout, "Found OPERATOR_DICREMENT: %s\n", yytext);}
+"*" {fprintf(yyout, "Found OPERATOR_MUL: %s\n", yytext);}
+"*=" {fprintf(yyout, "Found OPERATOR_MUL_ASSIGNMENT: %s\n", yytext);}
+"=" {fprintf(yyout, "Found OPERATOR_ASSIGNMENT: %s\n", yytext);}
+"==" {fprintf(yyout, "Found OPERATOR_EQUAL: %s\n", yytext);}
+"===" {fprintf(yyout, "Found OPERATOR_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);}
+"!" {fprintf(yyout, "Found OPERATOR_BIT_NOT: %s\n", yytext);}
+"!=" {fprintf(yyout, "Found OPERATOR_NOT_EQUAL: %s\n", yytext);}
+"!==" {fprintf(yyout, "Found OPERATOR_NOT_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);}
+">" {fprintf(yyout, "Found OPERATOR_MORE: %s\n", yytext);}
+">=" {fprintf(yyout, "Found OPERATOR_MORE_OR_EQUAL: %s\n", yytext);}
+"<" {fprintf(yyout, "Found OPERATOR_LESS: %s\n", yytext);}
+"<=" {fprintf(yyout, "Found OPERATOR_LESS_OR_EQUA: %s\n", yytext);}
+"/" {fprintf(yyout, "Found OPERATOR_DIV: %s\n", yytext);}
+"/=" {fprintf(yyout, "Found OPERATOR_DIV_ASSIGNMENT: %s\n", yytext);}
+"^" {fprintf(yyout, "Found OPERATOR_BIT_XOR: %s\n", yytext);}
+"~" {fprintf(yyout, "Унарный оператор побитового НЕ: %s\n", yytext);}
+"&" {fprintf(yyout, "Found OPERATOR_AMPERSAND: %s\n", yytext);}
+"&&" {fprintf(yyout, "Found OPERATOR_AND: %s\n", yytext);}
+"|" {fprintf(yyout, "Found OPERATOR_BIT_OR: %s\n", yytext);}
+"||" {fprintf(yyout, "Found OPERATOR_OR: %s\n", yytext);}
+"[" {fprintf(yyout, "Found LEFT_SQUARE_BRACKET: %s\n", yytext);}
+"]" {fprintf(yyout, "Found RIGHT_SQUARE_BRACKET: %s\n", yytext);}
+"(" {fprintf(yyout, "Found LEFT_ROUND_BRACKET: %s\n", yytext);}
+")" {fprintf(yyout, "Found RIGHT_ROUND_BRACKET: %s\n", yytext);}
+"{" {fprintf(yyout, "Found LEFT_FIGURE_BRACKET: %s\n", yytext);}
+"}" {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
+":" {fprintf(yyout, "Found COLON: %s\n", yytext);}
+";" {fprintf(yyout, "Found SEMICOLON: %s\n", yytext);}
+"n" {fprintf(yyout, "Found OPERATOR_ENTER: \\n\n", yytext);}
 
 \" { // строка с двойными кавычками
     BEGIN(STRINGD);
     str[0] = 0; // зануляем переменную
     }
-<STRINGD,STRINGS,STRINGB>\\[xX][^0-9a-fA-F] {printf("ERROR! Invalid hexadecimal escape sequence.");}
+<STRINGD,STRINGS,STRINGB>\\[xX][^0-9a-fA-F] {printf("ERROR! Invalid hexadecimal escape sequence. \n");}
 <STRINGD,STRINGS,STRINGB>\\[xX][0-9a-fA-F]{1,2} {
     char* end;
     long int num = strtol(yytext+2, &end, 16);
@@ -153,7 +158,6 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     }
 <STRINGD,STRINGS>[^\\\"\'\n]+ {strcat(str, yytext);}
 <STRINGD,STRINGS,STRINGB>\\n {strcat(str, "\n");}
-<STRINGD,STRINGS,STRINGB>\t {strcat(str, "\t");}
 <STRINGD,STRINGS,STRINGB>\\t {strcat(str, "\t");}
 <STRINGD,STRINGS,STRINGB>\\\\ {strcat(str, "\\");}
 <STRINGD,STRINGS,STRINGB>\\\" {strcat(str, "\"");}
@@ -163,11 +167,11 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     BEGIN(INITIAL);
     }
 <STRINGD,STRINGS>\n {
-    printf("ERROR! Line break inside literal.");
+    printf("ERROR! Line break inside literal.\n");
     exit(1);
     }
 <STRINGD,STRINGS,STRINGB><<EOF>> {
-    printf("ERROR! Unterminated string literal.");
+    printf("ERROR! Unterminated string literal. \n");
     exit(1);
     }
 
@@ -192,12 +196,12 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     BEGIN(TEMPLATE);
     }
 <STRINGB>\$\{\s*\} {
-    printf("ERROR! Unexpected '}'.");
+    printf("ERROR! Unexpected '}'. \n");
     exit(1);
     }
 <STRINGB>[\${]+ {strcat(str, yytext);}
 <STRINGB>\\[0-7]{2} {
-    printf("ERROR! Octal escape sequences are not allowed in template strings.");
+    printf("ERROR! Octal escape sequences are not allowed in template strings. \n");
     exit(1);
     }
 <STRINGB>[^\\\`\n\t] {strcat(str, yytext);}
@@ -208,6 +212,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     }
 
 <TEMPLATE>\} {
+    printf("WARNING! Template is not supported. \n");
     strcat(str, yytext);
     BEGIN(STRINGB);
     }
@@ -215,7 +220,7 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
     strcat(str, yytext);
 }
 <TEMPLATE><<EOF>> {
-    printf("ERROR! Missing } in template expression.");
+    printf("ERROR! Missing } in template expression. \n");
     exit(1);
     }
 
@@ -230,47 +235,109 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 <COMMENT>"*"+[^*/] {}
 <COMMENT>"*"+"/" {BEGIN(INITIAL);}
 <COMMENT><<EOF>> {
-    printf("ERROR! No closing comment at the end.");
+    printf("ERROR! No closing comment at the end. \n");
     exit(1);
     }
 
-{decimal} { /* Число десятичное */
-    fprintf(yyout, "Число: %s\n", yytext);
-    }
 
-{float} { /* Число с плавающей запятой */
+{DIGIT}(\_?{DIGIT})* { /*Десятичное число правильное*/
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
+    int buffLen = strlen(bufferString);
+    if (bufferString[0] == '0' && buffLen > 1)
+    {
+        printf("ERROR: illegal using of zero in INT in line %d.\n");
+    }
+    else
+    {
+        char* buffer = removeUnderline(bufferString);
+        int res = atoi(buffer);
+        fprintf(yyout, "DECIMAL_INT: %d\n", res);
+    }
+}
+
+{DIGIT}(\_*{DIGIT})*\_+ {
+    printf("ERROR: illegal underscore in INT in line %d.\n");
+}
+
+0(x|X)[0-9a-fA-F](_?[0-9a-fA-F]+)* { /* Число шестнадцатеричное правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
+    char* buffer = removeUnderline(bufferString);
+    char* end, numStr[20];
+    long int res = strtol(buffer+2, &end, 16);
+    snprintf(numStr, sizeof(numStr), "%ld", res);
+    fprintf(yyout, "HEX_INT: %s\n", numStr);
+}
+
+((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X){2,})\_* {
+    printf("ERROR: hex syntax error %d.\n");
+}
+
+0(o|O)[0-7](_?[0-7]+)* { /* Число восьмеричное правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
+    char* buffer = removeUnderline(bufferString);
+    char* end, numStr[20];
+    long int res = strtol(buffer+2, &end, 8);
+    snprintf(numStr, sizeof(numStr), "%ld", res);
+    fprintf(yyout, "OCTAL_INT: %s\n", numStr);
+}
+
+((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O){2,})\_* {
+    printf("ERROR: octal syntax error %d.\n");
+}
+
+0(b|B)[01](_?[01]+)* { /* Число двоичное правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
+    char* buffer = removeUnderline(bufferString);
+    char* end, numStr[20];
+    long int res = strtol(buffer+2, &end, 2);
+    snprintf(numStr, sizeof(numStr), "%ld", res);
+    fprintf(yyout, "BIN_INT: %s\n", numStr);
+}
+
+((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B){2,})\_* {
+    printf("ERROR: octal syntax error %d.\n");
+}
+
+(([0-9](\_?[0-9])*)?\.[0-9](\_?[0-9])*|([0-9](\_?[0-9])*)?[0-9](\_?[0-9])*\.?)((e|E)(\+|\-)?[0-9](\_?[0-9])*)? {
+    /* Число с плавающей запятой правильное */
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
+    char* buffer = removeUnderline(bufferString);
     char numStr[20];
-    float num = strtof(yytext, NULL);
-    snprintf(numStr, sizeof(numStr), "%f", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
+    float res = strtof(buffer, NULL);
+    snprintf(numStr, sizeof(numStr), "%f", res);
+    fprintf(yyout, "FLOAT_INT: %s\n", numStr);
+}
 
-{bin} { /* Число двоичное */
-    char* end, numStr[20];
-    long int num = strtol(yytext+2, &end, 2);
-    snprintf(numStr, sizeof(numStr), "%ld", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
+(([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.?\_*)((e|E)*\_*((\+|\-)?[0-9](\_*[0-9])*)?)? {
+    printf("ERROR: float syntax error %d.\n");
+}
 
-{octal} { /* Число восьмеричное */
-    char* end, numStr[20];
-    long int num = strtol(yytext+2, &end, 8);
-    snprintf(numStr, sizeof(numStr), "%ld", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
-
-{hex} { /* Число шестнадцатеричное */
-    char* end, numStr[20];
-    long int num = strtol(yytext+2, &end, 16);
-    snprintf(numStr, sizeof(numStr), "%ld", num);
-    fprintf(yyout, "Число: %s\n", numStr);
-    }
-
-[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Имя переменной: %s\n", yytext);}
+[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
 
 .|\n {/*все остальные символы пропускаем*/}
 
 %%
+
+char* removeUnderline(const char* str) {
+    int len = strlen(str);
+    char* result = (char*)malloc(len + 1);
+    int result_index = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (str[i] != '_') {
+            result[result_index] = str[i];
+            result_index++;
+        }
+    }
+
+    result[result_index] = '\0';
+    return result;
+}
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
