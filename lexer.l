@@ -201,8 +201,8 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     printf("ERROR! Octal escape sequences are not allowed in template strings. \n");
     exit(1);
     }
-<STRINGB>[^\\\`\n\t] {strcat(str, yytext);}
-<STRINGB>\\` {strcat(str, "\`");}
+<STRINGB>[^\\\`\n] {strcat(str, yytext);}
+<STRINGB>\\` {strcat(str, "`");}
 <STRINGB>\` {
     fprintf(yyout, "Шаблонная строка: %s\n", str);
     BEGIN(INITIAL);
