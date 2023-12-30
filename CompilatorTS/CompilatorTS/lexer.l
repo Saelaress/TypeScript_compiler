@@ -177,7 +177,10 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 "}" {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
 ":" {fprintf(yyout, "Found COLON: %s\n", yytext);}
 ";" {fprintf(yyout, "Found SEMICOLON: %s\n", yytext);}
-"n" {fprintf(yyout, "Found OPERATOR_ENTER: \\n\n", yytext);}
+"," {
+    printHandler((char*)"COMMA", yytext);
+    return ',';
+}
 
 \" { // строка с двойными кавычками
     BEGIN(STRINGD);
@@ -353,16 +356,16 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 	exit(1);
 }
 
-(([0-9](\_?[0-9])*)?\.[0-9](\_?[0-9])*|([0-9](\_?[0-9])*)?[0-9](\_?[0-9])*\.?)((e|E)(\+|\-)?[0-9](\_?[0-9])*)? {
+(({DIGIT}(\_*{DIGIT})*)?\.)?{DIGIT}(\_*{DIGIT})*((e|E)(\+|\-)?{DIGIT}(\_*{DIGIT})*)? {
     /* Число с плавающей запятой правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
     removeUnderline(bufferString);
-    char* buffer = bufferString;
-    char numStr[20];
-    float res = strtof(buffer, NULL);
-    snprintf(numStr, sizeof(numStr), "%f", res);
-    fprintf(yyout, "FLOAT: %s\n", numStr);
+    int resLen = strlen(bufferString);
+    float result = strtof(bufferString, NULL);
+    if(needsTokens) printf("(%.*f) - FLOAT\n", resLen, result);
+    yylval.floatLit = result;
+    return FLOAT_LITERAL;
 }
 
 ({DIGIT}(\_*{DIGIT})*\_+)\.{DIGIT}(\_*{DIGIT})*((e|E)(\+|\-)?{DIGIT}(\_*{DIGIT})*)? {
@@ -392,7 +395,21 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 [_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
 
-.|\n {/*все остальные символы пропускаем*/}
+[\r\n] {
+    return ENDL;
+}
+
+[ \t] {
+    // Игнорирование лишних пробелов и табуляций.
+}
+
+. {
+    /*все остальные символы пропускаем*/
+    bufferString[0] = 0;
+    strcat(bufferString, yytext);
+    printf("%s - UNRECOGNIZED TOKEN.\n", bufferString);
+    exit(1);
+}
 
 %%
 

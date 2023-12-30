@@ -629,28 +629,6 @@ struct ExpressionNode *createTernaryExpressionNode(struct ExpressionNode *condit
     return node;
 }
 
-/*! Создать узел для оператора приведения типа (as).
- * \param[in] conversionExpression выражение, которое подлежит приведению типа.
- * \param[in] asType тип, к которому выполняется приведение.
- * \return указатель на созданный экземпляр узла оператора приведения типа.
- */
-struct ExpressionNode *createAsTypeConversionExpressionNode(struct ExpressionNode *conversionExpression, struct TypeNode *asType)
-{
-    struct ExpressionNode *node = malloc(sizeof(struct ExpressionNode));
-    if (node == NULL)
-    {
-        // Обработка ошибки выделения памяти
-        exit(EXIT_FAILURE);
-    }
-
-    // Инициализируем поля для оператора приведения типа
-    node->type = _AS_TYPE_CONVERSION;
-    node->conversionExpression = conversionExpression;
-    node->asType = asType;
-
-    return node;
-}
-
 /*------------------------------------ ExpressionList -------------------------------------*/
 
 /*! Создать узел списка Expression.

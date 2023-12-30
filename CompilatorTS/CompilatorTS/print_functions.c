@@ -27,6 +27,14 @@ char * generateDotFromExpression(struct ExpressionNode * node)
         res = concat(res, (char*)"[label=\"+\"];\n");
         res = concat(res, generateStrForBinOperation(node));
         break;
+    case _FLOAT_LIT:
+        res = concat(res, (char*)"[label=\"");
+        float f = node->floatValue;
+        char fstr[20];
+        sprintf(fstr, "%f", f);
+        res = concat(res, fstr);
+        res = concat(res, (char*)"\"];\n");
+        break;
     default:
         break;
     }
