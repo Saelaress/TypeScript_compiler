@@ -365,9 +365,29 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     fprintf(yyout, "FLOAT: %s\n", numStr);
 }
 
-(([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.?\_*)((e|E)*\_*((\+|\-)?[0-9](\_*[0-9])*)?)? {
+({DIGIT}(\_*{DIGIT})*\_+)\.{DIGIT}(\_*{DIGIT})*((e|E)(\+|\-)?{DIGIT}(\_*{DIGIT})*)? {
     printf("ERROR: float syntax error %s.\n", yytext);
-	exit(1);
+    exit(1);
+}
+
+({DIGIT}(\_*{DIGIT})*)?\.{DIGIT}(\_*{DIGIT})*\_+((e|E)(\+|\-)?{DIGIT}(\_*{DIGIT})*)? {
+    printf("ERROR: float syntax error %s.\n", yytext);
+    exit(1);
+}
+
+(({DIGIT}(\_*{DIGIT})*)?\.)?{DIGIT}(\_*{DIGIT})*((e|E)(\+|\-)?\_+{DIGIT}(\_*{DIGIT})*) {
+    printf("ERROR: float syntax error %s.\n", yytext);
+    exit(1);
+}
+
+(({DIGIT}(\_*{DIGIT})*)?\.)?{DIGIT}(\_*{DIGIT})*((e|E)(\+|\-)?{DIGIT}(\_*{DIGIT})*\_+) {
+    printf("ERROR: float syntax error %s.\n", yytext);
+    exit(1);
+}
+
+(({DIGIT}(\_*{DIGIT})*)?\.)?{DIGIT}(\_*{DIGIT})*((e|E)(\+|\-)?)(\_)* {
+    printf("ERROR: float syntax error %s.\n", yytext);
+    exit(1);
 }
 
 [_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
