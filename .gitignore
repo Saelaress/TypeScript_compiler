@@ -4,6 +4,5 @@ main.exe
 parser.tab.c
 parser.tab.h
 output.txt
-win_flex_bison-2.5.25
 **/.vs/
 **/x64/
