@@ -1,14 +1,12 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <typeinfo>
+#include <iostream>
+using namespace std;
 
-#include "stringBuffer.h"
-#include "parser.tab.h"
-#include "parsing_tree.h"
-#include "print_functions.h"
-#include "modifier_head.h"
-#include "iohandler.h"
-extern int yyparse();
+char* removeUnderline(const char* str);
+
 %}
 %option noyywrap
 %option never-interactive
@@ -22,44 +20,6 @@ extern int yyparse();
 %x COMMENTONE
 
 DIGIT [0-9]
-
-%{
- /*! Удалить символ из строки по его индексу в ней.
-    * \param[in] str исходная строка.
-    * \param[in] index индекс удаляемого символа.
-    * \return 0, если удалено успешно, 1 - если нет.
-    */
-    int removeCharFromStringByIndex(char * str, int index);
-
-    /*! Удалить из строки нижние подчеркивания.
-    * \param[in] str исходная строка.
-    */
-    void removeUnderline(char* str);
-
-    /*! Опциональный вывод лексем в зависимости от значения флага.
-    * \param[in] str выводимая строка.
-    * \param[in] token выводимый токен.
-    */
-    void printHandler(char* str, char * token);
-
-    int hasClosingBrace = 0;
-
-    int hasPlus = 0;
-
-    int hasOpenBracket = 0;
-
-    int hasCloseBracket = 0;
-
-    int needsTokens = 0;
-
-    char tempIdent[1024];
-
-    // struct ModifierHead head = {0,0,0,0,0,0,0};
-
-    int line = 1;
-
-    int multilineBegin;
-%}
 
 /* Описание правил */
 %%
@@ -140,10 +100,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 "?" {fprintf(yyout, "Found OPERATOR_OPT_PARAM: %s\n", yytext);}
 "%" {fprintf(yyout, "Found OPERATOR_MOD: %s\n", yytext);}
 "%=" {fprintf(yyout, "Found OPERATOR_MOD_ASSIGNMENT: %s\n", yytext);}
-"+" {
-    printHandler((char*)"OPERATOR_PLUS", yytext);
-    return '+';
-}
+"+" {fprintf(yyout, "Found OPERATOR_PLUS: %s\n", yytext);}
 "+=" {fprintf(yyout, "Found OPERATOR_PLUS_ASSIGNMENT: %s\n", yytext);}
 "++" {fprintf(yyout, "Found OPERATOR_INCREMENT: %s\n", yytext);}
 "-" {fprintf(yyout, "Found OPERATOR_MINUS: %s\n", yytext);}
@@ -187,13 +144,13 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 <STRINGD,STRINGS,STRINGB>\\[xX][0-9a-fA-F]{1,2} {
     char* end;
     long int num = strtol(yytext+2, &end, 16);
-    char asciiChar = (char)num;
+    char asciiChar = static_cast<char>(num);
     strncat(str, &asciiChar, 1);
     }
 <STRINGD,STRINGS>\\[0-7]{1,2} {
     char* end;
     long int num = strtol(yytext+1, &end, 8);
-    char asciiChar = (char)num;
+    char asciiChar = static_cast<char>(num);
     strncat(str, &asciiChar, 1);
     }
 <STRINGD,STRINGS>[^\\\"\'\n]+ {strcat(str, yytext);}
@@ -244,8 +201,8 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     printf("ERROR! Octal escape sequences are not allowed in template strings. \n");
     exit(1);
     }
-<STRINGB>[^\\\`\n\t] {strcat(str, yytext);}
-<STRINGB>\\` {strcat(str, "\\`");}
+<STRINGB>[^\\\`\n] {strcat(str, yytext);}
+<STRINGB>\\` {strcat(str, "`");}
 <STRINGB>\` {
     fprintf(yyout, "Шаблонная строка: %s\n", str);
     BEGIN(INITIAL);
@@ -286,30 +243,24 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     int buffLen = strlen(bufferString);
     if (bufferString[0] == '0' && buffLen > 1)
     {
-        printf("ERROR: illegal using of zero in INT in line %d.\n", line);
-        return -1;
+        printf("ERROR: illegal using of zero in INT in line %s.\n", yytext);
     }
     else
     {
-        removeUnderline(bufferString);
-        char* buffer = bufferString;
+        char* buffer = removeUnderline(bufferString);
         int res = atoi(buffer);
-        if(needsTokens) printf("(%d) - DECIMAL_INT\n", res);
-        yylval.intLit = res;
-        return INT_LITERAL;
+        fprintf(yyout, "INT: %d\n", res);
     }
 }
 
 {DIGIT}(\_*{DIGIT})*\_+ {
-    printf("ERROR: illegal underscore in INT in line %d.\n");
-    return -1;
+    printf("ERROR: illegal underscore in INT in line %s.\n", yytext);
 }
 
 0(x|X)[0-9a-fA-F](_?[0-9a-fA-F]+)* { /* Число шестнадцатеричное правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
-    char* buffer = bufferString;
+    char* buffer = removeUnderline(bufferString);
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 16);
     snprintf(numStr, sizeof(numStr), "%ld", res);
@@ -317,14 +268,13 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 }
 
 ((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X){2,})\_* {
-    printf("ERROR: hex syntax error %d.\n");
+    printf("ERROR: hex syntax error %s.\n", yytext);
 }
 
 0(o|O)[0-7](_?[0-7]+)* { /* Число восьмеричное правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
-    char* buffer = bufferString;
+    char* buffer = removeUnderline(bufferString);
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 8);
     snprintf(numStr, sizeof(numStr), "%ld", res);
@@ -332,14 +282,13 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 }
 
 ((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O){2,})\_* {
-    printf("ERROR: octal syntax error %d.\n");
+    printf("ERROR: octal syntax error %s.\n", yytext);
 }
 
 0(b|B)[01](_?[01]+)* { /* Число двоичное правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
-    char* buffer = bufferString;
+    char* buffer = removeUnderline(bufferString);
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 2);
     snprintf(numStr, sizeof(numStr), "%ld", res);
@@ -347,15 +296,14 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 }
 
 ((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B){2,})\_* {
-    printf("ERROR: octal syntax error %d.\n");
+    printf("ERROR: octal syntax error %s.\n", yytext);
 }
 
 (([0-9](\_?[0-9])*)?\.[0-9](\_?[0-9])*|([0-9](\_?[0-9])*)?[0-9](\_?[0-9])*\.?)((e|E)(\+|\-)?[0-9](\_?[0-9])*)? {
     /* Число с плавающей запятой правильное */
     bufferString[0] = 0;
     strcat(bufferString, yytext);
-    removeUnderline(bufferString);
-    char* buffer = bufferString;
+    char* buffer = removeUnderline(bufferString);
     char numStr[20];
     float res = strtof(buffer, NULL);
     snprintf(numStr, sizeof(numStr), "%f", res);
@@ -363,7 +311,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 }
 
 (([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.?\_*)((e|E)*\_*((\+|\-)?[0-9](\_*[0-9])*)?)? {
-    printf("ERROR: float syntax error %d.\n");
+    printf("ERROR: float syntax error %s.\n", yytext);
 }
 
 [_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
@@ -372,27 +320,20 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 %%
 
-int removeCharFromStringByIndex(char * str, int index)
-{
-    int length = strlen(str); // Вычислить длину строки.
-    if (index >= length || index < 0) // Удалить символ, если индекс выходит за границу строки.
-    {
-        return 1;
-    }
-    for (int i = index; i < length; i++)
-    str[i] = str[i + 1];
+char* removeUnderline(const char* str) {
+    int len = strlen(str);
+    char* result = (char*)malloc(len + 1);
+    int result_index = 0;
 
-    return 0;
-}
-
-void removeUnderline(char* str)
-{
-    char* underline = strchr(str, '_');
-    while (underline != NULL){
-        underline = strchr(str, '_');
-        int position = underline - str;
-        removeCharFromStringByIndex(str, position);
+    for (int i = 0; i < len; i++) {
+        if (str[i] != '_') {
+            result[result_index] = str[i];
+            result_index++;
+        }
     }
+
+    result[result_index] = '\0';
+    return result;
 }
 
 int main(int argc, char *argv[]) {
@@ -401,93 +342,32 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int needsDotCon = 0;
-    int needsDotFile = 0;
-    int needsHelp = 0;
-    int needsTokens = 0;
-    int opt = 0;
-
-    while ((opt = t_getopt(argc, argv, "-cfth")) != -1)
-    {
-        switch (opt)
-        {
-            case 'h':
-                // Вывод справки
-                printf("%s", getHelp());
-                needsHelp = 1;
-                return 0;
-            case 't':
-                // Установка флага needsTokens
-                needsTokens = 1;
-                break;
-            case 'c':
-                // Установка флага needsDotCon
-                needsDotCon = 1;
-                break;
-            case 'f':
-                // Установка флага needsDotFile
-                needsDotFile = 1;
-                break;
-            case '?':
-                // Неизвестная опция, вывод сообщения об ошибке
-                printf("%c : unrecognized option; use -h to get help using the utility.\n", opt);
-                return -1;
-        }
-    }
-    // Проверка, что указан путь к входному файлу
-    if (!needsHelp && argv[argc - 1][0] == '-')
-    {
-        printf("The path to the input file is missing; use -h to get help using the utility.\n");
-        return -1;
-    }
-
-    FILE *input_file = fopen(argv[argc - 1], "r");
+    FILE *input_file = fopen(argv[1], "r");
     if (!input_file) {
         fprintf(stderr, "Error: could not open file '%s'\n", argv[1]);
         return 1;
     }
+    
+	// Открываем выходной файл для записи
+	FILE* output_file = fopen("output.txt", "w");
+	if (!output_file) {
+		fprintf(stderr, "Error: could not create output file\n");
+		fclose(input_file);
+		return 1;
+	}
 
     yyin = input_file;
+    yyout = output_file;
+    yylex();
 
-    printf("The parsing process has started.\n");
+    // printf("The parsing process has started.\n");
+	// yyparse();
+    // printf("The parsing process is completed.\n");
+    // tree_print();
+    // getch();
 
-    // Запуск синтаксического анализа
-    yyparse();
-
-    printf("The parsing process is completed.\n");
-
-    // Генерация и вывод DOT-строки
-    if (needsDotCon || needsDotFile) {
-        char * res = generateDotFromExpressionList(root);  // Функция генерации DOT-строки
-        if (needsDotFile) {
-            // Запись DOT-строки в файл result.gv
-            FILE *f = fopen("result.gv", "w");
-
-            if (!f) {
-                fprintf(stderr, "Error: could not create output file\n");
-                fclose(input_file);
-                return 1;
-            }
-            fprintf(f, "%s", res);
-            fclose(f);
-        }
-        if (needsDotCon)
-        {
-            // Вывод DOT-строки в консоль
-            printf("%s\n", res);
-        }
-    }
-
-    // Закрываем файлы
+	// Закрываем файлы
 	fclose(input_file);
+	fclose(output_file);
     return 0;
-}
-
-// Обработчик для вывода токенов
-void printHandler(char* str, char * token)
-{
-    if(needsTokens != 0)
-    {
-        printf("(%s) - %s\n", token, str);
-    }
 }
