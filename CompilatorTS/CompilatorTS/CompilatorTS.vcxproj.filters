@@ -62,4 +62,12 @@
       <Filter>Исходные файлы</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="lexer.l">
+      <Filter>Исходные файлы</Filter>
+    </None>
+    <None Include="parser.y">
+      <Filter>Исходные файлы</Filter>
+    </None>
+  </ItemGroup>
 </Project>

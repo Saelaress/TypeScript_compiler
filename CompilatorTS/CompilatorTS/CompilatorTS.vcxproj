@@ -147,6 +147,10 @@
   <ItemGroup>
     <Text Include="text.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="lexer.l" />
+    <None Include="parser.y" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
