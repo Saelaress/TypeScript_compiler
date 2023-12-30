@@ -244,6 +244,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     if (bufferString[0] == '0' && buffLen > 1)
     {
         printf("ERROR: illegal using of zero in INT in line %s.\n", yytext);
+		exit(1);
     }
     else
     {
@@ -255,6 +256,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 {DIGIT}(\_*{DIGIT})*\_+ {
     printf("ERROR: illegal underscore in INT in line %s.\n", yytext);
+	exit(1);
 }
 
 0(x|X)[0-9a-fA-F](_?[0-9a-fA-F]+)* { /* Число шестнадцатеричное правильное */
@@ -269,6 +271,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 ((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X){2,})\_* {
     printf("ERROR: hex syntax error %s.\n", yytext);
+	exit(1);
 }
 
 0(o|O)[0-7](_?[0-7]+)* { /* Число восьмеричное правильное */
@@ -283,6 +286,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 ((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O){2,})\_* {
     printf("ERROR: octal syntax error %s.\n", yytext);
+	exit(1);
 }
 
 0(b|B)[01](_?[01]+)* { /* Число двоичное правильное */
@@ -297,6 +301,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 ((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B){2,})\_* {
     printf("ERROR: octal syntax error %s.\n", yytext);
+	exit(1);
 }
 
 (([0-9](\_?[0-9])*)?\.[0-9](\_?[0-9])*|([0-9](\_?[0-9])*)?[0-9](\_?[0-9])*\.?)((e|E)(\+|\-)?[0-9](\_?[0-9])*)? {
@@ -312,6 +317,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 (([0-9](\_*[0-9])*)?\_*\.\_*[0-9](\_*[0-9])*|([0-9](\_*[0-9])*)?[0-9](\_*[0-9])*\_*\.?\_*)((e|E)*\_*((\+|\-)?[0-9](\_*[0-9])*)?)? {
     printf("ERROR: float syntax error %s.\n", yytext);
+	exit(1);
 }
 
 [_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
