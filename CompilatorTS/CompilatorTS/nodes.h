@@ -165,9 +165,6 @@ struct ExpressionNode
     /// Выражение, возвращаемое, если условие ложно
     struct ExpressionNode *falseExpr;
 
-    /// Тип, к которому выполняется приведение
-    struct TypeNode *asType;
-
     /// Выражение, которое подлежит приведению типа
     struct ExpressionNode *conversionExpression;
 };

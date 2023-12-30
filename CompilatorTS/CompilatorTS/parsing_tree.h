@@ -161,12 +161,6 @@ struct ExpressionNode *createTernaryExpressionNode(struct ExpressionNode *condit
                                                    struct ExpressionNode *trueExpr,
                                                    struct ExpressionNode *falseExpr);
 
-/*! Создать узел для оператора приведения типа (as).
- * \param[in] conversionExpression выражение, которое подлежит приведению типа.
- * \param[in] asType тип, к которому выполняется приведение.
- * \return указатель на созданный экземпляр узла оператора приведения типа.
- */
-struct ExpressionNode *createAsTypeConversionExpressionNode(struct ExpressionNode *conversionExpression, struct TypeNode *asType);
 
 /*------------------------------------ ExpressionList -------------------------------------*/
 
