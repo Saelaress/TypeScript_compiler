@@ -27,23 +27,21 @@
 %token ID
 %token TRUE_LITERAL FALSE_LITERAL
 
-%nonassoc INCREMENT DECREMENT
+%nonassoc INCREMENT DECREMENT 
 %nonassoc ENDL
 %left ';'
-%right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
-%left '[' ']'
 %left '?' ':'
+%right '=' PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left  OR
 %left  AND
-%left EQUALS NOT_EQUALS '<' '>' LESS_OR_EQUAL GREATER_OR_EQUAL IS AS
+%left EQUALS NOT_EQUALS
+%left '<' '>' LESS_OR_EQUAL GREATER_OR_EQUAL IS AS
 %left '+' '-'
 %left '*' '/' '%'
-%right NEW
-%right PREF_INCREMENT PREF_DECREMENT
-%left POST_INCREMENT POST_DECREMENT
-%left NOT UPLUS UMINUS
-%left '.'
-%nonassoc ')'
+%right NOT PREF_INCREMENT PREF_DECREMENT UPLUS UMINUS
+%nonassoc POST_INCREMENT POST_DECREMENT 
+%left '[' ']' '.'
+%nonassoc '(' ')'
 
 %start stmt_list
 
@@ -90,38 +88,38 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | DECREMENT endl_opt expr %prec PREF_DECREMENT {$$ = createPrefDecrementExpressionNode($3);}
 | expr INCREMENT %prec POST_INCREMENT {$$ = createPostIncrementExpressionNode($1);}
 | INCREMENT endl_opt expr %prec PREF_INCREMENT {$$ = createPrefIncrementExpressionNode($3);}
-// | '-' endl_opt expr %prec UMINUS {$$ = createUnaryMinusExpressionNode($3);}
-// | '+' endl_opt expr %prec UPLUS {$$ = createUnaryPlusExpressionNode($3);}
+| '-' endl_opt expr %prec UMINUS {$$ = createUnaryMinusExpressionNode($3);}
+| '+' endl_opt expr %prec UPLUS {$$ = createUnaryPlusExpressionNode($3);}
 | INT_LITERAL {$$ = createIntLiteralExpressionNode($1);}
 | FLOAT_LITERAL {$$ = createFloatLiteralExpressionNode($1);}
-// | STRING_LITERAL
-// | TRUE_LITERAL
-// | FALSE_LITERAL
-// | ID
+| STRING_LITERAL {$$ = createStringLiteralExpressionNode($1);}
+| TRUE_LITERAL {$$ = createTrueLiteralExpressionNode($1);}
+| FALSE_LITERAL {$$ = createFalseLiteralExpressionNode($1);}
+| ID {$$ = createIDExpressionNode($1);}
 // | '(' endl_opt expr endl_opt ')'
 | expr '+' endl_opt expr {$$ = createPlusExpressionNode($1, $4);}
-// | expr '-' endl_opt expr
-// | expr '*' endl_opt expr
-// | expr '/' endl_opt expr
-// | expr '%' endl_opt expr
-// | expr '<' endl_opt expr
-// | expr '>' endl_opt expr
-// | expr LESS_OR_EQUAL endl_opt expr
-// | expr GREATER_OR_EQUAL endl_opt expr
-// | expr EQUALS endl_opt expr
-// | expr NOT_EQUALS endl_opt expr
-// | expr '=' endl_opt expr
-// | expr PLUS_ASSIGN endl_opt expr
-// | expr MINUS_ASSIGN endl_opt expr
-// | expr MUL_ASSIGN endl_opt expr
-// | expr DIV_ASSIGN endl_opt expr
-// | expr MOD_ASSIGN endl_opt expr
-// | NOT endl_opt expr
-// | expr AND endl_opt expr {$$ = createAndExpressionNode($1, $4);}
-// | expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
-// | expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
-// | expr '[' endl_opt expr endl_opt ']' // Обращение к элементу массива
-// | ID '(' endl_opt expr_list_endl_opt ')' // Вызов функции
+| NOT endl_opt expr {$$ = createNotExpressionNode($3);}
+| expr '-' endl_opt expr {$$ = createMinusExpressionNode($1, $4);}
+| expr '*' endl_opt expr {$$ = createMulExpressionNode($1, $4);}
+| expr '/' endl_opt expr {$$ = createDivExpressionNode($1, $4);}
+| expr '%' endl_opt expr {$$ = createModExpressionNode($1, $4);}
+| expr '<' endl_opt expr {$$ = createLessExpressionNode($1, $4);}
+| expr '>' endl_opt expr {$$ = createGreatExpressionNode($1, $4);}
+| expr LESS_OR_EQUAL endl_opt expr {$$ = createLessEqualExpressionNode($1, $4);}
+| expr GREATER_OR_EQUAL endl_opt expr {$$ = createGreatEqualExpressionNode($1, $4);}
+| expr EQUALS endl_opt expr {$$ = createEqualExpressionNode($1, $4);}
+| expr NOT_EQUALS endl_opt expr {$$ = createNotEqualExpressionNode($1, $4);}
+| expr '=' endl_opt expr {$$ = createAssignmentExpressionNode($1, $4);}
+| expr PLUS_ASSIGN endl_opt expr {$$ = createPlusAssignmentExpressionNode($1, $4);}
+| expr MINUS_ASSIGN endl_opt expr {$$ = createMinusAssignmentExpressionNode($1, $4);}
+| expr MUL_ASSIGN endl_opt expr {$$ = createMulAssignmentExpressionNode($1, $4);}
+| expr DIV_ASSIGN endl_opt expr {$$ = createDivAssignmentExpressionNode($1, $4);}
+| expr MOD_ASSIGN endl_opt expr {$$ = createModAssignmentExpressionNode($1, $4);}
+| expr AND endl_opt expr {$$ = createAndExpressionNode($1, $4);}
+| expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
+| expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
+| expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
+| ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
 // | '[' endl_opt expr_list_endl_opt ']'
 ;
 

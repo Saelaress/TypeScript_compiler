@@ -88,7 +88,10 @@ else {fprintf(yyout, "Found KW_ELSE: %s\n", yytext);}
 enum {fprintf(yyout, "Found KW_ENUM: %s\n", yytext);} 
 export {fprintf(yyout, "Found KW_EXPORT: %s\n", yytext);} 
 extends {fprintf(yyout, "Found KW_EXTENDS: %s\n", yytext);} 
-false {fprintf(yyout, "Found KW_FALSE: %s\n", yytext);} 
+false {
+    printHandler((char*)"KW_FALSE", yytext);
+    return FALSE_LITERAL;
+} 
 finally {fprintf(yyout, "Found KW_FINALLY: %s\n", yytext);} 
 for {fprintf(yyout, "Found KW_FOR: %s\n", yytext);} 
 from {fprintf(yyout, "Found KW_FROM: %s\n", yytext);} 
@@ -107,7 +110,6 @@ let {fprintf(yyout, "Found KW_LET: %s\n", yytext);}
 module {fprintf(yyout, "Found KW_MODULE: %s\n", yytext);} 
 namespace {fprintf(yyout, "Found KW_NAMESPACE: %s\n", yytext);} 
 never {fprintf(yyout, "Found TYPE_NEVER: %s\n", yytext);} 
-new {fprintf(yyout, "Found KW_NEW: %s\n", yytext);} 
 null {fprintf(yyout, "Found KW_NULL: %s\n", yytext);} 
 number {fprintf(yyout, "Found TYPE_NUMBER: %s\n", yytext);} 
 object {fprintf(yyout, "Found TYPE_OBJECT: %s\n", yytext);} 
@@ -127,7 +129,10 @@ switch {fprintf(yyout, "Found KW_SWITCH: %s\n", yytext);}
 symbol {fprintf(yyout, "Found TYPE_SYMBOL: %s\n", yytext);}
 this {fprintf(yyout, "Found KW_THIS: %s\n", yytext);}
 throw {fprintf(yyout, "Found KW_THROW: %s\n", yytext);}
-true {fprintf(yyout, "Found KW_TRUE: %s\n", yytext);}
+true {
+    printHandler((char*)"KW_TRUE", yytext);
+    return TRUE_LITERAL;
+}
 try {fprintf(yyout, "Found KW_TRY: %s\n", yytext);}
 type {fprintf(yyout, "Found KW_TYPE: %s\n", yytext);}
 typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);}
@@ -138,47 +143,108 @@ while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
 undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 "?" {fprintf(yyout, "Found OPERATOR_OPT_PARAM: %s\n", yytext);}
-"%" {fprintf(yyout, "Found OPERATOR_MOD: %s\n", yytext);}
-"%=" {fprintf(yyout, "Found OPERATOR_MOD_ASSIGNMENT: %s\n", yytext);}
+"%" {
+    printHandler((char*)"OPERATOR_MOD", yytext);
+    return '%';
+}
+"%=" {
+    printHandler((char*)"OPERATOR_MOD_ASSIGNMENT", yytext);
+    return MOD_ASSIGN;
+}
 "+" {
     printHandler((char*)"OPERATOR_PLUS", yytext);
     return '+';
 }
-"+=" {fprintf(yyout, "Found OPERATOR_PLUS_ASSIGNMENT: %s\n", yytext);}
+"+=" {
+    printHandler((char*)"OPERATOR_PLUS_ASSIGNMENT", yytext);
+    return PLUS_ASSIGN;
+}
 "++" {
-    printHandler((char*)"INCREMENT_OPERATOR", yytext);
+    printHandler((char*)"OPERATOR_INCREMENT", yytext);
     return INCREMENT;
 }
-"-" {fprintf(yyout, "Found OPERATOR_MINUS: %s\n", yytext);}
-"-=" {fprintf(yyout, "Found OPERATOR_MINUS_ASSIGNMENT: %s\n", yytext);}
+"-" {
+    printHandler((char*)"OPERATOR_MINUS", yytext);
+    return '-';
+}
+"-=" {
+    printHandler((char*)"OPERATOR_MINUS_ASSIGNMENT", yytext);
+    return MINUS_ASSIGN;
+}
 "--" {
-    printHandler((char*)"DECREMENT_OPERATOR", yytext);
+    printHandler((char*)"OPERATOR_DECREMENT", yytext);
     return DECREMENT;
 }
-"*" {fprintf(yyout, "Found OPERATOR_MUL: %s\n", yytext);}
-"*=" {fprintf(yyout, "Found OPERATOR_MUL_ASSIGNMENT: %s\n", yytext);}
-"=" {fprintf(yyout, "Found OPERATOR_ASSIGNMENT: %s\n", yytext);}
-"==" {fprintf(yyout, "Found OPERATOR_EQUAL: %s\n", yytext);}
-"===" {fprintf(yyout, "Found OPERATOR_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);}
-"!" {fprintf(yyout, "Found OPERATOR_BIT_NOT: %s\n", yytext);}
-"!=" {fprintf(yyout, "Found OPERATOR_NOT_EQUAL: %s\n", yytext);}
-"!==" {fprintf(yyout, "Found OPERATOR_NOT_EQUAL_BY_TYPE_AND_VALUE: %s\n", yytext);}
-">" {fprintf(yyout, "Found OPERATOR_MORE: %s\n", yytext);}
-">=" {fprintf(yyout, "Found OPERATOR_MORE_OR_EQUAL: %s\n", yytext);}
-"<" {fprintf(yyout, "Found OPERATOR_LESS: %s\n", yytext);}
-"<=" {fprintf(yyout, "Found OPERATOR_LESS_OR_EQUA: %s\n", yytext);}
-"/" {fprintf(yyout, "Found OPERATOR_DIV: %s\n", yytext);}
-"/=" {fprintf(yyout, "Found OPERATOR_DIV_ASSIGNMENT: %s\n", yytext);}
+"*" {
+    printHandler((char*)"OPERATOR_MUL", yytext);
+    return '*';
+}
+"*=" {
+    printHandler((char*)"OPERATOR_MUL_ASSIGNMENT", yytext);
+    return MUL_ASSIGN;
+}
+"=" {
+    printHandler((char*)"OPERATOR_ASSIGNMENT", yytext);
+    return '=';
+}
+"==" {
+    printHandler((char*)"OPERATOR_EQUAL", yytext);
+    return EQUALS;
+}
+"!" {
+    printHandler((char*)"OPERATOR_BIT_NOT", yytext);
+    return NOT;
+}
+"!=" {
+    printHandler((char*)"OPERATOR_NOT_EQUAL", yytext);
+    return NOT_EQUALS;
+}
+">" {
+    printHandler((char*)"OPERATOR_MORE", yytext);
+    return '>';
+}
+">=" {
+    printHandler((char*)"OPERATOR_MORE_OR_EQUAL", yytext);
+    return GREATER_OR_EQUAL;
+}
+"<" {
+    printHandler((char*)"OPERATOR_LESS", yytext);
+    return '<';
+}
+"<=" {
+    printHandler((char*)"OPERATOR_LESS_OR_EQUA", yytext);
+    return LESS_OR_EQUAL;
+}
+"/" {
+    printHandler((char*)"OPERATOR_DIV", yytext);
+    return '/';
+}
+"/=" {
+    printHandler((char*)"OPERATOR_DIV_ASSIGNMENT", yytext);
+    return DIV_ASSIGN;
+}
 "^" {fprintf(yyout, "Found OPERATOR_BIT_XOR: %s\n", yytext);}
 "~" {fprintf(yyout, "Унарный оператор побитового НЕ: %s\n", yytext);}
 "&" {fprintf(yyout, "Found OPERATOR_BIT_AND: %s\n", yytext);}
 "&&" {fprintf(yyout, "AND: %s\n", yytext);}
 "|" {fprintf(yyout, "Found OPERATOR_BIT_OR: %s\n", yytext);}
 "||" {fprintf(yyout, "OR: %s\n", yytext);}
-"[" {fprintf(yyout, "Found LEFT_SQUARE_BRACKET: %s\n", yytext);}
-"]" {fprintf(yyout, "Found RIGHT_SQUARE_BRACKET: %s\n", yytext);}
-"(" {fprintf(yyout, "Found LEFT_ROUND_BRACKET: %s\n", yytext);}
-")" {fprintf(yyout, "Found RIGHT_ROUND_BRACKET: %s\n", yytext);}
+"[" {
+    printHandler((char*)"LEFT_SQUARE_BRACKET", yytext);
+    return '[';
+}
+"]" {
+    printHandler((char*)"RIGHT_SQUARE_BRACKET", yytext);
+    return ']';
+}
+"(" {
+    printHandler((char*)"LEFT_ROUND_BRACKET", yytext);
+    return '(';
+}
+")" {
+    printHandler((char*)"RIGHT_ROUND_BRACKET", yytext);
+    return ')';
+}
 "{" {fprintf(yyout, "Found LEFT_FIGURE_BRACKET: %s\n", yytext);}
 "}" {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
 ":" {fprintf(yyout, "Found COLON: %s\n", yytext);}
@@ -402,7 +468,13 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     exit(1);
 }
 
-[_A-Za-z]+[_0-9A-Za-z]* {fprintf(yyout, "Found ID: %s\n", yytext);}
+[_A-Za-z]+[_0-9A-Za-z]* { 
+    printHandler((char*)"IDENTIFIER", yytext);
+    char * t = (char*)malloc(strlen(yytext) + 1);
+    strcpy(t, yytext);
+    yylval.ident = t;
+    return ID;
+    }
 
 [\r\n] {
     return ENDL;

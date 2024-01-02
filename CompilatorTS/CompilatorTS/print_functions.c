@@ -14,18 +14,156 @@ char * generateDotFromExpression(struct ExpressionNode * node)
     switch (node->type)
     {
     case _IDENTIFIER:
-        res = concat(res, (char *)"[label=\"");
+        res = concat(res, (char*)"[label=\"");
         res = concat(res, node->identifierString);
-        res = concat(res, (char *)"\"];\n");
+        res = concat(res, (char*)"\"];\n");
         break;
     case _INT_LIT:
-        res = concat(res, (char *)"[label=\"");
+        res = concat(res, (char*)"[label=\"");
         res = concat(res, itoa(node->intValue, idStr, 10));
-        res = concat(res, (char *)"\"];\n");
+        res = concat(res, (char*)"\"];\n");
         break;
     case _PLUS:
         res = concat(res, (char*)"[label=\"+\"];\n");
         res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _MINUS:
+        res = concat(res, (char*)"[label=\"-\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _MUL:
+        res = concat(res, (char*)"[label=\"*\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _DIV:
+        res = concat(res, (char*)"[label=\"/\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _POST_DECREMENT:
+        res = concat(res, (char*)"[label=\"--\"];\n");
+        res = concat(res, generateDotFromExpression(node->left));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->left->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _PREF_DECREMENT:
+        res = concat(res, (char*)"[label=\"--\"];\n");
+        res = concat(res, generateDotFromExpression(node->right));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->right->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _POST_INCREMENT:
+        res = concat(res, (char*)"[label=\"++\"];\n");
+        res = concat(res, generateDotFromExpression(node->left));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->left->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _PREF_INCREMENT:
+        res = concat(res, (char*)"[label=\"++\"];\n");
+        res = concat(res, generateDotFromExpression(node->right));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->right->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _MOD:
+        res = concat(res, (char*)"[label=\"%\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _GREAT:
+        res = concat(res, (char*)"[label=\">\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _LESS:
+        res = concat(res, (char*)"[label=\"<\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _GREAT_EQUAL:
+        res = concat(res, (char*)"[label=\">=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _LESS_EQUAL:
+        res = concat(res, (char*)"[label=\"<=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _EQUAL:
+        res = concat(res, (char*)"[label=\"==\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _NOT_EQUAL:
+        res = concat(res, (char*)"[label=\"!=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _ASSIGNMENT:
+        res = concat(res, (char*)"[label=\"=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _PLUS_ASSIGNMENT:
+        res = concat(res, (char*)"[label=\"+=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _MINUS_ASSIGNMENT:
+        res = concat(res, (char*)"[label=\"-=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _MUL_ASSIGNMENT:
+        res = concat(res, (char*)"[label=\"*=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _DIV_ASSIGNMENT:
+        res = concat(res, (char*)"[label=\"/=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _MOD_ASSIGNMENT:
+        res = concat(res, (char*)"[label=\"%=\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _NOT:
+        res = concat(res, (char*)"[label=\"!\"];\n");
+        res = concat(res, generateDotFromExpression(node->right));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->right->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _ARRAY_ACCESS:
+        res = concat(res, (char*)"[label=\"array_access\"];\n");
+        res = concat(res, generateStrForBinOperation(node));
+        break;
+    case _FUNC_CALL:
+        res = concat(res, (char*)"[label=\"invoke <name=");
+        res = concat(res, node->identifierString);
+        res = concat(res, (char*)">\"];\n");
+        if (node->params != NULL)
+        {
+            res = concat(res, generateDotFromExpressionList(node->params));
+            res = concat(res, itoa(node->id, idStr, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(node->params->id, idStr, 10));
+            res = concat(res, (char*)"[label=\"params\"];\n");
+        }
+        break;
+    case _BOOLEAN_LIT:
+        res = concat(res, (char*)"[label=\"");
+        if (node->boolValue == 1)
+        {
+            res = concat(res, (char*)"true");
+        }
+        else
+        {
+            res = concat(res, (char*)"false");
+        }
+        res = concat(res, (char*)"\"];\n");
+        break;
+    case _STRING_LIT:
+        res = concat(res, (char*)"[label=\"");
+        res = concat(res, getSafeCString(node->stringValue->buffer));
+        res = concat(res, (char*)"\"];\n");
         break;
     case _FLOAT_LIT:
         res = concat(res, (char*)"[label=\"");
@@ -34,38 +172,6 @@ char * generateDotFromExpression(struct ExpressionNode * node)
         sprintf(fstr, "%f", f);
         res = concat(res, fstr);
         res = concat(res, (char*)"\"];\n");
-        break;
-    case _PREF_INCREMENT:
-        res = concat(res, (char*)"[label=\"PREF_++\"];\n");
-        res = concat(res, generateDotFromExpression(node->right));
-        res = concat(res, itoa(node->id, idStr, 10));
-        res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(node->right->id, idStr, 10));
-        res = concat(res, (char*)";\n");
-        break;
-    case _PREF_DECREMENT:
-        res = concat(res, (char*)"[label=\"PREF_--\"];\n");
-        res = concat(res, generateDotFromExpression(node->right));
-        res = concat(res, itoa(node->id, idStr, 10));
-        res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(node->right->id, idStr, 10));
-        res = concat(res, (char*)";\n");
-        break;
-    case _POST_INCREMENT:
-        res = concat(res, (char*)"[label=\"POST_++\"];\n");
-        res = concat(res, generateDotFromExpression(node->left));
-        res = concat(res, itoa(node->id, idStr, 10));
-        res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(node->left->id, idStr, 10));
-        res = concat(res, (char*)";\n");
-        break;
-    case _POST_DECREMENT:
-        res = concat(res, (char*)"[label=\"POST_--\"];\n");
-        res = concat(res, generateDotFromExpression(node->left));
-        res = concat(res, itoa(node->id, idStr, 10));
-        res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(node->left->id, idStr, 10));
-        res = concat(res, (char*)";\n");
         break;
     default:
         break;
