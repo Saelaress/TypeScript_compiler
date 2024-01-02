@@ -178,19 +178,31 @@ struct ExpressionListNode *createExpressionListNode(struct ExpressionNode *first
 struct ExpressionListNode *addExpressionToExpressionList(struct ExpressionListNode *list, struct ExpressionNode *expression);
 
 
-/*------------------------------------ KotlinFile -------------------------------------*/
+/*------------------------------------ Statement -------------------------------------*/
 
-/*! Создать корневой узел файла Kotlin на основе списка элементов файла.
-* \param[in] elemList список элементов файла Kotlin, на основе которого создается файл Kotlin.
-* \return указатель на корневой узел файла Kotlin.
+/*! Создать узел StatementNode на основе узла ExpressionNode.
+* \param[in] expr указатель на экземпляр ExpressionNode, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
 */
-struct KotlinFileNode* createKotlinFileNode(struct KotlinFileElementListNode* elemList);
+struct StatementNode* createStatementFromExpression(struct ExpressionNode* expr);
 
-
-/*------------------------------------ KotlinFileElementList -------------------------------------*/
-
-/*! Создать узел списка элементов файла Kotlin на основе элемента Kotlin.
-* \param[in] elem элемент файла Kotlin, на основе которого создается список элементов Kotlin.
-* \return указатель на список элементов файла Kotlin.
+/*! Создать пустой узел Statement.
+* \return указатель на пустой узел Statement.
 */
-struct KotlinFileElementListNode* createKotlinFileElementListNode(struct ExpressionListNode* elem);
+struct StatementNode* createEmptyStatement();
+
+
+/*------------------------------------ StatementList -------------------------------------*/
+
+/*! Создать узел списка Statement.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct StatementListNode* createStatementListNode(struct StatementNode* firstChild);
+
+/*! Добавить StatementNode к списку Statement.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел Statement.
+* \return измененный список Statement (тот же самый, что и параметр list).
+*/
+struct StatementListNode* addStatementToStatementList(struct StatementListNode* list, struct StatementNode* statement);

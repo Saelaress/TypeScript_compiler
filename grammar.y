@@ -54,6 +54,10 @@ program_elem: stmt_top
 | function_declaration
 ;
 
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
+| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
+;
+
 endl: ENDL
 | endl ENDL
 ;
@@ -75,6 +79,10 @@ expr_list_endl_opt: /* empty */
 ;
 
 expr_list_endl: expr_list endl_opt
+;
+
+expr_opt: /*empty*/
+| endl_opt expr endl_opt
 ;
 
 expr: expr DECREMENT %prec POST_DECREMENT
@@ -129,10 +137,6 @@ while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep
 ;
 
-expr_opt: /*empty*/
-| endl_opt expr endl_opt
-;
-
 for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt
 | FOR endl_opt '(' endl_opt modifier endl_opt var_list ';' expr_opt ';' expr_opt ')' endl_opt stmt
 | FOR endl_opt '(' endl_opt modifier endl_opt ID ';' expr_opt ';' expr_opt ')' endl_opt stmt
@@ -169,10 +173,6 @@ break_opt: /* empty */
 ;
 
 return_statement: RETURN expr stmt_sep
-;
-
-function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
-| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
 ;
 
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause

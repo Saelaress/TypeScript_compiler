@@ -184,29 +184,68 @@ struct ExpressionListNode
     struct ExpressionNode *last;
 };
 
-/*------------------------------------ KotlinFile-------------------------------------*/
+/*------------------------------------ Statement -------------------------------------*/
 
-/*! \brief Структура, описывающая корневой узел программы - файл Kotlin. */
-struct KotlinFileNode
+/*! \brief Перечисление типов Statement. */
+enum StatementType
 {
-    /// Идентификатор узла.
-    int id;
+    /// Выражениие.
+    _EXPRESSION,
 
-    /// Указатель на список элементов Kotlin, из которых состоит файл Kotlin.
-    struct KotlinFileElementListNode* elemList;
+    /// Пустой Statement.
+    _EMPTY,
 };
 
-/*------------------------------------ KotlinFileElementList -------------------------------------*/
+struct StatementListNode;
 
-/*! \brief Структура, описывающая список элементов файла Kotlin.*/
-struct KotlinFileElementListNode
+/*! \brief Структура узла Statement. */
+struct StatementNode
 {
     /// Идентификатор узла.
     int id;
 
-    /// Указатель на первый элемент списка.
-    struct KotlinFileElementNode* first;
+    /// Тип обозреваемого Statement - вариант перечисления.
+    enum StatementType type;
 
-    /// Указатель на последний элемент списка.
-    struct KotlinFileElementNode* last;
+    /// Идентификатор переменной для выражения объявления переменной.
+    char* varValId;
+
+    /// Тип переменной для выражения объявления переменной с явным указанием типа.
+    struct TypeNode* varValType;
+
+    /// Ссылка на Expression, которое используется при созании Statement.
+    struct ExpressionNode* expression;
+
+    /// Ссылка на выражение условия (для циклов WHILE и DO..WHILE).
+    struct ExpressionNode* condition;
+
+    /// Ссылка на простое тело цикла.
+    struct StatementNode* singleBody;
+
+    /// Ссылка на составное тело цикла.
+    struct StatementListNode* complexBody;
+
+    /// Указатель на следующий Statement в списке StatementList (использовать при работе со списком Statement).
+    struct StatementNode* next;
+
+    /// Указатель на список переменных.
+    struct VarDeclarationListNode* varDeclList;
+
+    /// Временное хранилище модификаторов.
+    struct ModifierHead* _tempHead;
+};
+
+/*------------------------------------ StatementList -------------------------------------*/
+
+/*! \brief Структура узла списка Statement. */
+struct StatementListNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Указатель на первый элемент списка Statement.
+    struct StatementNode* first;
+
+    /// Указатель на последний элемент списка Statement.
+    struct StatementNode* last;
 };

@@ -145,10 +145,16 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     return '+';
 }
 "+=" {fprintf(yyout, "Found OPERATOR_PLUS_ASSIGNMENT: %s\n", yytext);}
-"++" {fprintf(yyout, "Found OPERATOR_INCREMENT: %s\n", yytext);}
+"++" {
+    printHandler((char*)"INCREMENT_OPERATOR", yytext);
+    return INCREMENT;
+}
 "-" {fprintf(yyout, "Found OPERATOR_MINUS: %s\n", yytext);}
 "-=" {fprintf(yyout, "Found OPERATOR_MINUS_ASSIGNMENT: %s\n", yytext);}
-"--" {fprintf(yyout, "Found OPERATOR_DICREMENT: %s\n", yytext);}
+"--" {
+    printHandler((char*)"DECREMENT_OPERATOR", yytext);
+    return DECREMENT;
+}
 "*" {fprintf(yyout, "Found OPERATOR_MUL: %s\n", yytext);}
 "*=" {fprintf(yyout, "Found OPERATOR_MUL_ASSIGNMENT: %s\n", yytext);}
 "=" {fprintf(yyout, "Found OPERATOR_ASSIGNMENT: %s\n", yytext);}
@@ -176,7 +182,10 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 "{" {fprintf(yyout, "Found LEFT_FIGURE_BRACKET: %s\n", yytext);}
 "}" {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
 ":" {fprintf(yyout, "Found COLON: %s\n", yytext);}
-";" {fprintf(yyout, "Found SEMICOLON: %s\n", yytext);}
+";" {
+    printHandler((char*)"SEMICOLON", yytext);
+    return ';';
+}
 "," {
     printHandler((char*)"COMMA", yytext);
     return ',';
@@ -436,8 +445,10 @@ void removeUnderline(char* str)
     }
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
+int main(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
         fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
         return 1;
     }
@@ -499,7 +510,7 @@ int main(int argc, char *argv[]) {
 
     // Генерация и вывод DOT-строки
     if (needsDotCon || needsDotFile) {
-        char * res = generateDotFromExpressionList(root);  // Функция генерации DOT-строки
+        char * res = generateDotFromStatementList(root);  // Функция генерации DOT-строки
         if (needsDotFile) {
             // Запись DOT-строки в файл result.gv
             FILE *f = fopen("result.gv", "w");

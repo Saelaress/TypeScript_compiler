@@ -655,3 +655,68 @@ struct ExpressionListNode *addExpressionToExpressionList(struct ExpressionListNo
     list->last = expression;
     return list;
 }
+
+/*------------------------------------ Statement -------------------------------------*/
+
+/*! Создать узел StatementNode на основе узла ExpressionNode.
+* \param[in] expr указатель на экземпляр ExpressionNode, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
+*/
+struct StatementNode* createStatementFromExpression(struct ExpressionNode* expr)
+{
+    struct StatementNode* stmt = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    stmt->type = _EXPRESSION;
+    stmt->expression = expr;
+    stmt->complexBody = NULL;
+    stmt->condition = NULL;
+    stmt->singleBody = NULL;
+    stmt->complexBody = NULL;
+    stmt->id = ID++;
+    stmt->next = NULL;
+    stmt->varDeclList = NULL;
+    return stmt;
+}
+
+/*! Создать пустой узел Statement.
+* \return указатель на пустой узел Statement.
+*/
+struct StatementNode* createEmptyStatement()
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _EMPTY;
+    node->expression = NULL;
+    node->condition = NULL;
+    node->complexBody = NULL;
+    node->singleBody = NULL;
+    node->next = NULL;
+    node->varDeclList = NULL;
+    return node;
+}
+
+/*------------------------------------ StatementList -------------------------------------*/
+
+/*! Создать узел списка Statement.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct StatementListNode* createStatementListNode(struct StatementNode* firstChild)
+{
+    struct StatementListNode* node = (struct StatementListNode*)malloc(sizeof(struct StatementListNode));
+    node->first = firstChild;
+    node->last = firstChild;
+    node->id = ID++;
+    return node;
+}
+
+/*! Добавить StatementNode к списку Statement.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел Statement.
+* \return измененный список Statement (тот же самый, что и параметр list).
+*/
+struct StatementListNode* addStatementToStatementList(struct StatementListNode* list, struct StatementNode* statement)
+{
+    list->last->next = statement;
+    list->last = statement;
+    return list;
+}

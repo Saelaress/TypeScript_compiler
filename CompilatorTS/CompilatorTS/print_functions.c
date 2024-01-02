@@ -35,6 +35,38 @@ char * generateDotFromExpression(struct ExpressionNode * node)
         res = concat(res, fstr);
         res = concat(res, (char*)"\"];\n");
         break;
+    case _PREF_INCREMENT:
+        res = concat(res, (char*)"[label=\"PREF_++\"];\n");
+        res = concat(res, generateDotFromExpression(node->right));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->right->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _PREF_DECREMENT:
+        res = concat(res, (char*)"[label=\"PREF_--\"];\n");
+        res = concat(res, generateDotFromExpression(node->right));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->right->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _POST_INCREMENT:
+        res = concat(res, (char*)"[label=\"POST_++\"];\n");
+        res = concat(res, generateDotFromExpression(node->left));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->left->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _POST_DECREMENT:
+        res = concat(res, (char*)"[label=\"POST_--\"];\n");
+        res = concat(res, generateDotFromExpression(node->left));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->left->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
     default:
         break;
     }
@@ -65,6 +97,61 @@ char * generateDotFromExpressionList(struct ExpressionListNode * listNode)
         res = concat(res, itoa(listNode->id, strId, 10));
         res = concat(res, (char *)" -> ");
         res = concat(res, itoa(listNode->first->id, strId, 10));
+        res = concat(res, (char *)"[label=\"first\"];\n");
+    }
+    return res;
+}
+
+/*!    /*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла Statement.
+    * \param[in] stmt Визуализироваемый узел.
+    * \return Строка кода на языке DOT из узла Statement.
+    */
+char* generateDotFromStatement(struct StatementNode* stmt)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(stmt->id, strId, 10));
+    switch (stmt->type) {
+    case _EXPRESSION:
+        res = concat(res, (char*)"[label=\"stmt\"];\n");
+        res = concat(res, generateDotFromExpression(stmt->expression));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->expression->id, strId, 10));
+        res = concat(res, (char*)"[label=\"expr\"];\n");
+        break;
+    case _EMPTY:
+        res = concat(res, (char*)"[label=\"empty_stmt\"];\n");
+        break;
+    }
+    if (stmt->next != NULL)
+    {
+        res = concat(res, generateDotFromStatement(stmt->next));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->next->id, strId, 10));
+        res = concat(res, (char*)"[label = \"next\"];\n");
+    }
+    return res;
+}
+
+
+/*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла StatementList.
+* \param[in] stmtList Визуализироваемый узел.
+* \return Строка кода на языке DOT из узла StatementList.
+*/
+char * generateDotFromStatementList(struct StatementListNode * stmtList)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(stmtList->id, strId, 10));
+    res = concat(res, (char *)"[label=\"StmtList\"];\n");
+    if (stmtList->first != NULL)
+    {
+        res = concat(res, generateDotFromStatement(stmtList->first));
+        res = concat(res, itoa(stmtList->id, strId, 10));
+        res = concat(res, (char *)" -> ");
+        res = concat(res, itoa(stmtList->first->id, strId, 10));
         res = concat(res, (char *)"[label=\"first\"];\n");
     }
     return res;
