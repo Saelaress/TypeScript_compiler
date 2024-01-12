@@ -172,7 +172,8 @@ break_opt: /* empty */
 | BREAK ';' endl_opt
 ;
 
-return_statement: RETURN expr stmt_sep
+return_statement: RETURN stmt_sep
+| RETURN expr stmt_sep
 ;
 
 try_catch_block: TRY endl_opt block_statement endl_opt catch_clause

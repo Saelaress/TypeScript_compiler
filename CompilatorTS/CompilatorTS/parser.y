@@ -8,6 +8,8 @@
 %union {
     int intLit;
     float floatLit;
+    struct stringBuffer * stringLit;
+    char * ident;
     struct ExpressionNode * expression;
     struct ExpressionListNode * exprList;
 	struct StatementNode * statement;
@@ -23,8 +25,8 @@
 
 %token <intLit> INT_LITERAL
 %token <floatLit> FLOAT_LITERAL
-%token STRING_LITERAL
-%token ID
+%token <stringLit> STRING_LITERAL
+%token <ident> ID
 %token TRUE_LITERAL FALSE_LITERAL
 
 %nonassoc INCREMENT DECREMENT 
@@ -47,7 +49,7 @@
 
 %type <expression> expr
 
-%type <statement>stmt stmt_top
+%type <statement>stmt stmt_top return_statement
 %type <stmtList>stmt_list
 
 %%
@@ -92,9 +94,9 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | '+' endl_opt expr %prec UPLUS {$$ = createUnaryPlusExpressionNode($3);}
 | INT_LITERAL {$$ = createIntLiteralExpressionNode($1);}
 | FLOAT_LITERAL {$$ = createFloatLiteralExpressionNode($1);}
-| STRING_LITERAL {$$ = createStringLiteralExpressionNode($1);}
-| TRUE_LITERAL {$$ = createTrueLiteralExpressionNode($1);}
-| FALSE_LITERAL {$$ = createFalseLiteralExpressionNode($1);}
+// | STRING_LITERAL {$$ = createStringLiteralExpressionNode($1);}
+| TRUE_LITERAL {$$ = createTrueLiteralExpressionNode();}
+| FALSE_LITERAL {$$ = createFalseLiteralExpressionNode();}
 | ID {$$ = createIDExpressionNode($1);}
 // | '(' endl_opt expr endl_opt ')'
 | expr '+' endl_opt expr {$$ = createPlusExpressionNode($1, $4);}
@@ -119,7 +121,7 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
 | expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
 | expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
-| ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
+// | ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
 // | '[' endl_opt expr_list_endl_opt ']'
 ;
 
@@ -170,8 +172,9 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 // | BREAK ';' endl_opt
 // ;
 
-// return_statement: RETURN expr stmt_sep
-// ;
+return_statement: RETURN stmt_sep {$$ = createReturnStatement(NULL);}
+| RETURN expr stmt_sep {$$ = createReturnStatement($2);}
+;
 
 // try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
 // |TRY endl_opt block_statement endl_opt catch_clause FINALLY endl_opt block_statement
@@ -210,7 +213,7 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 ;
 
 stmt: stmt_top
-// | return_statement
+| return_statement {$$ = $1;}
 ;
 
 %%

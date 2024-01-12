@@ -191,6 +191,12 @@ struct StatementNode* createStatementFromExpression(struct ExpressionNode* expr)
 */
 struct StatementNode* createEmptyStatement();
 
+/*! Создать узел Return Statement.
+* \param[in] expr выражение, результат которого возвращается; может быть NULL, если ничего не возвращается.
+* \return созданный узел Return Stmt.
+*/
+struct StatementNode* createReturnStatement(struct ExpressionNode* expr);
+
 
 /*------------------------------------ StatementList -------------------------------------*/
 

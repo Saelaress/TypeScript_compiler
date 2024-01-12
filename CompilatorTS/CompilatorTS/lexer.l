@@ -120,7 +120,10 @@ protected {fprintf(yyout, "Found KW_PROTECTED: %s\n", yytext);}
 public {fprintf(yyout, "Found KW_PUBLIC: %s\n", yytext);} 
 readonly {fprintf(yyout, "Found KW_READONLY: %s\n", yytext);} 
 require {fprintf(yyout, "Found KW_REQUIRE: %s\n", yytext);} 
-return {fprintf(yyout, "Found KW_RETURN: %s\n", yytext);} 
+return {
+    printHandler((char*)"RETURN_KEY_WORD", yytext);
+    return RETURN;
+} 
 set {fprintf(yyout, "Found KW_SET: %s\n", yytext);} 
 static {fprintf(yyout, "Found KW_STATIC: %s\n", yytext);} 
 string {fprintf(yyout, "Found TYPE_STRING: %s\n", yytext);} 

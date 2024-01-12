@@ -694,6 +694,26 @@ struct StatementNode* createEmptyStatement()
     return node;
 }
 
+/*! Создать узел Return Statement.
+* \param[in] expr выражение, результат которого возвращается; может быть NULL, если ничего не возвращается.
+* \return созданный узел Return Stmt.
+*/
+struct StatementNode* createReturnStatement(struct ExpressionNode* expr)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->next = NULL;
+    node->varDeclList = NULL;
+    node->expression = expr;
+    node->type = _RETURN;
+    node->complexBody = NULL;
+    node->condition = NULL;
+    node->singleBody = NULL;
+    node->varValId = NULL;
+    node->varValType = NULL;
+    return node;
+}
+
 /*------------------------------------ StatementList -------------------------------------*/
 
 /*! Создать узел списка Statement.

@@ -194,6 +194,9 @@ enum StatementType
 
     /// Пустой Statement.
     _EMPTY,
+
+    /// Возврат из функции.
+    _RETURN
 };
 
 struct StatementListNode;

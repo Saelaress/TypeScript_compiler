@@ -187,7 +187,7 @@ char * generateDotFromExpression(struct ExpressionNode * node)
     return res;
 }
 
-/*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла ExpressionList.
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла ExpressionList.
 * \param[in] listNode Визуализироваемый узел.
 * \return Строка кода на языке DOT из узла ExpressionList.
 */
@@ -229,6 +229,17 @@ char* generateDotFromStatement(struct StatementNode* stmt)
     case _EMPTY:
         res = concat(res, (char*)"[label=\"empty_stmt\"];\n");
         break;
+    case _RETURN:
+        res = concat(res, (char*)"[label=\"RETURN\"];\n");
+        if (stmt->expression != NULL)
+        {
+            res = concat(res, generateDotFromExpression(stmt->expression));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->expression->id, strId, 10));
+            res = concat(res, (char*)"[label = \"expr\"];\n");
+        }
+        break;
     }
     if (stmt->next != NULL)
     {
@@ -242,7 +253,7 @@ char* generateDotFromStatement(struct StatementNode* stmt)
 }
 
 
-/*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла StatementList.
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла StatementList.
 * \param[in] stmtList Визуализироваемый узел.
 * \return Строка кода на языке DOT из узла StatementList.
 */
