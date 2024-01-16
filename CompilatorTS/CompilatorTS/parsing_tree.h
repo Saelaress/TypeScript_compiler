@@ -151,15 +151,17 @@ struct ExpressionNode *createOrExpressionNode(struct ExpressionNode *leftOperand
  */
 struct ExpressionNode *createAndExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
 
-/*! Создать узел тернарной операции (? :).
- * \param[in] condition условие тернарной операции.
- * \param[in] trueExpr выражение, возвращаемое, если условие истинно.
- * \param[in] falseExpr выражение, возвращаемое, если условие ложно.
- * \return указатель на созданный экземпляр узла тернарной операции.
- */
-struct ExpressionNode *createTernaryExpressionNode(struct ExpressionNode *condition,
-                                                   struct ExpressionNode *trueExpr,
-                                                   struct ExpressionNode *falseExpr);
+/*! Создать узел оператора логического отрицания.
+* \param[in] value указатель на операнд.
+* \return указатель на узел оператора логического отрицания.
+*/
+struct ExpressionNode* createNotExpressionNode(struct ExpressionNode* value);
+
+/*! Создать узел выражения идентификатора.
+* \param[in] ident строка идентификатора.
+* \return указатель на узел Expression ID.
+*/
+struct ExpressionNode* createIDExpressionNode(char* ident);
 
 
 /*------------------------------------ ExpressionList -------------------------------------*/
@@ -196,6 +198,19 @@ struct StatementNode* createEmptyStatement();
 * \return созданный узел Return Stmt.
 */
 struct StatementNode* createReturnStatement(struct ExpressionNode* expr);
+
+/*! Создать узел StatementNode для цикла while.
+* \param[in] cond Условие выполнения цикла - указатель на узел  Expression.
+* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
+* \return Созданный узел Statement.
+*/
+struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct StatementNode* stmt);
+
+/*! Создать узел StatementNode на основе узла BlockStatement.
+* \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
+*/
+struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt);
 
 
 /*------------------------------------ StatementList -------------------------------------*/

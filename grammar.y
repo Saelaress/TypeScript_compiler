@@ -126,6 +126,7 @@ expr: expr DECREMENT %prec POST_DECREMENT
 ;
 
 block_statement: '{' endl_opt stmt_list_opt '}'
+;
 
 if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt 
 | IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE endl_opt stmt
@@ -204,10 +205,10 @@ stmt_top: expr stmt_sep
 | do_while_stmt
 | switch_stmt
 | try_catch_block
-| block_statement
+| block_statement endl_opt
 | modifier endl_opt ID stmt_sep
 | modifier endl_opt var_list_stmt
-| enum_declaration
+| enum_declaration endl_opt
 | ';' endl_opt
 | THROW expr stmt_sep
 ;

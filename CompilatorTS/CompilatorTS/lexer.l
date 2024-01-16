@@ -142,7 +142,10 @@ typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);}
 unique {fprintf(yyout, "Found KW_UNIQUE: %s\n", yytext);} 
 unknown {fprintf(yyout, "Found TYPE_UNKNOWN: %s\n", yytext);} 
 var {fprintf(yyout, "Found KW_VAR: %s\n", yytext);}
-while {fprintf(yyout, "Found KW_WHILE: %s\n", yytext);}
+while {
+    printHandler((char*)"WHILE_KEY_WORD", yytext);
+    return WHILE;
+}
 undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
 "?" {fprintf(yyout, "Found OPERATOR_OPT_PARAM: %s\n", yytext);}
@@ -195,7 +198,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     return EQUALS;
 }
 "!" {
-    printHandler((char*)"OPERATOR_BIT_NOT", yytext);
+    printHandler((char*)"NOT_OPERATOR", yytext);
     return NOT;
 }
 "!=" {
@@ -248,8 +251,14 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     printHandler((char*)"RIGHT_ROUND_BRACKET", yytext);
     return ')';
 }
-"{" {fprintf(yyout, "Found LEFT_FIGURE_BRACKET: %s\n", yytext);}
-"}" {fprintf(yyout, "Found RIGHT_FIGURE_BRACKET: %s\n", yytext);}
+"{" {
+    printHandler((char*)"LEFT_BRACE", yytext);
+    return '{';
+}
+"}" {
+    printHandler((char*)"RIGHT_BRACE", yytext);
+    return '}';
+}
 ":" {fprintf(yyout, "Found COLON: %s\n", yytext);}
 ";" {
     printHandler((char*)"SEMICOLON", yytext);

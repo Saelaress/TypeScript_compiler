@@ -138,6 +138,9 @@ struct ExpressionNode
     /// Значение строкового литерала - строковый буффер (только для строковых литералов).
     struct stringBuffer *stringValue;
 
+    /// Значение символьного литерала (только для символьных литералов).
+    char charValue;
+
     /// Строка идентификатора (только для функций и переменных).
     char *identifierString;
 
@@ -155,18 +158,6 @@ struct ExpressionNode
 
     /// Указатель на список Expression (параметры при вызове функций и методов).
     struct ExpressionListNode *params;
-
-    /// Условие тернарной операции
-    struct ExpressionNode *condition;
-
-    /// Выражение, возвращаемое, если условие истинно
-    struct ExpressionNode *trueExpr;
-
-    /// Выражение, возвращаемое, если условие ложно
-    struct ExpressionNode *falseExpr;
-
-    /// Выражение, которое подлежит приведению типа
-    struct ExpressionNode *conversionExpression;
 };
 
 /*------------------------------------ ExpressionList -------------------------------------*/
@@ -192,14 +183,19 @@ enum StatementType
     /// Выражениие.
     _EXPRESSION,
 
+    /// Управляющий оператор цикла WHILE.
+    _WHILE,
+
     /// Пустой Statement.
     _EMPTY,
+
+    /// Блок операторов.
+    _BLOCK,
 
     /// Возврат из функции.
     _RETURN
 };
 
-struct StatementListNode;
 
 /*! \brief Структура узла Statement. */
 struct StatementNode

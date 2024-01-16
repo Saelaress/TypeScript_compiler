@@ -526,7 +526,7 @@ struct ExpressionNode *createModAssignmentExpressionNode(struct ExpressionNode *
  */
 struct ExpressionNode *createNotExpressionNode(struct ExpressionNode *value)
 {
-    struct ExpressionNode *node = (struct ExpressionNode *)malloc(sizeof(struct ExpressionNode));
+    struct ExpressionNode* node = (struct ExpressionNode*)malloc(sizeof(struct ExpressionNode));
     node->id = ID++;
     node->type = _NOT;
     node->left = NULL;
@@ -600,32 +600,6 @@ struct ExpressionNode *createAndExpressionNode(struct ExpressionNode *leftOperan
     node->right = rightOperand;
     node->next = NULL;
     node->id = ID++;
-    return node;
-}
-
-/*! Создать узел тернарной операции (? :).
- * \param[in] condition условие тернарной операции.
- * \param[in] trueExpr выражение, возвращаемое, если условие истинно.
- * \param[in] falseExpr выражение, возвращаемое, если условие ложно.
- * \return указатель на созданный экземпляр узла тернарной операции.
- */
-struct ExpressionNode *createTernaryExpressionNode(struct ExpressionNode *condition,
-                                                   struct ExpressionNode *trueExpr,
-                                                   struct ExpressionNode *falseExpr)
-{
-    struct ExpressionNode *node = malloc(sizeof(struct ExpressionNode));
-    if (node == NULL)
-    {
-        // Обработка ошибки выделения памяти
-        exit(EXIT_FAILURE);
-    }
-
-    // Инициализируем поля для тернарной операции
-    node->type = _TERNARY;
-    node->condition = condition;
-    node->trueExpr = trueExpr;
-    node->falseExpr = falseExpr;
-
     return node;
 }
 
@@ -713,6 +687,49 @@ struct StatementNode* createReturnStatement(struct ExpressionNode* expr)
     node->varValType = NULL;
     return node;
 }
+
+/*! Создать узел StatementNode для цикла while.
+* \param[in] cond Условие выполнения цикла - указатель на узел  Expression.
+* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
+* \return Созданный узел Statement.
+*/
+struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct StatementNode* stmt)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _WHILE;
+    node->next = NULL;
+    node->varValId = NULL;
+    node->varValType = NULL;
+    node->expression = NULL;
+    node->condition = cond;
+    node->singleBody = stmt;
+    node->complexBody = NULL;
+    node->varDeclList = NULL;
+    return node;
+}
+
+/*! Создать узел StatementNode на основе узла BlockStatement.
+* \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
+*/
+struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->type = _BLOCK;
+    node->expression = NULL;
+    node->complexBody = blockStmt;
+    node->condition = NULL;
+    node->singleBody = NULL;
+    node->id = ID++;
+    node->next = NULL;
+    node->varDeclList = NULL;
+    node->varValId = NULL;
+    node->varValType = NULL;
+    return node;
+}
+
+
 
 /*------------------------------------ StatementList -------------------------------------*/
 

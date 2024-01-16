@@ -49,8 +49,8 @@
 
 %type <expression> expr
 
-%type <statement>stmt stmt_top return_statement
-%type <stmtList>stmt_list
+%type <statement>stmt stmt_top return_statement while_stmt block_statement
+%type <stmtList>stmt_list stmt_list_opt
 
 %%
 
@@ -70,7 +70,6 @@ stmt_sep: ';' endl_opt
 | endl
 ;
 
-// Определение стартового символа
 // expr_list: expr {$$ = createExpressionListNode($1);}
 // | expr_list endl_opt ',' endl_opt expr {$$ = addExpressionToExpressionList($1, $5);}
 // ;
@@ -119,20 +118,20 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | expr MOD_ASSIGN endl_opt expr {$$ = createModAssignmentExpressionNode($1, $4);}
 | expr AND endl_opt expr {$$ = createAndExpressionNode($1, $4);}
 | expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
-| expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
+//| expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
 | expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
 // | ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
 // | '[' endl_opt expr_list_endl_opt ']'
 ;
 
-// block_statement: '{' endl_opt stmt_list_opt '}'
+block_statement: '{' endl_opt stmt_list_opt '}' {$$ = $3;}
 
 // if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
 // | IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE endl_opt stmt
 // ;
 
-// while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-// ;
+while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt {$$ = createWhileStatement($5, $9);}
+;
 
 // do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep
 // ;
@@ -189,9 +188,9 @@ return_statement: RETURN stmt_sep {$$ = createReturnStatement(NULL);}
 // | ANY
 // ;
 
-// stmt_list_opt: /* empty */
-// | stmt_list
-// ;
+stmt_list_opt: /* empty */ {$$ = createStatementListNode(NULL);}
+| stmt_list {$$ = $1;}
+;
 
 stmt_list: stmt {$$ = root = createStatementListNode($1);}
 | stmt_list stmt {$$ = root = addStatementToStatementList($1, $2);}
@@ -199,15 +198,15 @@ stmt_list: stmt {$$ = root = createStatementListNode($1);}
 
 stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | if_stmt
-// | while_stmt
+| while_stmt {$$ = $1;}
 // | for_stmt
 // | do_while_stmt
 // | switch_stmt
 // | try_catch_block
-// | block_statement
+| block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
 // | modifier endl_opt ID stmt_sep
 // | modifier endl_opt var_list_stmt
-// | enum_declaration
+// | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
 // | THROW expr stmt_sep
 ;
