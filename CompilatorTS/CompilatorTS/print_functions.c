@@ -250,6 +250,30 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, (char*)"[label = \"control_body\"];\n");
         }
         break;
+    case _DOWHILE:
+        res = concat(res, (char*)"[label=\"DO_WHILE\"];\n");
+        res = concat(res, generateDotFromExpression(stmt->condition));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->condition->id, strId, 10));
+        res = concat(res, (char*)"[label = \"condition\"];\n");
+        if (stmt->complexBody != NULL)
+        {
+            res = concat(res, generateDotFromStatementList(stmt->complexBody));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->complexBody->id, strId, 10));
+            res = concat(res, (char*)"[label = \"control_body\"];\n");
+        }
+        else if (stmt->singleBody != NULL)
+        {
+            res = concat(res, generateDotFromStatement(stmt->singleBody));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->singleBody->id, strId, 10));
+            res = concat(res, (char*)"[label = \"control_body\"];\n");
+        }
+        break;
     case _EMPTY:
         res = concat(res, (char*)"[label=\"empty_stmt\"];\n");
         break;

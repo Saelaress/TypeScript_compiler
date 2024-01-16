@@ -689,7 +689,7 @@ struct StatementNode* createReturnStatement(struct ExpressionNode* expr)
 }
 
 /*! Создать узел StatementNode для цикла while.
-* \param[in] cond Условие выполнения цикла - указатель на узел  Expression.
+* \param[in] cond Условие выполнения цикла - указатель на узел Expression.
 * \param[in] stmt Тело цикла, состоящее из одного узла Statement.
 * \return Созданный узел Statement.
 */
@@ -698,6 +698,27 @@ struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct S
     struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
     node->id = ID++;
     node->type = _WHILE;
+    node->next = NULL;
+    node->varValId = NULL;
+    node->varValType = NULL;
+    node->expression = NULL;
+    node->condition = cond;
+    node->singleBody = stmt;
+    node->complexBody = NULL;
+    node->varDeclList = NULL;
+    return node;
+}
+
+/*! Создать узел StatementNode для цикла do..while.
+* \param[in] cond Условие выполнения цикла - указатель на узел Expression.
+* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
+* \return Созданный узел Statement.
+*/
+struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct StatementNode* stmt)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _DOWHILE;
     node->next = NULL;
     node->varValId = NULL;
     node->varValType = NULL;

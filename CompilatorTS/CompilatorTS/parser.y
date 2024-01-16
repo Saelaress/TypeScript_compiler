@@ -49,7 +49,7 @@
 
 %type <expression> expr
 
-%type <statement>stmt stmt_top return_statement while_stmt block_statement
+%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt
 %type <stmtList>stmt_list stmt_list_opt
 
 %%
@@ -133,8 +133,8 @@ block_statement: '{' endl_opt stmt_list_opt '}' {$$ = $3;}
 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt {$$ = createWhileStatement($5, $9);}
 ;
 
-// do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep
-// ;
+do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep {$$ = createDoWhileStatement($8, $3);}
+;
 
 // for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt
 // | FOR endl_opt '(' endl_opt modifier endl_opt var_list ';' expr_opt ';' expr_opt ')' endl_opt stmt
@@ -200,7 +200,7 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | if_stmt
 | while_stmt {$$ = $1;}
 // | for_stmt
-// | do_while_stmt
+| do_while_stmt
 // | switch_stmt
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}

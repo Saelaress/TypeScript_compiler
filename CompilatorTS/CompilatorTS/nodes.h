@@ -186,6 +186,9 @@ enum StatementType
     /// Управляющий оператор цикла WHILE.
     _WHILE,
 
+    /// Управляющий оператор цикла DO..WHILE.
+    _DOWHILE,
+
     /// Пустой Statement.
     _EMPTY,
 

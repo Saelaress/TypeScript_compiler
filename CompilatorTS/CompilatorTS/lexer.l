@@ -83,7 +83,10 @@ debugger {fprintf(yyout, "Found KW_DEBUGGER: %s\n", yytext);}
 declare {fprintf(yyout, "Found KW_DECLARE: %s\n", yytext);} 
 default {fprintf(yyout, "Found KW_DEFAULT: %s\n", yytext);} 
 delete {fprintf(yyout, "Found KW_DELETE: %s\n", yytext);} 
-do {fprintf(yyout, "Found KW_DO: %s\n", yytext);} 
+do {
+    printHandler((char*)"DO_KEY_WORD", yytext);
+    return DO;
+}
 else {fprintf(yyout, "Found KW_ELSE: %s\n", yytext);} 
 enum {fprintf(yyout, "Found KW_ENUM: %s\n", yytext);} 
 export {fprintf(yyout, "Found KW_EXPORT: %s\n", yytext);} 

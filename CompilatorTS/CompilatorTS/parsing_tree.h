@@ -206,6 +206,13 @@ struct StatementNode* createReturnStatement(struct ExpressionNode* expr);
 */
 struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct StatementNode* stmt);
 
+/*! Создать узел StatementNode для цикла do..while.
+* \param[in] cond Условие выполнения цикла - указатель на узел Expression.
+* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
+* \return Созданный узел Statement.
+*/
+struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct StatementNode* stmt);
+
 /*! Создать узел StatementNode на основе узла BlockStatement.
 * \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
 * \return указатель на созданный экземпляр StatementNode.
