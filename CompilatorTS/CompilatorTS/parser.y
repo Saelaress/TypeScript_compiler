@@ -118,7 +118,6 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | expr MOD_ASSIGN endl_opt expr {$$ = createModAssignmentExpressionNode($1, $4);}
 | expr AND endl_opt expr {$$ = createAndExpressionNode($1, $4);}
 | expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
-//| expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
 | expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
 // | ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
 // | '[' endl_opt expr_list_endl_opt ']'

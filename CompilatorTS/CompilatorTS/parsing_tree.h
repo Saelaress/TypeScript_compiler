@@ -6,12 +6,6 @@ struct KotlinFileNode *root;
 
 /*------------------------------------ Expression -------------------------------------*/
 
-/*! Создать узел идентификатора.
- * \param[in] idStr указатель на строку, представляющую идентификатор.
- * \return указатель на созданный экземпляр узла идентификатора.
- */
-struct ExpressionNode *createIDExpression(char *idStr);
-
 /*! Создать узел Expression на основе целочисленной литеральной констаты.
  * \param[in] value значение целочисленной литеральной константы.
  * \return указатель на созданный экземпляр узла целочисленной литеральной константы.
@@ -163,6 +157,13 @@ struct ExpressionNode* createNotExpressionNode(struct ExpressionNode* value);
 */
 struct ExpressionNode* createIDExpressionNode(char* ident);
 
+/*! Создать узел оператора присвоения.
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на узел оператора присвоения.
+ */
+struct ExpressionNode* createAssignmentExpressionNode(struct ExpressionNode* leftOperand, struct ExpressionNode* rightOperand);
+
 
 /*------------------------------------ ExpressionList -------------------------------------*/
 
@@ -218,6 +219,13 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
 * \return указатель на созданный экземпляр StatementNode.
 */
 struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt);
+
+/*! Создать узел StatementNode для цикла while.
+* \param[in] cond Условие выполнения цикла - указатель на узел  Expression.
+* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
+* \return Созданный узел Statement.
+*/
+struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct StatementNode* stmt);
 
 
 /*------------------------------------ StatementList -------------------------------------*/
