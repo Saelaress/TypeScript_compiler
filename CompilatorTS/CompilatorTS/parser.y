@@ -49,7 +49,7 @@
 
 %type <expression> expr
 
-%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt
+%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
 %type <stmtList>stmt_list stmt_list_opt
 
 %%
@@ -118,7 +118,6 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | expr MOD_ASSIGN endl_opt expr {$$ = createModAssignmentExpressionNode($1, $4);}
 | expr AND endl_opt expr {$$ = createAndExpressionNode($1, $4);}
 | expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
-//| expr '?' endl_opt expr endl_opt ':' endl_opt expr {$$ = createTernaryExpressionNode($1, $4, $8);}
 | expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
 // | ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
 // | '[' endl_opt expr_list_endl_opt ']'
@@ -126,9 +125,9 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 
 block_statement: '{' endl_opt stmt_list_opt '}' {$$ = $3;}
 
-// if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt
-// | IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE endl_opt stmt
-// ;
+if_stmt: IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt {$$ = createIfStatement($5, $9, NULL);}
+| IF endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt ELSE endl_opt stmt {$$ = createIfStatement($5, $9, $12);}
+;
 
 while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt {$$ = createWhileStatement($5, $9);}
 ;
@@ -197,10 +196,10 @@ stmt_list: stmt {$$ = root = createStatementListNode($1);}
 ;
 
 stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
-// | if_stmt
+| if_stmt {$$ = $1;}
 | while_stmt {$$ = $1;}
 // | for_stmt
-| do_while_stmt
+| do_while_stmt {$$ = $1;}
 // | switch_stmt
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
@@ -211,7 +210,7 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | THROW expr stmt_sep
 ;
 
-stmt: stmt_top
+stmt: stmt_top {$$ = $1;}
 | return_statement {$$ = $1;}
 ;
 

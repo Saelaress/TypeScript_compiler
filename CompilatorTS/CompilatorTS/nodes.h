@@ -189,6 +189,12 @@ enum StatementType
     /// Управляющий оператор цикла DO..WHILE.
     _DOWHILE,
 
+    /// Управляющий оператор if.
+    _IF,
+
+    /// Управляющий оператор if-else.
+    _ELSE,
+
     /// Пустой Statement.
     _EMPTY,
 
@@ -226,6 +232,9 @@ struct StatementNode
 
     /// Ссылка на составное тело цикла.
     struct StatementListNode* complexBody;
+
+    /// Ссылка на тело ветки else в условном операторе if.
+    struct StatementNode* falseBody;
 
     /// Указатель на следующий Statement в списке StatementList (использовать при работе со списком Statement).
     struct StatementNode* next;

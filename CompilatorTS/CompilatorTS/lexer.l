@@ -87,20 +87,26 @@ do {
     printHandler((char*)"DO_KEY_WORD", yytext);
     return DO;
 }
-else {fprintf(yyout, "Found KW_ELSE: %s\n", yytext);} 
+else {
+    printHandler((char*)"KW_ELSE", yytext);
+    return ELSE;
+}
 enum {fprintf(yyout, "Found KW_ENUM: %s\n", yytext);} 
 export {fprintf(yyout, "Found KW_EXPORT: %s\n", yytext);} 
 extends {fprintf(yyout, "Found KW_EXTENDS: %s\n", yytext);} 
 false {
     printHandler((char*)"KW_FALSE", yytext);
     return FALSE_LITERAL;
-} 
+}
 finally {fprintf(yyout, "Found KW_FINALLY: %s\n", yytext);} 
 for {fprintf(yyout, "Found KW_FOR: %s\n", yytext);} 
 from {fprintf(yyout, "Found KW_FROM: %s\n", yytext);} 
 function {fprintf(yyout, "Found KW_FUNCTION: %s\n", yytext);} 
 get {fprintf(yyout, "Found KW_GET: %s\n", yytext);} 
-if {fprintf(yyout, "Found KW_IF: %s\n", yytext);} 
+if {
+    printHandler((char*)"KW_IF", yytext);
+    return IF;
+}
 implements {fprintf(yyout, "Found KW_IMPLEMENTS: %s\n", yytext);} 
 import {fprintf(yyout, "Found KW_IMPORT: %s\n", yytext);} 
 in {fprintf(yyout, "Found KW_IN: %s\n", yytext);} 

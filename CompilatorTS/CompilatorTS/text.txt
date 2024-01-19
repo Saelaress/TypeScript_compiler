@@ -1,6 +1,16 @@
-do {
+if (i > 0) {
+    i++;
+} else if (i < 0) {
+    i;
+}
+else {
+    i--;
+}
+
+/*do {
 	i++;
 	i--;
 } while(i<1)
-{5;}
-return 0;
+*/
+//{5;}
+//return 0;
