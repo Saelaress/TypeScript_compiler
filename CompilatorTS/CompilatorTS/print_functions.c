@@ -288,6 +288,30 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, (char*)"[label = \"statements\"];\n");
         }
         break;
+    case _IF:
+        res = concat(res, (char*)"[label=\"IF\"];\n");
+        res = concat(res, generateDotFromExpression(stmt->condition));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->condition->id, strId, 10));
+        res = concat(res, (char*)"[label = \"condition\"];\n");
+        if (stmt->singleBody != NULL)
+        {
+            res = concat(res, generateDotFromStatement(stmt->singleBody));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->singleBody->id, strId, 10));
+            res = concat(res, (char*)"[label = \"true_body\"];\n");
+        }
+        if (stmt->falseBody != NULL)
+        {
+            res = concat(res, generateDotFromStatement(stmt->falseBody));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->falseBody->id, strId, 10));
+            res = concat(res, (char*)"[label = \"false_body\"];\n");
+        }
+        break;
     case _RETURN:
         res = concat(res, (char*)"[label=\"RETURN\"];\n");
         if (stmt->expression != NULL)

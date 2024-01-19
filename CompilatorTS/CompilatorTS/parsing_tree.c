@@ -730,6 +730,29 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
     return node;
 }
 
+/*! Создать узел StatementNode для условного оператора if.
+ * \param[in] cond Условие выполнения ветки if - указатель на узел Expression.
+ * \param[in] trueStmt Тело ветки if, состоящее из одного узла Statement.
+ * \param[in] falseStmt Тело ветки else, состоящее из одного узла Statement (может быть NULL).
+ * \return Созданный узел Statement.
+ */
+struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct StatementNode* trueStmt, struct StatementNode* falseStmt)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _IF;
+    node->next = NULL;
+    node->varValId = NULL;
+    node->varValType = NULL;
+    node->expression = NULL;
+    node->condition = cond;
+    node->singleBody = trueStmt;
+    node->complexBody = NULL;
+    node->varDeclList = NULL;
+    node->falseBody = falseStmt;
+    return node;
+}
+
 /*! Создать узел StatementNode на основе узла BlockStatement.
 * \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
 * \return указатель на созданный экземпляр StatementNode.
