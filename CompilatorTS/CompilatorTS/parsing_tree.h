@@ -221,6 +221,13 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
  */
 struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct StatementNode* trueStmt, struct StatementNode* falseStmt);
 
+/*! Создать узел StatementNode на основе узла VarDeclaration.
+* \param[in] mod модификатор идентификатора.
+* \param[in] varDecl указатель на экземпляр VarDeclaration, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
+*/
+struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod, struct VarDeclarationNode* varDecl);
+
 /*! Создать узел StatementNode на основе узла BlockStatement.
 * \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
 * \return указатель на созданный экземпляр StatementNode.
@@ -242,3 +249,25 @@ struct StatementListNode* createStatementListNode(struct StatementNode* firstChi
 * \return измененный список Statement (тот же самый, что и параметр list).
 */
 struct StatementListNode* addStatementToStatementList(struct StatementListNode* list, struct StatementNode* statement);
+
+
+/*------------------------------------ Modifier -------------------------------------*/
+
+/*! Создать узел модификатора LET.
+* \return указатель на узел модификатора LET.
+*/
+struct ModifierNode* createLetModifierNode();
+
+/*! Создать узел модификатора CONST.
+ * \return указатель на узел модификатора CONST.
+ */
+struct ModifierNode* createConstModifierNode();
+
+/*------------------------------------ VarDeclaration -------------------------------------*/
+
+/*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
+* \param[in] ident строка - наименование идентификатора.
+* \param[in] typ тип идентификатора; NULL, если не указан.
+* \return указатель на узел VarDeclaration.
+*/
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ);

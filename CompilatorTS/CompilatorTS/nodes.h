@@ -201,6 +201,9 @@ enum StatementType
     /// Блок операторов.
     _BLOCK,
 
+    /// Объявление переменной.
+    _VARDECL,
+
     /// Возврат из функции.
     _RETURN
 };
@@ -242,6 +245,9 @@ struct StatementNode
     /// Указатель на список переменных.
     struct VarDeclarationListNode* varDeclList;
 
+    /// Ссылка на модификатор переменной.
+    struct ModifierNode* modifier;
+
     /// Временное хранилище модификаторов.
     struct ModifierHead* _tempHead;
 };
@@ -259,4 +265,68 @@ struct StatementListNode
 
     /// Указатель на последний элемент списка Statement.
     struct StatementNode* last;
+};
+
+/*------------------------------------ Modifier -------------------------------------*/
+
+/// \brief Перечисление типов модификатора.
+enum ModifierType
+{
+    _LET,
+    _CONST
+};
+
+/*! \brief Узел модификатора. */
+struct ModifierNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Тип узла.
+    enum ModifierType type;
+};
+
+/*------------------------------------ VarDeclaration -------------------------------------*/
+
+/*! \brief Структура узла, описывающего объявление переменной. */
+struct VarDeclarationNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Модификатор переменной.
+    struct ModifierNode* modif;
+
+    /// Идентификатор переменной.
+    char* identifier;
+
+    /// Тип переменной.
+    struct TypeNode* type;
+
+    /// Указатель на следующий узел объявления переменной в списке.
+    struct VarDeclarationNode* next;
+};
+
+/*------------------------------------ Type -------------------------------------*/
+
+/// Тип узла типа.
+enum TypeType
+{
+    _NUMBER,
+    _STRING,
+    _BOOLEAN,
+    _ANY,
+    _UNKNOWN,
+    _VOID
+};
+
+
+/*! \brief Структура, описывающая узел типа. */
+struct TypeNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Тип узла типа.
+    enum TypeType type;
 };

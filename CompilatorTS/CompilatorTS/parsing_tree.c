@@ -760,12 +760,12 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
 struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt)
 {
     struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
     node->type = _BLOCK;
     node->expression = NULL;
     node->complexBody = blockStmt;
     node->condition = NULL;
     node->singleBody = NULL;
-    node->id = ID++;
     node->next = NULL;
     node->varDeclList = NULL;
     node->varValId = NULL;
@@ -773,6 +773,27 @@ struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNod
     return node;
 }
 
+/*! Создать узел StatementNode на основе узла VarDeclaration.
+* \param[in] mod модификатор идентификатора.
+* \param[in] varDecl указатель на экземпляр VarDeclaration, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
+*/
+struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod, struct VarDeclarationNode* varDecl)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _VARDECL;
+    node->next = NULL;
+    node->varValId = varDecl->identifier;
+    node->varValType = varDecl->type;
+    node->expression = NULL;
+    node->condition = NULL;
+    node->complexBody = NULL;
+    node->singleBody = NULL;
+    node->varDeclList = NULL;
+    node->modifier = mod;
+    return node;
+}
 
 
 /*------------------------------------ StatementList -------------------------------------*/
@@ -800,4 +821,45 @@ struct StatementListNode* addStatementToStatementList(struct StatementListNode* 
     list->last->next = statement;
     list->last = statement;
     return list;
+}
+
+/*------------------------------------ Modifier -------------------------------------*/
+
+/*! Создать узел модификатора LET.
+* \return указатель на узел модификатора LET.
+*/
+struct ModifierNode* createLetModifierNode()
+{
+    struct ModifierNode* node = (struct ModifierNode*)malloc(sizeof(struct ModifierNode));
+    node->id = ID++;
+    node->type = _LET;
+    return node;
+}
+
+/*! Создать узел модификатора CONST.
+ * \return указатель на узел модификатора CONST.
+ */
+struct ModifierNode* createConstModifierNode()
+{
+    struct ModifierNode* node = (struct ModifierNode*)malloc(sizeof(struct ModifierNode));
+    node->id = ID++;
+    node->type = _CONST;
+    return node;
+}
+
+/*------------------------------------ VarDeclaration -------------------------------------*/
+
+/*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
+* \param[in] ident строка - наименование идентификатора.
+* \param[in] typ тип идентификатора; NULL, если не указан.
+* \return указатель на узел VarDeclaration.
+*/
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ)
+{
+    struct VarDeclarationNode* node = (struct VarDeclarationNode*)malloc(sizeof(struct VarDeclarationNode));
+    node->id = ID++;
+    node->identifier = ident;
+    node->type = typ;
+    node->next = NULL;
+    return node;
 }

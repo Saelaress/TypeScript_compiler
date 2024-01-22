@@ -2,7 +2,7 @@
 #pragma warning(disable : 4996)
 #include "print_functions.h"
 
-/*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла Expression.
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла Expression.
 * \param[in] node Визуализироваемый узел.
 * \return Строка кода на языке DOT из узла Expression.
 */
@@ -208,10 +208,10 @@ char * generateDotFromExpressionList(struct ExpressionListNode * listNode)
     return res;
 }
 
-/*!    /*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла Statement.
-    * \param[in] stmt Визуализироваемый узел.
-    * \return Строка кода на языке DOT из узла Statement.
-    */
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла Statement.
+* \param[in] stmt Визуализироваемый узел.
+* \return Строка кода на языке DOT из узла Statement.
+*/
 char* generateDotFromStatement(struct StatementNode* stmt)
 {
     char base[] = "";
@@ -312,6 +312,25 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, (char*)"[label = \"false_body\"];\n");
         }
         break;
+    case _VARDECL:
+        res = concat(res, (char*)"[label=\"VAR <ident=");
+        res = concat(res, stmt->varValId);
+        res = concat(res, (char*)">\"];\n");
+        res = concat(res, generateDotFromModifier(stmt->modifier));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->modifier->id, strId, 10));
+        res = concat(res, (char*)"[label = \"modifier\"];\n");
+        if (stmt->varValType != NULL)
+        {
+            res = concat(res, generateDotFromType(stmt->varValType));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->varValType->id, strId, 10));
+            res = concat(res, (char*)"[label = \"type\"];\n");
+        }
+
+        break;
     case _RETURN:
         res = concat(res, (char*)"[label=\"RETURN\"];\n");
         if (stmt->expression != NULL)
@@ -368,8 +387,6 @@ char* concat(char* firstStr, char* secStr)
     result[0] = 0;
     strcpy(result, firstStr);
     strcat(result, secStr);
-    //printf("len of \"%s\" is %d\n\n\n", firstStr, strlen(firstStr));
-    //printf("len of \"%s\" is %d\n\n\n", secStr, strlen(secStr));
     return result;
 }
 
@@ -391,5 +408,55 @@ char* generateStrForBinOperation(struct ExpressionNode* node)
     res = concat(res, (char*)" -> ");
     res = concat(res, itoa(node->right->id, strId, 10));
     res = concat(res, (char*)"[label=\"right\"];\n");
+    return res;
+}
+
+char* generateDotFromModifier(struct ModifierNode* mod)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(mod->id, strId, 10));
+
+    switch (mod->type)
+    {
+    case _LET:
+        res = concat(res, (char*)"[label=\"LET\"];\n");
+        break;
+    case _CONST:
+        res = concat(res, (char*)"[label=\"CONST\"];\n");
+        break;
+    }
+
+    return res;
+}
+
+char* generateDotFromType(struct TypeNode* typ)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(typ->id, strId, 10));
+
+    switch (typ->type)
+    {
+    case _NUMBER:
+        res = concat(res, (char*)"[label=\"NUMBER\"];\n");
+        break;
+    case _STRING:
+        res = concat(res, (char*)"[label=\"STRING\"];\n");
+        break;
+    case _BOOLEAN:
+        res = concat(res, (char*)"[label=\"BOOLEAN\"];\n");
+        break;
+    case _ANY:
+        res = concat(res, (char*)"[label=\"ANY\"];\n");
+        break;
+    case _UNKNOWN:
+        res = concat(res, (char*)"[label=\"UNKNOWN\"];\n");
+        break;
+    case _VOID:
+        res = concat(res, (char*)"[label=\"VOID\"];\n");
+        break;
+    }
+
     return res;
 }

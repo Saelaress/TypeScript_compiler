@@ -39,6 +39,18 @@ char * concat(char * firstStr, char * secStr);
 */
 char* generateStrForBinOperation(struct ExpressionNode* node);
 
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла модификатора (ModifierNode).
+ * \param[in] mod Модификатор переменной.
+ * \return Строка кода на языке DOT из узла модификатора.
+ */
+char* generateDotFromModifier(struct ModifierNode* mod);
+
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла типа (TypeNode).
+ * \param[in] typ Тип переменной.
+ * \return Строка кода на языке DOT из узла типа.
+ */
+char* generateDotFromType(struct TypeNode* typ);
+
 /*! Сгенерировать DOT-строку для файла Kotlin. Строка будет содержать корневую структуру направленного графа digraph prg.
 * \param[in] node Визуализироваемый узел.
 * \return DOT-строка с дочерними узлами.

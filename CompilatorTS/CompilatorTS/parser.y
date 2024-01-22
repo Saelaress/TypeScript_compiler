@@ -14,15 +14,18 @@
     struct ExpressionListNode * exprList;
 	struct StatementNode * statement;
     struct StatementListNode * stmtList;
+    struct ModifierNode * mod;
 }
 
 %define lr.type ielr
 
 %token RETURN DO IF ELSE FOR IN WHILE BREAK CONTINUE DEFAULT ENDL
-%token SWITCH CASE TRY CATCH THROW FINALLY INSTANCEOF
-%token LET CONST FUNC
-%token UNKNOWN ANY NUMBER STRING VOID BOOLEAN ENUM
+%token SWITCH CASE TRY CATCH THROW FINALLY INSTANCEOF FUNC ENUM
 
+%token CONST
+%token LET 
+%token UNKNOWN ANY STRING VOID BOOLEAN
+%token NUMBER
 %token <intLit> INT_LITERAL
 %token <floatLit> FLOAT_LITERAL
 %token <stringLit> STRING_LITERAL
@@ -47,11 +50,10 @@
 
 %start stmt_list
 
-%type <expression> expr
-
+%type <expression>expr
 %type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
 %type <stmtList>stmt_list stmt_list_opt
-
+%type <mod>modifier
 %%
 
 // function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
@@ -78,11 +80,11 @@ stmt_sep: ';' endl_opt
 // | expr_list_endl
 // ;
 
-// expr_list_endl: expr_list endl_opt
+// expr_list_endl: expr_list endl_opt {$$ = $1;}
 // ;
 
 // expr_opt: /*empty*/
-// | endl_opt expr endl_opt
+// | endl_opt expr endl_opt {$$ = $2;}
 // ;
 
 expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNode($1);}
@@ -203,8 +205,8 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | switch_stmt
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
-// | modifier endl_opt ID stmt_sep
-// | modifier endl_opt var_list_stmt
+| modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclaration($1, createVarDeclarationNode($3, NULL));}
+// | modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclarationList($1, $3);}
 // | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
 // | THROW expr stmt_sep
@@ -213,6 +215,61 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 stmt: stmt_top {$$ = $1;}
 | return_statement {$$ = $1;}
 ;
+
+modifier: LET {$$ = createLetModifierNode();}
+| CONST {$$ = createConstModifierNode();}
+;
+
+// type: NUMBER {$$ = createTypeNode($1);}
+// | STRING {$$ = $1;}
+// | BOOLEAN {$$ = $1;}
+// | ANY {$$ = $1;}
+// | UNKNOWN {$$ = $1;}
+// | VOID {$$ = $1;}
+// | ID
+;
+
+// type_mark: ':' endl_opt type {$$ = $3;}
+// ;
+
+// variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt
+// | ID endl_opt type_mark endl_opt
+// | ID endl_opt var_init endl_opt
+// | ID endl_opt type_mark dimensions_list endl_opt // Объявление массива
+// | ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' endl_opt // Инициализация массива
+// ;
+
+// var_list: variable_endl ',' endl_opt variable_endl
+// | ID endl_opt ',' endl_opt variable_endl
+// | variable_endl ',' endl_opt ID endl_opt
+// | ID endl_opt ',' endl_opt ID endl_opt
+// | var_list ',' endl_opt variable_endl
+// ;
+
+// var_list_stmt: variable_stmt {$$ = createVarStatementList($1);}
+// | variable_endl ',' endl_opt variable_stmt
+// | ID endl_opt ',' endl_opt variable_stmt
+// | variable_endl ',' endl_opt ID stmt_sep
+// | ID endl_opt ',' endl_opt ID stmt_sep
+// | var_list ',' endl_opt variable_stmt
+;
+
+// variable_stmt: //ID endl_opt type_mark endl_opt var_init stmt_sep
+//  ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3);}
+//| ID endl_opt var_init stmt_sep
+// | ID endl_opt type_mark dimensions_list stmt_sep {$$ = createArrayDeclarationStatement(createVarDeclarationStatement($1, $3), $4);} // Объявление массива
+// | ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' stmt_sep // Инициализация массива
+;
+
+// var_init: '=' endl_opt expr {$$ = $3;}
+// ;
+
+// dimensions: '[' endl_opt ']'
+// ;
+
+// dimensions_list: dimensions
+// | dimensions_list dimensions
+// ;
 
 %%
 

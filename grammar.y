@@ -230,7 +230,7 @@ type: NUMBER
 // | ID
 ;
 
-type_mark:  ':' endl_opt type
+type_mark: ':' endl_opt type
 ;
 
 variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt
