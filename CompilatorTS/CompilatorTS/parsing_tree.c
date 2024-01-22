@@ -786,7 +786,7 @@ struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod
     node->next = NULL;
     node->varValId = varDecl->identifier;
     node->varValType = varDecl->type;
-    node->expression = NULL;
+    node->expression = varDecl->expression;
     node->condition = NULL;
     node->complexBody = NULL;
     node->singleBody = NULL;
@@ -922,14 +922,16 @@ struct TypeNode* createVoidTypeNode()
 /*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
 * \param[in] ident строка - наименование идентификатора.
 * \param[in] typ тип идентификатора; NULL, если не указан.
+* \param[in] expr указатель на экземпляр ExpressionNode.
 * \return указатель на узел VarDeclaration.
 */
-struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ)
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct ExpressionNode* expr)
 {
     struct VarDeclarationNode* node = (struct VarDeclarationNode*)malloc(sizeof(struct VarDeclarationNode));
     node->id = ID++;
     node->identifier = ident;
     node->type = typ;
+    node->expression = expr;
     node->next = NULL;
     return node;
 }

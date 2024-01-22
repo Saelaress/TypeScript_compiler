@@ -329,6 +329,14 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, itoa(stmt->varValType->id, strId, 10));
             res = concat(res, (char*)"[label = \"type\"];\n");
         }
+        if (stmt->expression != NULL)
+        {
+            res = concat(res, generateDotFromExpression(stmt->expression));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->expression->id, strId, 10));
+            res = concat(res, (char*)"[label = \"expr\"];\n");
+        }
 
         break;
     case _RETURN:

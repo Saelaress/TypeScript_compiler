@@ -51,7 +51,7 @@
 
 %start stmt_list
 
-%type <expression>expr
+%type <expression>expr var_init
 %type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt var_list_stmt variable_stmt
 %type <stmtList>stmt_list stmt_list_opt
 %type <mod>modifier
@@ -207,7 +207,7 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | switch_stmt
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
-| modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclaration($1, createVarDeclarationNode($3, NULL));}
+| modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclaration($1, createVarDeclarationNode($3, NULL, NULL));}
 | modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclaration($1, $3);}
 // | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
@@ -256,15 +256,15 @@ var_list_stmt: variable_stmt {$$ = $1;}
 // | var_list ',' endl_opt variable_stmt
 ;
 
-variable_stmt: //ID endl_opt type_mark endl_opt var_init stmt_sep
- ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3);}
-//| ID endl_opt var_init stmt_sep
+variable_stmt: ID endl_opt type_mark endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, $3, $5);}
+| ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3, NULL);}
+| ID endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, NULL, $3);}
 // | ID endl_opt type_mark dimensions_list stmt_sep {$$ = createArrayDeclarationStatement(createVarDeclarationStatement($1, $3), $4);} // Объявление массива
 // | ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' stmt_sep // Инициализация массива
 ;
 
-// var_init: '=' endl_opt expr {$$ = $3;}
-// ;
+var_init: '=' endl_opt expr {$$ = $3;}
+;
 
 // dimensions: '[' endl_opt ']'
 // ;

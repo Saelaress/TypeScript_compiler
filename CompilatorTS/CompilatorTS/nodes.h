@@ -303,6 +303,9 @@ struct VarDeclarationNode
     /// Тип переменной.
     struct TypeNode* type;
 
+    /// Ссылка на Expression.
+    struct ExpressionNode* expression;
+
     /// Указатель на следующий узел объявления переменной в списке.
     struct VarDeclarationNode* next;
 };
