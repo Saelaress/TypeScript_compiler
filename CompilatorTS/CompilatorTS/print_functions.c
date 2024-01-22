@@ -337,7 +337,19 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, itoa(stmt->expression->id, strId, 10));
             res = concat(res, (char*)"[label = \"expr\"];\n");
         }
-
+        break;
+    case _VARDECLLIST:
+        res = concat(res, (char*)"[label=\"VARDECLLIST\"];\n");
+        res = concat(res, generateDotFromModifier(stmt->modifier));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->modifier->id, strId, 10));
+        res = concat(res, (char*)"[label = \"modifier\"];\n");
+        res = concat(res, generateDotFromVarDeclaration(stmt->varDeclList->first));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->varDeclList->first->id, strId, 10));
+        res = concat(res, (char*)"[label = \"first\"];\n");
         break;
     case _RETURN:
         res = concat(res, (char*)"[label=\"RETURN\"];\n");
@@ -416,6 +428,41 @@ char* generateStrForBinOperation(struct ExpressionNode* node)
     res = concat(res, (char*)" -> ");
     res = concat(res, itoa(node->right->id, strId, 10));
     res = concat(res, (char*)"[label=\"right\"];\n");
+    return res;
+}
+
+char* generateDotFromVarDeclaration(struct VarDeclarationNode* varDecl)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(varDecl->id, strId, 10));
+    res = concat(res, (char*)"[label=\"VAR <ident=");
+    res = concat(res, varDecl->identifier);
+    res = concat(res, (char*)">\"];\n");
+    if (varDecl->type != NULL)
+    {
+        res = concat(res, generateDotFromType(varDecl->type));
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->type->id, strId, 10));
+        res = concat(res, (char*)"[label = \"type\"];\n");
+    }
+    if (varDecl->expression != NULL)
+    {
+        res = concat(res, generateDotFromExpression(varDecl->expression));
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->expression->id, strId, 10));
+        res = concat(res, (char*)"[label = \"expr\"];\n");
+    }
+    if (varDecl->next != NULL)
+    {
+        res = concat(res, generateDotFromVarDeclaration(varDecl->next));
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->next->id, strId, 10));
+        res = concat(res, (char*)"[label=\"next\"];\n");
+    }
     return res;
 }
 

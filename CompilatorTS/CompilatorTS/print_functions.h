@@ -69,12 +69,6 @@ char * generateDotFromKotlinFileElementList(struct KotlinFileElementListNode * n
 */
 char * generateDotFromKotlinFileElement(struct KotlinFileElementNode * node);
 
-/*! Сгенерировать DOT-строку для узла модификатора.
-* \param[in] node Узел модификатора.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromModifier(struct ModifierNode * node);
-
 /*! Сгенерировать DOT-строку для узла списка модификаторов.
 * \param[in] node Узел списка модификаторов.
 * \return DOT-строка с дочерними узлами.
@@ -88,10 +82,10 @@ char * generateDotFromModifierList(struct ModifierListNode * node);
 char * generateDotFromFunction(struct FunctionNode * node);
 
 /*! Сгенерировать DOT-строку для узла объявления переменной.
-* \param[in] node Узел объявления переменной.
+* \param[in] varDecl Узел объявления переменной.
 * \return DOT-строка с дочерними узлами.
 */
-char * generateDotFromVarDeclaration(struct VarDeclarationNode * node);
+char * generateDotFromVarDeclaration(struct VarDeclarationNode * varDecl);
 
 /*! Сгенерировать DOT-строку для узла списка объявлений переменной.
 * \param[in] node Узел списка объявлений переменной.

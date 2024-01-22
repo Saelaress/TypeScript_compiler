@@ -796,21 +796,24 @@ struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod
 }
 
 /*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
+ * \param[in] mod модификатор идентификатора.
  * \param[in] varDeclList Список объявлений переменных.
  * \return Указатель на узел StatementNode, представляющий объявления переменных.
  */
-struct StatementNode* createStatementFromVarDeclarationList(struct VarDeclarationListNode* varDeclList)
+struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode* mod, struct VarDeclarationListNode* varDeclList)
 {
     struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
     node->id = ID++;
-    node->type = _VARDECL;
+    node->type = _VARDECLLIST;
     node->varValId = NULL;
     node->varValType = NULL;
     node->expression = NULL;
     node->condition = NULL;
     node->complexBody = NULL;
     node->singleBody = NULL;
+    node->next = NULL;
     node->varDeclList = varDeclList;
+    node->modifier = mod;
     return node;
 }
 
@@ -964,7 +967,15 @@ struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNod
 {
     struct VarDeclarationListNode* node = (struct VarDeclarationListNode*)malloc(sizeof(struct VarDeclarationListNode));
     node->first = firstChild;
-    node->last = lastChild;
+    if (lastChild != NULL)
+    {
+        node->first->next = lastChild;
+        node->last = lastChild;
+    }
+    else 
+    {
+        node->last = firstChild;
+    }
     node->id = ID++;
     return node;
 }

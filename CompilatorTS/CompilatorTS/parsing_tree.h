@@ -229,10 +229,11 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
 struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod, struct VarDeclarationNode* varDecl);
 
 /*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
+ * \param[in] mod модификатор идентификатора.
  * \param[in] varDeclList Список объявлений переменных.
  * \return Указатель на узел StatementNode, представляющий объявления переменных.
  */
-struct StatementNode* createStatementFromVarDeclarationList(struct VarDeclarationListNode* varDeclList);
+struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode* mod, struct VarDeclarationListNode* varDeclList);
 
 /*! Создать узел StatementNode на основе узла BlockStatement.
 * \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.

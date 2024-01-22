@@ -16,6 +16,8 @@
     struct StatementListNode * stmtList;
     struct ModifierNode * mod;
     struct TypeNode * typ;
+    struct VarDeclarationListNode * varDeclList;
+    struct VarDeclarationNode * varDecl;
 }
 
 %define lr.type ielr
@@ -52,7 +54,9 @@
 %start stmt_list
 
 %type <expression>expr var_init
-%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt var_list_stmt variable_stmt variable_endl
+%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
+%type <varDeclList> var_list_stmt
+%type <varDecl> variable_stmt variable_endl
 %type <stmtList>stmt_list stmt_list_opt
 %type <mod>modifier
 %type <typ>type type_mark
@@ -248,8 +252,8 @@ variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt {$$ = createVarD
 // | var_list ',' endl_opt variable_endl
 // ;
 
-var_list_stmt: variable_stmt {$$ = createVarDeclarationList($1, $1);}
-| variable_endl ',' endl_opt variable_stmt {$$ = addVarDeclarationToVarDeclarationList($1, $4);}
+var_list_stmt: variable_stmt {$$ = createVarDeclarationList($1, NULL);}
+| variable_endl ',' endl_opt variable_stmt {$$ = createVarDeclarationList($1, $4);}
 // | ID endl_opt ',' endl_opt variable_stmt
 // | variable_endl ',' endl_opt ID stmt_sep
 // | ID endl_opt ',' endl_opt ID stmt_sep
