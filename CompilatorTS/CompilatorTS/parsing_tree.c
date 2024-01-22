@@ -762,7 +762,7 @@ struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNod
     struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
     node->id = ID++;
     node->type = _BLOCK;
-    node->expression = NULL;
+    node->expression = NULL;    
     node->complexBody = blockStmt;
     node->condition = NULL;
     node->singleBody = NULL;
@@ -795,7 +795,24 @@ struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod
     return node;
 }
 
-
+/*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
+ * \param[in] varDeclList Список объявлений переменных.
+ * \return Указатель на узел StatementNode, представляющий объявления переменных.
+ */
+struct StatementNode* createStatementFromVarDeclarationList(struct VarDeclarationListNode* varDeclList)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _VARDECL;
+    node->varValId = NULL;
+    node->varValType = NULL;
+    node->expression = NULL;
+    node->condition = NULL;
+    node->complexBody = NULL;
+    node->singleBody = NULL;
+    node->varDeclList = varDeclList;
+    return node;
+}
 
 /*------------------------------------ StatementList -------------------------------------*/
 
@@ -934,4 +951,32 @@ struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode
     node->expression = expr;
     node->next = NULL;
     return node;
+}
+
+
+/*------------------------------------ VarDeclarationList -------------------------------------*/
+
+/*! Создать узел списка VarDeclaration.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNode* firstChild, struct VarDeclarationNode* lastChild)
+{
+    struct VarDeclarationListNode* node = (struct VarDeclarationListNode*)malloc(sizeof(struct VarDeclarationListNode));
+    node->first = firstChild;
+    node->last = lastChild;
+    node->id = ID++;
+    return node;
+}
+
+/*! Добавить VarDeclarationNode к списку VarDeclaration.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел VarDeclaration.
+* \return измененный список VarDeclaration (тот же самый, что и параметр list).
+*/
+struct VarDeclarationListNode* addVarDeclarationToVarDeclarationList(struct VarDeclarationListNode* list, struct VarDeclarationNode* varDecl)
+{
+    list->last->next = varDecl;
+    list->last = varDecl;
+    return list;
 }

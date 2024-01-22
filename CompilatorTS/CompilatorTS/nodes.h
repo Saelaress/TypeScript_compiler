@@ -310,6 +310,21 @@ struct VarDeclarationNode
     struct VarDeclarationNode* next;
 };
 
+/*------------------------------------ VarDeclarationList -------------------------------------*/
+
+/*! \brief Структура узла списка VarDeclaration. */
+struct VarDeclarationListNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Указатель на первый элемент списка VarDeclaration.
+    struct VarDeclarationNode* first;
+
+    /// Указатель на последний элемент списка VarDeclaration.
+    struct VarDeclarationNode* last;
+};
+
 /*------------------------------------ Type -------------------------------------*/
 
 /// Тип узла типа.

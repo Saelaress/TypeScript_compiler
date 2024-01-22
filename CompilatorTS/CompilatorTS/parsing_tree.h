@@ -228,6 +228,12 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
 */
 struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod, struct VarDeclarationNode* varDecl);
 
+/*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
+ * \param[in] varDeclList Список объявлений переменных.
+ * \return Указатель на узел StatementNode, представляющий объявления переменных.
+ */
+struct StatementNode* createStatementFromVarDeclarationList(struct VarDeclarationListNode* varDeclList);
+
 /*! Создать узел StatementNode на основе узла BlockStatement.
 * \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
 * \return указатель на созданный экземпляр StatementNode.
@@ -304,3 +310,18 @@ struct TypeNode* createVoidTypeNode();
 * \return указатель на узел VarDeclaration.
 */
 struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct ExpressionNode* expr);
+
+/*------------------------------------ VarDeclarationList -------------------------------------*/
+
+/*! Создать узел списка VarDeclaration.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNode* firstChild, struct VarDeclarationNode* lastChild);
+
+/*! Добавить VarDeclarationNode к списку VarDeclaration.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел VarDeclaration.
+* \return измененный список VarDeclaration (тот же самый, что и параметр list).
+*/
+struct VarDeclarationListNode* addVarDeclarationToVarDeclarationList(struct VarDeclarationListNode* list, struct VarDeclarationNode* varDecl);

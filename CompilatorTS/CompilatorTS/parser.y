@@ -52,7 +52,7 @@
 %start stmt_list
 
 %type <expression>expr var_init
-%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt var_list_stmt variable_stmt
+%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt var_list_stmt variable_stmt variable_endl
 %type <stmtList>stmt_list stmt_list_opt
 %type <mod>modifier
 %type <typ>type type_mark
@@ -208,7 +208,7 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
 | modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclaration($1, createVarDeclarationNode($3, NULL, NULL));}
-| modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclaration($1, $3);}
+| modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclarationList($1, $3);}
 // | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
 // | THROW expr stmt_sep
@@ -234,9 +234,9 @@ type: NUMBER {$$ = createNumberTypeNode();}
 type_mark: ':' endl_opt type {$$ = $3;}
 ;
 
-// variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt
-// | ID endl_opt type_mark endl_opt
-// | ID endl_opt var_init endl_opt
+variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, $3, $5);}
+| ID endl_opt type_mark endl_opt {$$ = createVarDeclarationNode($1, $3, NULL);}
+| ID endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, NULL, $3);}
 // | ID endl_opt type_mark dimensions_list endl_opt // Объявление массива
 // | ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' endl_opt // Инициализация массива
 // ;
@@ -248,8 +248,8 @@ type_mark: ':' endl_opt type {$$ = $3;}
 // | var_list ',' endl_opt variable_endl
 // ;
 
-var_list_stmt: variable_stmt {$$ = $1;}
-// | variable_endl ',' endl_opt variable_stmt
+var_list_stmt: variable_stmt {$$ = createVarDeclarationList($1, $1);}
+| variable_endl ',' endl_opt variable_stmt {$$ = addVarDeclarationToVarDeclarationList($1, $4);}
 // | ID endl_opt ',' endl_opt variable_stmt
 // | variable_endl ',' endl_opt ID stmt_sep
 // | ID endl_opt ',' endl_opt ID stmt_sep
