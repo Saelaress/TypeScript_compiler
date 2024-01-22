@@ -15,6 +15,7 @@
 	struct StatementNode * statement;
     struct StatementListNode * stmtList;
     struct ModifierNode * mod;
+    struct TypeNode * typ;
 }
 
 %define lr.type ielr
@@ -51,9 +52,10 @@
 %start stmt_list
 
 %type <expression>expr
-%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
+%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt var_list_stmt variable_stmt
 %type <stmtList>stmt_list stmt_list_opt
 %type <mod>modifier
+%type <typ>type type_mark
 %%
 
 // function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
@@ -206,7 +208,7 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
 | modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclaration($1, createVarDeclarationNode($3, NULL));}
-// | modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclarationList($1, $3);}
+| modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclaration($1, $3);}
 // | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
 // | THROW expr stmt_sep
@@ -220,17 +222,17 @@ modifier: LET {$$ = createLetModifierNode();}
 | CONST {$$ = createConstModifierNode();}
 ;
 
-// type: NUMBER {$$ = createTypeNode($1);}
-// | STRING {$$ = $1;}
-// | BOOLEAN {$$ = $1;}
-// | ANY {$$ = $1;}
-// | UNKNOWN {$$ = $1;}
-// | VOID {$$ = $1;}
+type: NUMBER {$$ = createNumberTypeNode();}
+| STRING {$$ = createStringTypeNode();}
+| BOOLEAN {$$ = createBooleanTypeNode();}
+| ANY {$$ = createAnyTypeNode();}
+| UNKNOWN {$$ = createUnknownTypeNode();}
+| VOID {$$ = createVoidTypeNode();}
 // | ID
 ;
 
-// type_mark: ':' endl_opt type {$$ = $3;}
-// ;
+type_mark: ':' endl_opt type {$$ = $3;}
+;
 
 // variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt
 // | ID endl_opt type_mark endl_opt
@@ -246,7 +248,7 @@ modifier: LET {$$ = createLetModifierNode();}
 // | var_list ',' endl_opt variable_endl
 // ;
 
-// var_list_stmt: variable_stmt {$$ = createVarStatementList($1);}
+var_list_stmt: variable_stmt {$$ = $1;}
 // | variable_endl ',' endl_opt variable_stmt
 // | ID endl_opt ',' endl_opt variable_stmt
 // | variable_endl ',' endl_opt ID stmt_sep
@@ -254,8 +256,8 @@ modifier: LET {$$ = createLetModifierNode();}
 // | var_list ',' endl_opt variable_stmt
 ;
 
-// variable_stmt: //ID endl_opt type_mark endl_opt var_init stmt_sep
-//  ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3);}
+variable_stmt: //ID endl_opt type_mark endl_opt var_init stmt_sep
+ ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3);}
 //| ID endl_opt var_init stmt_sep
 // | ID endl_opt type_mark dimensions_list stmt_sep {$$ = createArrayDeclarationStatement(createVarDeclarationStatement($1, $3), $4);} // Объявление массива
 // | ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' stmt_sep // Инициализация массива

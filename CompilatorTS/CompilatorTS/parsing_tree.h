@@ -263,6 +263,38 @@ struct ModifierNode* createLetModifierNode();
  */
 struct ModifierNode* createConstModifierNode();
 
+/*------------------------------------ Type -------------------------------------*/
+
+/*! Создать узел типа NUMBER.
+ * \return Указатель на узел типа NUMBER.
+ */
+struct TypeNode* createNumberTypeNode();
+
+/*! Создать узел типа STRING.
+ * \return Указатель на узел типа STRING.
+ */
+struct TypeNode* createStringTypeNode();
+
+/*! Создать узел типа BOOLEAN.
+ * \return Указатель на узел типа BOOLEAN.
+ */
+struct TypeNode* createBooleanTypeNode();
+
+/*! Создать узел типа ANY.
+ * \return Указатель на узел типа ANY.
+ */
+struct TypeNode* createAnyTypeNode();
+
+/*! Создать узел типа UNKNOWN.
+ * \return Указатель на узел типа UNKNOWN.
+ */
+struct TypeNode* createUnknownTypeNode();
+
+/*! Создать узел типа VOID.
+ * \return Указатель на узел типа VOID.
+ */
+struct TypeNode* createVoidTypeNode();
+
 /*------------------------------------ VarDeclaration -------------------------------------*/
 
 /*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.

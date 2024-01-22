@@ -796,6 +796,7 @@ struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod
 }
 
 
+
 /*------------------------------------ StatementList -------------------------------------*/
 
 /*! Создать узел списка Statement.
@@ -846,6 +847,75 @@ struct ModifierNode* createConstModifierNode()
     node->type = _CONST;
     return node;
 }
+
+/*------------------------------------ Type -------------------------------------*/
+
+/*! Создать узел типа NUMBER.
+ * \return Указатель на узел типа NUMBER.
+ */
+struct TypeNode* createNumberTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _NUMBER;
+    return node;
+}
+
+/*! Создать узел типа STRING.
+ * \return Указатель на узел типа STRING.
+ */
+struct TypeNode* createStringTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _STRING;
+    return node;
+}
+
+/*! Создать узел типа BOOLEAN.
+ * \return Указатель на узел типа BOOLEAN.
+ */
+struct TypeNode* createBooleanTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _BOOLEAN;
+    return node;
+}
+
+/*! Создать узел типа ANY.
+ * \return Указатель на узел типа ANY.
+ */
+struct TypeNode* createAnyTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _ANY;
+    return node;
+}
+
+/*! Создать узел типа UNKNOWN.
+ * \return Указатель на узел типа UNKNOWN.
+ */
+struct TypeNode* createUnknownTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _UNKNOWN;
+    return node;
+}
+
+/*! Создать узел типа VOID.
+ * \return Указатель на узел типа VOID.
+ */
+struct TypeNode* createVoidTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _VOID;
+    return node;
+}
+
 
 /*------------------------------------ VarDeclaration -------------------------------------*/
 

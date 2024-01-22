@@ -293,7 +293,10 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     printHandler((char*)"RIGHT_BRACE", yytext);
     return '}';
 }
-":" {fprintf(yyout, "Found COLON: %s\n", yytext);}
+":" {
+    printHandler((char*)"COLON", yytext);
+    return ':';
+}
 ";" {
     printHandler((char*)"SEMICOLON", yytext);
     return ';';
