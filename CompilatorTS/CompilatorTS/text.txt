@@ -1,1 +1,1 @@
-let i: number = 1, a: any = x++;
+let i, a;

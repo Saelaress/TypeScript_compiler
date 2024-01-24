@@ -254,9 +254,9 @@ variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt {$$ = createVarD
 
 var_list_stmt: variable_stmt {$$ = createVarDeclarationList($1, NULL);}
 | variable_endl ',' endl_opt variable_stmt {$$ = createVarDeclarationList($1, $4);}
-// | ID endl_opt ',' endl_opt variable_stmt
-// | variable_endl ',' endl_opt ID stmt_sep
-// | ID endl_opt ',' endl_opt ID stmt_sep
+| ID endl_opt ',' endl_opt variable_stmt {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL), $5);}
+| variable_endl ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL));}
+| ID endl_opt ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL), createVarDeclarationNode($5, NULL, NULL));}
 // | var_list ',' endl_opt variable_stmt
 ;
 
