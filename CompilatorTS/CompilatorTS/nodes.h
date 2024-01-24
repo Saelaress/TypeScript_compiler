@@ -306,6 +306,9 @@ struct VarDeclarationNode
     /// Тип переменной.
     struct TypeNode* type;
 
+    /// Ссылка на Dimension.
+    struct DimensionNode* dimen;
+
     /// Ссылка на Expression.
     struct ExpressionNode* expression;
 
@@ -350,4 +353,16 @@ struct TypeNode
 
     /// Тип узла типа.
     enum TypeType type;
+};
+
+/*------------------------------------ Dimension -------------------------------------*/
+
+/*! \brief Структура, описывающая узел размерности массива. */
+struct DimensionNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Размерность.
+    int dimension;
 };

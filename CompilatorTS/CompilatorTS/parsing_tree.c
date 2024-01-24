@@ -937,20 +937,45 @@ struct TypeNode* createVoidTypeNode()
 }
 
 
+/*------------------------------------ Dimension -------------------------------------*/
+
+/*! Создать узел DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* createDimensionNode()
+{
+    struct DimensionNode* node = (struct DimensionNode*)malloc(sizeof(struct DimensionNode));
+    node->id = ID++;
+    node->dimension = 1;
+    return node;
+}
+
+/*! Инкрементировать размерность в узле DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* incrementDimensionNode(struct DimensionNode* node)
+{
+    node->dimension = node->dimension+1;
+    return node;
+}
+
+
 /*------------------------------------ VarDeclaration -------------------------------------*/
 
 /*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
 * \param[in] ident строка - наименование идентификатора.
 * \param[in] typ тип идентификатора; NULL, если не указан.
+* \param[in] dimen размерность идентификатора; NULL, если не указан.
 * \param[in] expr указатель на экземпляр ExpressionNode.
 * \return указатель на узел VarDeclaration.
 */
-struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct ExpressionNode* expr)
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct DimensionNode* dimen, struct ExpressionNode* expr)
 {
     struct VarDeclarationNode* node = (struct VarDeclarationNode*)malloc(sizeof(struct VarDeclarationNode));
     node->id = ID++;
     node->identifier = ident;
     node->type = typ;
+    node->dimen = dimen;
     node->expression = expr;
     node->next = NULL;
     return node;

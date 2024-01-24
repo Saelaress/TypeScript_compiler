@@ -18,6 +18,7 @@
     struct TypeNode * typ;
     struct VarDeclarationListNode * varDeclList;
     struct VarDeclarationNode * varDecl;
+    struct DimensionNode * dimension;
 }
 
 %define lr.type ielr
@@ -60,6 +61,7 @@
 %type <stmtList>stmt_list stmt_list_opt
 %type <mod>modifier
 %type <typ>type type_mark
+%type <dimension>dimensions_list
 %%
 
 // function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
@@ -211,7 +213,7 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 // | switch_stmt
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
-| modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclaration($1, createVarDeclarationNode($3, NULL, NULL));}
+| modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclarationList($1, createVarDeclarationList(createVarDeclarationNode($3, NULL, NULL, NULL), NULL));}
 | modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclarationList($1, $3);}
 // | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
@@ -238,46 +240,46 @@ type: NUMBER {$$ = createNumberTypeNode();}
 type_mark: ':' endl_opt type {$$ = $3;}
 ;
 
-variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, $3, $5);}
-| ID endl_opt type_mark endl_opt {$$ = createVarDeclarationNode($1, $3, NULL);}
-| ID endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, NULL, $3);}
-// | ID endl_opt type_mark dimensions_list endl_opt // Объявление массива
-// | ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' endl_opt // Инициализация массива
-// ;
+variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, $3, NULL, $5);}
+| ID endl_opt type_mark endl_opt {$$ = createVarDeclarationNode($1, $3, NULL, NULL);}
+| ID endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, NULL, NULL, $3);}
+| ID endl_opt type_mark dimensions_list endl_opt {$$ = createVarDeclarationNode($1, $3, $4, NULL);} // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, $3, $4, $6);} // Инициализация массива
+;
 
 var_list: variable_endl ',' endl_opt variable_endl {$$ = createVarDeclarationList($1, $4);}
-| ID endl_opt ',' endl_opt variable_endl {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL), $5);}
-| variable_endl ',' endl_opt ID endl_opt {$$ = createVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL));}
-| ID endl_opt ',' endl_opt ID endl_opt {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL), createVarDeclarationNode($5, NULL, NULL));}
+| ID endl_opt ',' endl_opt variable_endl {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), $5);}
+| variable_endl ',' endl_opt ID endl_opt {$$ = createVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
+| ID endl_opt ',' endl_opt ID endl_opt {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), createVarDeclarationNode($5, NULL, NULL, NULL));}
 | var_list ',' endl_opt variable_endl {$$ = addVarDeclarationToVarDeclarationList($1, $4);}
-| var_list ',' endl_opt ID endl_opt {$$ = addVarDeclarationToVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL));}
+| var_list ',' endl_opt ID endl_opt {$$ = addVarDeclarationToVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
 ;
 
 var_list_stmt: variable_stmt {$$ = createVarDeclarationList($1, NULL);}
 | variable_endl ',' endl_opt variable_stmt {$$ = createVarDeclarationList($1, $4);}
-| ID endl_opt ',' endl_opt variable_stmt {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL), $5);}
-| variable_endl ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL));}
-| ID endl_opt ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL), createVarDeclarationNode($5, NULL, NULL));}
+| ID endl_opt ',' endl_opt variable_stmt {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), $5);}
+| variable_endl ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
+| ID endl_opt ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), createVarDeclarationNode($5, NULL, NULL, NULL));}
 | var_list ',' endl_opt variable_stmt {$$ = addVarDeclarationToVarDeclarationList($1, $4);}
-| var_list ',' endl_opt ID stmt_sep {$$ = addVarDeclarationToVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL));}
+| var_list ',' endl_opt ID stmt_sep {$$ = addVarDeclarationToVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
 ;
 
-variable_stmt: ID endl_opt type_mark endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, $3, $5);}
-| ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3, NULL);}
-| ID endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, NULL, $3);}
-// | ID endl_opt type_mark dimensions_list stmt_sep {$$ = createArrayDeclarationStatement(createVarDeclarationStatement($1, $3), $4);} // Объявление массива
-// | ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' stmt_sep // Инициализация массива
+variable_stmt: ID endl_opt type_mark endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, $3, NULL, $5);}
+| ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3, NULL, NULL);}
+| ID endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, NULL, NULL, $3);}
+| ID endl_opt type_mark dimensions_list stmt_sep {$$ = createVarDeclarationNode($1, $3, $4, NULL);} // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, $3, $4, $6);} // Инициализация массива
 ;
 
 var_init: '=' endl_opt expr {$$ = $3;}
 ;
 
-// dimensions: '[' endl_opt ']'
-// ;
+dimensions: '[' endl_opt ']'
+;
 
-// dimensions_list: dimensions
-// | dimensions_list dimensions
-// ;
+dimensions_list: dimensions {$$ = createDimensionNode();}
+| dimensions_list dimensions {$$ = incrementDimensionNode($1);}
+;
 
 %%
 

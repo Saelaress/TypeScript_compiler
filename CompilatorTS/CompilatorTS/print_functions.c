@@ -312,32 +312,6 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, (char*)"[label = \"false_body\"];\n");
         }
         break;
-    case _VARDECL:
-        res = concat(res, (char*)"[label=\"VAR <ident=");
-        res = concat(res, stmt->varValId);
-        res = concat(res, (char*)">\"];\n");
-        res = concat(res, generateDotFromModifier(stmt->modifier));
-        res = concat(res, itoa(stmt->id, strId, 10));
-        res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(stmt->modifier->id, strId, 10));
-        res = concat(res, (char*)"[label = \"modifier\"];\n");
-        if (stmt->varValType != NULL)
-        {
-            res = concat(res, generateDotFromType(stmt->varValType));
-            res = concat(res, itoa(stmt->id, strId, 10));
-            res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->varValType->id, strId, 10));
-            res = concat(res, (char*)"[label = \"type\"];\n");
-        }
-        if (stmt->expression != NULL)
-        {
-            res = concat(res, generateDotFromExpression(stmt->expression));
-            res = concat(res, itoa(stmt->id, strId, 10));
-            res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->expression->id, strId, 10));
-            res = concat(res, (char*)"[label = \"expr\"];\n");
-        }
-        break;
     case _VARDECLLIST:
         res = concat(res, (char*)"[label=\"VARDECLLIST\"];\n");
         res = concat(res, generateDotFromModifier(stmt->modifier));
@@ -410,7 +384,7 @@ char* concat(char* firstStr, char* secStr)
     return result;
 }
 
-/*! Сгенерировать DOT-строку для дочерних узллов Expression бинарной операции.
+/*! Сгенерировать DOT-строку для дочерних узлов Expression бинарной операции.
 * \param[in] node узел, для дочерних узлов которого формируется DOT-строка.
 * \return DOT-строка с дочерними узлами.
 */
@@ -431,6 +405,10 @@ char* generateStrForBinOperation(struct ExpressionNode* node)
     return res;
 }
 
+/*! Сгенерировать DOT-строку для узла объявления переменной.
+* \param[in] varDecl Узел объявления переменной.
+* \return DOT-строка с дочерними узлами.
+*/
 char* generateDotFromVarDeclaration(struct VarDeclarationNode* varDecl)
 {
     char base[] = "";
@@ -446,6 +424,17 @@ char* generateDotFromVarDeclaration(struct VarDeclarationNode* varDecl)
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(varDecl->type->id, strId, 10));
         res = concat(res, (char*)"[label = \"type\"];\n");
+    }
+    if (varDecl->dimen != NULL)
+    {
+        res = concat(res, itoa(varDecl->dimen->id, strId, 10));
+        res = concat(res, (char*)"[label=\"");
+        res = concat(res, itoa(varDecl->dimen->dimension, strId, 10));
+        res = concat(res, (char*)"\"];\n");
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->dimen->id, strId, 10));
+        res = concat(res, (char*)"[label = \"dimension\"];\n");
     }
     if (varDecl->expression != NULL)
     {
@@ -466,6 +455,10 @@ char* generateDotFromVarDeclaration(struct VarDeclarationNode* varDecl)
     return res;
 }
 
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла модификатора (ModifierNode).
+ * \param[in] mod Модификатор переменной.
+ * \return Строка кода на языке DOT из узла модификатора.
+ */
 char* generateDotFromModifier(struct ModifierNode* mod)
 {
     char base[] = "";
@@ -485,6 +478,10 @@ char* generateDotFromModifier(struct ModifierNode* mod)
     return res;
 }
 
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла типа (TypeNode).
+ * \param[in] typ Тип переменной.
+ * \return Строка кода на языке DOT из узла типа.
+ */
 char* generateDotFromType(struct TypeNode* typ)
 {
     char base[] = "";

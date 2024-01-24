@@ -302,15 +302,28 @@ struct TypeNode* createUnknownTypeNode();
  */
 struct TypeNode* createVoidTypeNode();
 
+/*------------------------------------ Dimension -------------------------------------*/
+
+/*! Создать узел DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* createDimensionNode();
+
+/*! Инкрементировать размерность в узле DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* incrementDimensionNode(struct DimensionNode* node);
+
 /*------------------------------------ VarDeclaration -------------------------------------*/
 
 /*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
 * \param[in] ident строка - наименование идентификатора.
 * \param[in] typ тип идентификатора; NULL, если не указан.
+* \param[in] dimen размерность идентификатора; NULL, если не указан.
 * \param[in] expr указатель на экземпляр ExpressionNode.
 * \return указатель на узел VarDeclaration.
 */
-struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct ExpressionNode* expr);
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct DimensionNode* dimen, struct ExpressionNode* expr);
 
 /*------------------------------------ VarDeclarationList -------------------------------------*/
 
