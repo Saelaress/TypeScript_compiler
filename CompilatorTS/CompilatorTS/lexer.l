@@ -108,7 +108,10 @@ false {
     return FALSE_LITERAL;
 }
 finally {fprintf(yyout, "Found KW_FINALLY: %s\n", yytext);} 
-for {fprintf(yyout, "Found KW_FOR: %s\n", yytext);} 
+for {
+    printHandler((char*)"KW_FOR", yytext);
+    return FOR;
+}
 from {fprintf(yyout, "Found KW_FROM: %s\n", yytext);} 
 function {fprintf(yyout, "Found KW_FUNCTION: %s\n", yytext);} 
 get {fprintf(yyout, "Found KW_GET: %s\n", yytext);} 

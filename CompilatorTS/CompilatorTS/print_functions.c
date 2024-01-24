@@ -313,17 +313,44 @@ char* generateDotFromStatement(struct StatementNode* stmt)
         }
         break;
     case _VARDECLLIST:
-        res = concat(res, (char*)"[label=\"VARDECLLIST\"];\n");
-        res = concat(res, generateDotFromModifier(stmt->modifier));
+        res = concat(res, generateDotFromStmtVarDeclarationList(stmt));
+        break;
+    case _FOR:
+        res = concat(res, (char*)"[label=\"FOR\"];\n");
+        if (stmt->initializer != NULL) {
+            if (stmt->initializer->varDeclList != NULL)
+            {
+                res = concat(res, itoa(stmt->initializer->id, strId, 10));
+                res = concat(res, generateDotFromStmtVarDeclarationList(stmt->initializer));
+            }
+            else
+            {
+                res = concat(res, generateDotFromStatement(stmt->initializer));
+            }
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->initializer->id, strId, 10));
+            res = concat(res, (char*)"[label = \"initializer\"];\n");
+        }
+        if (stmt->condition != NULL) {
+            res = concat(res, generateDotFromExpression(stmt->condition));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->condition->id, strId, 10));
+            res = concat(res, (char*)"[label = \"condition\"];\n");
+        }
+        if (stmt->expression != NULL) {
+            res = concat(res, generateDotFromExpression(stmt->expression));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->expression->id, strId, 10));
+            res = concat(res, (char*)"[label = \"expression\"];\n");
+        }
+        res = concat(res, generateDotFromStatement(stmt->complexBody));
         res = concat(res, itoa(stmt->id, strId, 10));
         res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(stmt->modifier->id, strId, 10));
-        res = concat(res, (char*)"[label = \"modifier\"];\n");
-        res = concat(res, generateDotFromVarDeclaration(stmt->varDeclList->first));
-        res = concat(res, itoa(stmt->id, strId, 10));
-        res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(stmt->varDeclList->first->id, strId, 10));
-        res = concat(res, (char*)"[label = \"first\"];\n");
+        res = concat(res, itoa(stmt->complexBody->id, strId, 10));
+        res = concat(res, (char*)"[label = \"control_body\"];\n");
         break;
     case _RETURN:
         res = concat(res, (char*)"[label=\"RETURN\"];\n");
@@ -452,6 +479,28 @@ char* generateDotFromVarDeclaration(struct VarDeclarationNode* varDecl)
         res = concat(res, itoa(varDecl->next->id, strId, 10));
         res = concat(res, (char*)"[label=\"next\"];\n");
     }
+    return res;
+}
+
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла stmt типа VarDeclarationListNode.
+* \param[in] stmt Визуализироваемый узел.
+* \return Строка кода на языке DOT из узла Statement типа VarDeclarationListNode.
+*/
+char* generateDotFromStmtVarDeclarationList(struct StatementNode* stmt)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, (char*)"[label=\"VARDECLLIST\"];\n");
+    res = concat(res, generateDotFromModifier(stmt->modifier));
+    res = concat(res, itoa(stmt->id, strId, 10));
+    res = concat(res, (char*)" -> ");
+    res = concat(res, itoa(stmt->modifier->id, strId, 10));
+    res = concat(res, (char*)"[label = \"modifier\"];\n");
+    res = concat(res, generateDotFromVarDeclaration(stmt->varDeclList->first));
+    res = concat(res, itoa(stmt->id, strId, 10));
+    res = concat(res, (char*)" -> ");
+    res = concat(res, itoa(stmt->varDeclList->first->id, strId, 10));
+    res = concat(res, (char*)"[label = \"first\"];\n");
     return res;
 }
 

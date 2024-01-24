@@ -683,8 +683,6 @@ struct StatementNode* createReturnStatement(struct ExpressionNode* expr)
     node->complexBody = NULL;
     node->condition = NULL;
     node->singleBody = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     return node;
 }
 
@@ -699,8 +697,6 @@ struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct S
     node->id = ID++;
     node->type = _WHILE;
     node->next = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     node->expression = NULL;
     node->condition = cond;
     node->singleBody = stmt;
@@ -720,8 +716,6 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
     node->id = ID++;
     node->type = _DOWHILE;
     node->next = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     node->expression = NULL;
     node->condition = cond;
     node->singleBody = stmt;
@@ -742,8 +736,6 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
     node->id = ID++;
     node->type = _IF;
     node->next = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     node->expression = NULL;
     node->condition = cond;
     node->singleBody = trueStmt;
@@ -768,30 +760,6 @@ struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNod
     node->singleBody = NULL;
     node->next = NULL;
     node->varDeclList = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
-    return node;
-}
-
-/*! Создать узел StatementNode на основе узла VarDeclaration.
-* \param[in] mod модификатор идентификатора.
-* \param[in] varDecl указатель на экземпляр VarDeclaration, на основе которого создается StatementNode.
-* \return указатель на созданный экземпляр StatementNode.
-*/
-struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod, struct VarDeclarationNode* varDecl)
-{
-    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
-    node->id = ID++;
-    node->type = _VARDECL;
-    node->next = NULL;
-    node->varValId = varDecl->identifier;
-    node->varValType = varDecl->type;
-    node->expression = varDecl->expression;
-    node->condition = NULL;
-    node->complexBody = NULL;
-    node->singleBody = NULL;
-    node->varDeclList = NULL;
-    node->modifier = mod;
     return node;
 }
 
@@ -805,8 +773,6 @@ struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode*
     struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
     node->id = ID++;
     node->type = _VARDECLLIST;
-    node->varValId = NULL;
-    node->varValType = NULL;
     node->expression = NULL;
     node->condition = NULL;
     node->complexBody = NULL;
@@ -814,6 +780,29 @@ struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode*
     node->next = NULL;
     node->varDeclList = varDeclList;
     node->modifier = mod;
+    return node;
+}
+
+/*! Создать узел StatementNode для цикла for.
+ * \param[in] init Инициализация цикла; узел Statement или NULL, если нет инициализации.
+ * \param[in] cond Условие выполнения цикла; узел Expression или NULL, если нет условия.
+ * \param[in] updExpr Выражение обновления после каждой итерации; узел Expression или NULL, если нет обновления.
+ * \param[in] stmt Тело цикла, состоящее из узла Statement.
+ * \return Созданный узел Statement.
+ */
+struct StatementNode* createForStatement(struct StatementNode* init, struct ExpressionNode* cond, struct ExpressionNode* updExpr, struct StatementNode* stmt)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _FOR;
+    node->initializer = init;
+    node->condition = cond;
+    node->expression = updExpr;
+    node->singleBody = NULL;
+    node->complexBody = stmt;
+    node->next = NULL;
+    node->varDeclList = NULL;
+    node->modifier = NULL;
     return node;
 }
 

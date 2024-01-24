@@ -207,6 +207,9 @@ enum StatementType
     /// Объявление списка переменных.
     _VARDECLLIST,
 
+    /// Управляющий оператор цикла FOR.
+    _FOR,
+
     /// Возврат из функции.
     _RETURN
 };
@@ -221,16 +224,13 @@ struct StatementNode
     /// Тип обозреваемого Statement - вариант перечисления.
     enum StatementType type;
 
-    /// Идентификатор переменной для выражения объявления переменной.
-    char* varValId;
+    /// Ссылка на инициализатор в цикле for.
+    struct StatementNode* initializer;
 
-    /// Тип переменной для выражения объявления переменной с явным указанием типа.
-    struct TypeNode* varValType;
-
-    /// Ссылка на Expression, которое используется при созании Statement.
+    /// Ссылка на Expression, которое используется при создании Statement.
     struct ExpressionNode* expression;
 
-    /// Ссылка на выражение условия (для циклов WHILE и DO..WHILE).
+    /// Ссылка на выражение условия (для циклов).
     struct ExpressionNode* condition;
 
     /// Ссылка на простое тело цикла.

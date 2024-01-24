@@ -87,11 +87,11 @@ char * generateDotFromFunction(struct FunctionNode * node);
 */
 char * generateDotFromVarDeclaration(struct VarDeclarationNode * varDecl);
 
-/*! Сгенерировать DOT-строку для узла списка объявлений переменной.
-* \param[in] node Узел списка объявлений переменной.
-* \return DOT-строка с дочерними узлами.
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла stmt типа VarDeclarationListNode.
+* \param[in] stmt Визуализироваемый узел.
+* \return Строка кода на языке DOT из узла Statement типа VarDeclarationListNode.
 */
-char * generateDotFromVarDeclarationList(struct VarDeclarationListNode * node);
+char* generateDotFromStmtVarDeclarationList(struct StatementNode* stmt);
 
 /*! Сгенерировать DOT-строку для узла класса.
 * \param[in] node Узел класса.

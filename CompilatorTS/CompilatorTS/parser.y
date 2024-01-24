@@ -54,8 +54,8 @@
 
 %start stmt_list
 
-%type <expression>expr var_init
-%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
+%type <expression>expr var_init expr_opt
+%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt for_stmt
 %type <varDeclList> var_list_stmt var_list
 %type <varDecl> variable_stmt variable_endl
 %type <stmtList>stmt_list stmt_list_opt
@@ -91,9 +91,9 @@ stmt_sep: ';' endl_opt
 // expr_list_endl: expr_list endl_opt {$$ = $1;}
 // ;
 
-// expr_opt: /*empty*/
-// | endl_opt expr endl_opt {$$ = $2;}
-// ;
+expr_opt: /*empty*/ {$$ = NULL;}
+| endl_opt expr endl_opt {$$ = $2;}
+;
 
 expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNode($1);}
 | DECREMENT endl_opt expr %prec PREF_DECREMENT {$$ = createPrefDecrementExpressionNode($3);}
@@ -145,10 +145,13 @@ while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt {$$ = cr
 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep {$$ = createDoWhileStatement($8, $3);}
 ;
 
-// for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt
-// | FOR endl_opt '(' endl_opt modifier endl_opt var_list ';' expr_opt ';' expr_opt ')' endl_opt stmt
-// | FOR endl_opt '(' endl_opt modifier endl_opt ID ';' expr_opt ';' expr_opt ')' endl_opt stmt
-// ;
+for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt {$$ = createForStatement(createStatementFromExpression($4), $6, $8, $11);}
+| FOR endl_opt '(' endl_opt modifier endl_opt var_list ';' expr_opt ';' expr_opt ')' endl_opt stmt {
+    $$ = createForStatement(createStatementFromVarDeclarationList($5, $7), $9, $11, $14);}
+| FOR endl_opt '(' endl_opt modifier endl_opt ID ';' expr_opt ';' expr_opt ')' endl_opt stmt {$$ = 
+    createForStatement(createStatementFromVarDeclarationList($5, 
+    createVarDeclarationList(createVarDeclarationNode($7, NULL, NULL, NULL), NULL)), $9, $11, $14);}
+;
 
 // switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list_break '}' endl_opt
 // ;
@@ -208,7 +211,7 @@ stmt_list: stmt {$$ = root = createStatementListNode($1);}
 stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 | if_stmt {$$ = $1;}
 | while_stmt {$$ = $1;}
-// | for_stmt
+| for_stmt {$$ = $1;}
 | do_while_stmt {$$ = $1;}
 // | switch_stmt
 // | try_catch_block

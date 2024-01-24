@@ -221,13 +221,6 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
  */
 struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct StatementNode* trueStmt, struct StatementNode* falseStmt);
 
-/*! Создать узел StatementNode на основе узла VarDeclaration.
-* \param[in] mod модификатор идентификатора.
-* \param[in] varDecl указатель на экземпляр VarDeclaration, на основе которого создается StatementNode.
-* \return указатель на созданный экземпляр StatementNode.
-*/
-struct StatementNode* createStatementFromVarDeclaration(struct ModifierNode* mod, struct VarDeclarationNode* varDecl);
-
 /*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
  * \param[in] mod модификатор идентификатора.
  * \param[in] varDeclList Список объявлений переменных.
@@ -241,6 +234,14 @@ struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode*
 */
 struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt);
 
+/*! Создать узел StatementNode для цикла for.
+ * \param[in] init Инициализация цикла; узел Statement или NULL, если нет инициализации.
+ * \param[in] cond Условие выполнения цикла; узел Expression или NULL, если нет условия.
+ * \param[in] updExpr Выражение обновления после каждой итерации; узел Expression или NULL, если нет обновления.
+ * \param[in] stmt Тело цикла, состоящее из узла Statement.
+ * \return Созданный узел Statement.
+ */
+struct StatementNode* createForStatement(struct StatementNode* init, struct ExpressionNode* cond, struct ExpressionNode* updExpr, struct StatementNode* stmt);
 
 /*------------------------------------ StatementList -------------------------------------*/
 
