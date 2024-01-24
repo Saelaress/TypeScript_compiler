@@ -255,6 +255,7 @@ var_list: variable_endl ',' endl_opt variable_endl
 | variable_endl ',' endl_opt ID endl_opt
 | ID endl_opt ',' endl_opt ID endl_opt
 | var_list ',' endl_opt variable_endl
+| var_list ',' endl_opt ID endl_opt
 ;
 
 var_list_stmt: variable_stmt
@@ -263,6 +264,7 @@ var_list_stmt: variable_stmt
 | variable_endl ',' endl_opt ID stmt_sep
 | ID endl_opt ',' endl_opt ID stmt_sep
 | var_list ',' endl_opt variable_stmt
+| var_list ',' endl_opt ID stmt_sep
 ;
 
 dimensions: '[' endl_opt ']'
