@@ -173,6 +173,22 @@ char * generateDotFromExpression(struct ExpressionNode * node)
         res = concat(res, fstr);
         res = concat(res, (char*)"\"];\n");
         break;
+    case _BRACKETS:
+        res = concat(res, (char*)"[label=\"()\"];\n");
+        res = concat(res, generateDotFromExpression(node->left));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->left->id, idStr, 10));
+        res = concat(res, (char*)"[label=\"inner\"];\n");
+        break;
+    case _SQUARE_BRACKETS:
+        res = concat(res, (char*)"[label=\"[]\"];\n");
+        res = concat(res, generateDotFromExpression(node->left));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->left->id, idStr, 10));
+        res = concat(res, (char*)"[label=\"inner\"];\n");
+        break;
     default:
         break;
     }
@@ -391,5 +407,88 @@ char* generateStrForBinOperation(struct ExpressionNode* node)
     res = concat(res, (char*)" -> ");
     res = concat(res, itoa(node->right->id, strId, 10));
     res = concat(res, (char*)"[label=\"right\"];\n");
+    return res;
+}
+
+/*!Сгенерировать DOT - строку для файла TS.трока будет содержать корневую структуру направленного графа digraph prg.
+* \param[in] node Визуализироваемый узел.
+* \return DOT - строка с дочерними узлами.
+*/
+char* generateDotFromTSFile(struct TSFileNode* node)
+{
+    char base[] = "digraph prg {\n";
+    char strId[10];
+    char* res = concat(base, itoa(node->id, strId, 10));
+    res = concat(res, (char*)"[label=\"TSFile\"];\n");
+
+    res = concat(res, generateDotFromTSFileElementList(node->elemList));
+
+    res = concat(res, itoa(node->id, strId, 10));
+    res = concat(res, (char*)" -> ");
+    res = concat(res, itoa(node->elemList->id, strId, 10));
+    res = concat(res, (char*)";\n");
+    res = concat(res, (char*)"}");
+    return res;
+}
+
+/*! Сгенерировать DOT-строку для списка элементов файла TS.
+* \param[in] node Узел списка элементов файла TS.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromTSFileElementList(struct TSFileElementListNode* node)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(node->id, strId, 10));
+    res = concat(res, (char*)"[label=\"TSFileElementList\"];\n");
+    if (node->first != NULL)
+    {
+        res = concat(res, generateDotFromTSFileElement(node->first));
+        res = concat(res, itoa(node->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->first->id, strId, 10));
+        res = concat(res, (char*)"[label=\"first\"];\n");
+    }
+    return res;
+}
+
+/*! Сгенерировать DOT-строку для элемена файла TS.
+* \param[in] node Узел элемента файла TS.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromTSFileElement(struct TSFileElementNode* node)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(node->id, strId, 10));
+    ///if (node->type != _EMPT) res = concat(res, (char*)"[label=\"TSFileElement\"];\n");
+    //else res = concat(res, (char*)"[label=\"EmptyElement\"];\n");
+    res = concat(res, (char*)"[label=\"TSFileElement\"];\n");
+    if (node->stmt != NULL)
+    {
+        res = concat(res, generateDotFromStatement(node->stmt));
+        res = concat(res, itoa(node->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->stmt->id, strId, 10));
+        res = concat(res, (char*)"[label=\"stmt\"];\n");
+    }
+    /*if (node->func != NULL) 
+    {
+        res = concat(res, generateDotFromFunction(node->func));
+        res = concat(res, itoa(node->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->func->id, strId, 10));
+        res = concat(res, (char*)"[label=\"function\"];\n");
+    }*/
+    
+
+    if (node->next != NULL)
+    {
+        res = concat(res, generateDotFromTSFileElement(node->next));
+        res = concat(res, itoa(node->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->next->id, strId, 10));
+        res = concat(res, (char*)"[label=\"next\"];\n");
+    }
     return res;
 }

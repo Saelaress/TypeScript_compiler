@@ -43,19 +43,19 @@ char* generateStrForBinOperation(struct ExpressionNode* node);
 * \param[in] node Визуализироваемый узел.
 * \return DOT-строка с дочерними узлами.
 */
-char * generateDotFromKotlinFile(struct KotlinFileNode * node);
+char * generateDotFromTSFile(struct TSFileNode * node);
 
 /*! Сгенерировать DOT-строку для списка элементов файла Kotlin.
 * \param[in] node Узел списка элементов файла Kotlin.
 * \return DOT-строка с дочерними узлами.
 */
-char * generateDotFromKotlinFileElementList(struct KotlinFileElementListNode * node);
+char * generateDotFromTSFileElementList(struct TSFileElementListNode * node);
 
 /*! Сгенерировать DOT-строку для элемента файла Kotlin.
 * \param[in] node Узел элемента файла Kotlin.
 * \return DOT-строка с дочерними узлами.
 */
-char * generateDotFromKotlinFileElement(struct KotlinFileElementNode * node);
+char * generateDotFromTSFileElement(struct TSFileElementNode * node);
 
 /*! Сгенерировать DOT-строку для узла модификатора.
 * \param[in] node Узел модификатора.
@@ -87,38 +87,3 @@ char * generateDotFromVarDeclaration(struct VarDeclarationNode * node);
 */
 char * generateDotFromVarDeclarationList(struct VarDeclarationListNode * node);
 
-/*! Сгенерировать DOT-строку для узла класса.
-* \param[in] node Узел класса.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromClass(struct ClassNode * node);
-
-/*! Сгенерировать DOT-строку для узла первичного конструктора.
-* \param[in] node Узел первичного конструктора.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromPrimaryConstructor(struct PrimaryConstructorNode * node);
-
-/*! Сгенерировать DOT-строку для узла члена класса.
-* \param[in] node Узел члена класса.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromClassMember(struct ClassMemberNode * node);
-
-/*! Сгенерировать DOT-строку для узла списка членов класса.
-* \param[in] node Узел списка членов класса.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromClassMemberList(struct ClassMemberListNode * node);
-
-/*! Сгенерировать DOT-строку для узла списка параметров класса.
-* \param[in] node Узел списка параметров класса.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromClassParamList(struct ClassParamListNode * node);
-
-/*! Сгенерировать DOT-строку для узла параметра класса.
-* \param[in] node Узел параметра класса.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromClassParam(struct ClassParamNode * node);

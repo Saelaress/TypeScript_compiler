@@ -801,3 +801,101 @@ struct StatementListNode* addStatementToStatementList(struct StatementListNode* 
     list->last = statement;
     return list;
 }
+
+/*------------------------------------ TSFileElement -------------------------------------*/
+
+/*! Создать элемент файла TS на основе функции.
+* \param[in] modList список модификаторов элемента.
+* \param[in] function функция, на основе которой создается элемент.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createElementFromFunction(struct FunctionNode* function)
+{
+    struct TSFileElementNode* node = (struct TSFileElementNode*)malloc(sizeof(struct TSFileElementNode));
+    node->id = ID++;
+    node->next = NULL;
+    node->stmt = NULL;
+   //node->modifiers = modList;
+    node->func = function;
+    //node->type = _FUNCTION;
+    return node;
+}
+
+/*! Создать элемент файла TS на основе stmt.
+* \param[in] modList список модификаторов элемента.
+* \param[in] stmt, на основе которого создается элемент.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createElementFromStatement(struct StatementNode* stmt)
+{
+    struct TSFileElementNode* node = (struct TSFileElementNode*)malloc(sizeof(struct TSFileElementNode));
+    node->id = ID++;
+    node->next = NULL;
+    //node->modifiers = modList;
+    //node->func = function;
+   // node->type = _FUNCTION;
+    node->stmt = stmt;
+    node->func = NULL;
+    return node;
+}
+
+
+/*! Создать пустой элемент файла TS.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createEmptyElement()
+{
+    struct TSFileElementNode* node = (struct TSFileElementNode*)malloc(sizeof(struct TSFileElementNode));
+    node->id = ID++;
+    node->next = NULL;
+    //node->modifiers = NULL;
+    node->func = NULL;
+   // node->type = _EMPT;
+    return node;
+}
+
+
+/*------------------------------------ TSFileElementList -------------------------------------*/
+
+/*! Создать узел списка элементов файла TS на основе элемента TS.
+* \param[in] elem элемент файла TS, на основе которого создается список элементов TS.
+* \return указатель на список элементов файла TS.
+*/
+struct TSFileElementListNode* createTSFileElementListNode(struct TSFileElementNode* elem)
+{
+    struct TSFileElementListNode* node = (struct TSFileElementListNode*)malloc(sizeof(struct TSFileElementListNode));
+    node->id = ID++;
+    node->first = elem;
+    node->last = elem;
+    return node;
+}
+
+/*! Добавить элемент файла TS к списку элементов файла TS.
+* \param[in] elemList список элементов файла TS, к которому добавляется новый элемент.
+* \param[in] elem новый добавляемый элемет файла TS.
+* \return указатель на обновленный список элементов.
+*/
+struct TSFileElementListNode* addTSFileElementToList(struct TSFileElementListNode* elemList, struct TSFileElementNode* elem)
+{
+    elemList->last->next = elem;
+    elemList->last = elem;
+    return elemList;
+}
+
+
+                                                                                                                             
+/*------------------------------------ TSFile -------------------------------------*/
+
+/*! Создать корневой узел файла TS на основе списка элементов файла.
+* \param[in] elemList список элементов файла TS, на основе которого создается файл TS.
+* \return указатель на корневой узел файла TS.
+*/
+struct TSFileNode* createTSFileNode(struct TSFileElementListNode* elemList)
+{
+    struct TSFileNode* node = (struct TSFileNode*)malloc(sizeof(struct TSFileNode));
+    node->id = ID++;
+    node->elemList = elemList;
+    return node;
+}
+
+

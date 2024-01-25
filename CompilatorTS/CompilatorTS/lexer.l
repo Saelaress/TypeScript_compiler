@@ -603,7 +603,7 @@ int main(int argc, char *argv[])
 
     // Генерация и вывод DOT-строки
     if (needsDotCon || needsDotFile) {
-        char * res = generateDotFromStatementList(root);  // Функция генерации DOT-строки
+        char * res = generateDotFromTSFile(root);  // Функция генерации DOT-строки
         if (needsDotFile) {
             // Запись DOT-строки в файл result.gv
             FILE *f = fopen("result.gv", "w");

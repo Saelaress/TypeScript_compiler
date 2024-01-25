@@ -2,7 +2,7 @@
 #include "nodes.h"
 
 /// Ссылка на корневой узел программы.
-struct KotlinFileNode *root;
+struct TSFileNode *root;
 
 /*------------------------------------ Expression -------------------------------------*/
 
@@ -228,12 +228,6 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
 */
 struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt);
 
-/*! Создать узел StatementNode для цикла while.
-* \param[in] cond Условие выполнения цикла - указатель на узел  Expression.
-* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
-* \return Созданный узел Statement.
-*/
-struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct StatementNode* stmt);
 
 
 /*------------------------------------ StatementList -------------------------------------*/
@@ -250,3 +244,52 @@ struct StatementListNode* createStatementListNode(struct StatementNode* firstChi
 * \return измененный список Statement (тот же самый, что и параметр list).
 */
 struct StatementListNode* addStatementToStatementList(struct StatementListNode* list, struct StatementNode* statement);
+
+
+/*------------------------------------ TSFileElement -------------------------------------*/
+
+/*! Создать элемент файла TS на основе функции.
+* \param[in] modList список модификаторов элемента.
+* \param[in] function функция, на основе которой создается элемент.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createElementFromFunction(struct FunctionNode* function);
+
+/*! Создать элемент файла TS на основе Statement.
+* \param[in] modList список модификаторов элемента.
+* \param[in] Statement, на основе которой создается элемент.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createElementFromStatement(struct FunctionNode* stmt);
+
+
+/*! Создать пустой элемент файла TS.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createEmptyElement();
+
+
+/*------------------------------------ TSFileElementList -------------------------------------*/
+
+/*! Создать узел списка элементов файла TS на основе элемента TS.
+* \param[in] elem элемент файла TS, на основе которого создается список элементов TS.
+* \return указатель на список элементов файла TS.
+*/
+struct TSFileElementListNode* createTSFileElementListNode(struct TSFileElementNode* elem);
+
+/*! Добавить элемент файла TS к списку элементов файла TS.
+* \param[in] elemList список элементов файла TS, к которому добавляется новый элемент.
+* \param[in] elem новый добавляемый элемет файла TS.
+* \return указатель на обновленный список элементов.
+*/
+struct TSFileElementListNode* addTSFileElementToList(struct TSFileElementListNode* elemList, struct TSFileElementNode* elem);
+
+
+
+/*------------------------------------ TSFile -------------------------------------*/
+
+/*! Создать корневой узел файла TS на основе списка элементов файла.
+* \param[in] elemList список элементов файла TS, на основе которого создается файл TS.
+* \return указатель на корневой узел файла TS.
+*/
+struct TSFileNode* createTSFileNode(struct TSFileElementListNode* elemList);

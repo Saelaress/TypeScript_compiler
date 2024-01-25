@@ -260,3 +260,70 @@ struct StatementListNode
     /// Указатель на последний элемент списка Statement.
     struct StatementNode* last;
 };
+
+/*------------------------------------ TSFileElement -------------------------------------*/
+
+/*! \brief Перечисление типа элемента файла TS. */
+enum TSFileElementType
+{
+
+    /// Свободная функция.
+    _FUNCTION,
+
+    /// Пустой элемент.
+    //_EMPT
+};
+
+/*! \brief Структура, описывающая элемент файла TS. */
+struct TSFileElementNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Указатель на список модификаторов.
+   // struct ModifierListNode* modifiers;
+
+    /// Тип элемента TS.
+    enum TSFileElementType type;
+
+    /// Указатель на узел функции, если элемент - функция.
+    struct FunctionNode* func;
+
+    struct StatementNode* stmt;
+
+
+    /// Указатель на следующий элемент TS в списке элементов.
+    struct TSFileElementNode* next;
+};
+
+
+
+/*------------------------------------ TSFileElementList -------------------------------------*/
+
+/*! \brief Структура, описывающая список элементов файла TS.*/
+struct TSFileElementListNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Указатель на первый элемент списка.
+    struct TSFileElementNode* first;
+
+    /// Указатель на последний элемент списка.
+    struct TSFileElementNode* last;
+};
+
+
+
+/*------------------------------------ TSFile-------------------------------------*/
+
+/*! \brief Структура, описывающая корневой узел программы - файл TS. */
+struct TSFileNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Указатель на список элементов TS, из которых состоит файл TS.
+    struct TSFileElementListNode* elemList;
+};
+

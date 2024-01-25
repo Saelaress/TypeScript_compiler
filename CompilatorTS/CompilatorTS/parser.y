@@ -14,6 +14,9 @@
     struct ExpressionListNode * exprList;
 	struct StatementNode * statement;
     struct StatementListNode * stmtList;
+    struct TSFileElementNode * elem;
+    struct TSFileElementListNode * elemList;
+    struct TSFileNode * file;
 }
 
 %define lr.type ielr
@@ -45,14 +48,32 @@
 %left '[' ']' '.'
 %nonassoc '(' ')'
 
-%start stmt_list
+%start TSFile
 
-%type <expression> expr
+//%start stmt_list
+
+%type <expression>expr 
+%type <exprList>expr_list expr_list_endl_opt expr_list_endl
 
 %type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
 %type <stmtList>stmt_list stmt_list_opt
 
+%type <elem>program_elem
+%type <elemList>program_elem_list
+%type <file>TSFile
+
 %%
+// Определение стартового символа
+TSFile: program_elem_list {$$ = root = createTSFileNode($1);}
+;
+
+program_elem_list: program_elem {$$ = createTSFileElementListNode($1);}
+| program_elem_list program_elem {$$ = addTSFileElementToList($1, $2);}
+;
+
+program_elem: stmt_top {$$ = createElementFromStatement($1);}
+//| function_declaration {$$ = createElementFromFunction($1);}
+;
 
 // function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
 // | FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
@@ -70,16 +91,16 @@ stmt_sep: ';' endl_opt
 | endl
 ;
 
-// expr_list: expr {$$ = createExpressionListNode($1);}
-// | expr_list endl_opt ',' endl_opt expr {$$ = addExpressionToExpressionList($1, $5);}
-// ;
+ expr_list: expr {$$ = createExpressionListNode($1);}
+ | expr_list endl_opt ',' endl_opt expr {$$ = addExpressionToExpressionList($1, $5);}
+ ;
 
-// expr_list_endl_opt: /* empty */
-// | expr_list_endl
-// ;
+ expr_list_endl_opt: /* empty */ {$$ = createExpressionListNode(NULL);}
+ | expr_list_endl 
+ ;
 
-// expr_list_endl: expr_list endl_opt
-// ;
+ expr_list_endl: expr_list endl_opt 
+ ;
 
 // expr_opt: /*empty*/
 // | endl_opt expr endl_opt
@@ -97,7 +118,7 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | TRUE_LITERAL {$$ = createTrueLiteralExpressionNode();}
 | FALSE_LITERAL {$$ = createFalseLiteralExpressionNode();}
 | ID {$$ = createIDExpressionNode($1);}
-// | '(' endl_opt expr endl_opt ')'
+| '(' endl_opt expr endl_opt ')' {$$ = createBracketExpressionNode($3);}
 | expr '+' endl_opt expr {$$ = createPlusExpressionNode($1, $4);}
 | NOT endl_opt expr {$$ = createNotExpressionNode($3);}
 | expr '-' endl_opt expr {$$ = createMinusExpressionNode($1, $4);}
@@ -120,7 +141,7 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
 | expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
 // | ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
-// | '[' endl_opt expr_list_endl_opt ']'
+| '[' endl_opt expr_list_endl_opt ']' {$$ = createSquareBracketExpressionNode($3);}
 ;
 
 block_statement: '{' endl_opt stmt_list_opt '}' {$$ = $3;}
@@ -191,8 +212,8 @@ stmt_list_opt: /* empty */ {$$ = createStatementListNode(NULL);}
 | stmt_list {$$ = $1;}
 ;
 
-stmt_list: stmt {$$ = root = createStatementListNode($1);}
-| stmt_list stmt {$$ = root = addStatementToStatementList($1, $2);}
+stmt_list: stmt {$$ = createStatementListNode($1);}
+| stmt_list stmt {$$ = addStatementToStatementList($1, $2);}
 ;
 
 stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
