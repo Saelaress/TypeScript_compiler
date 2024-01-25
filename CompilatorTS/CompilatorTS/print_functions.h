@@ -39,6 +39,18 @@ char * concat(char * firstStr, char * secStr);
 */
 char* generateStrForBinOperation(struct ExpressionNode* node);
 
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла модификатора (ModifierNode).
+ * \param[in] mod Модификатор переменной.
+ * \return Строка кода на языке DOT из узла модификатора.
+ */
+char* generateDotFromModifier(struct ModifierNode* mod);
+
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла типа (TypeNode).
+ * \param[in] typ Тип переменной.
+ * \return Строка кода на языке DOT из узла типа.
+ */
+char* generateDotFromType(struct TypeNode* typ);
+
 /*! Сгенерировать DOT-строку для файла Kotlin. Строка будет содержать корневую структуру направленного графа digraph prg.
 * \param[in] node Визуализироваемый узел.
 * \return DOT-строка с дочерними узлами.
@@ -57,12 +69,6 @@ char * generateDotFromTSFileElementList(struct TSFileElementListNode * node);
 */
 char * generateDotFromTSFileElement(struct TSFileElementNode * node);
 
-/*! Сгенерировать DOT-строку для узла модификатора.
-* \param[in] node Узел модификатора.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromModifier(struct ModifierNode * node);
-
 /*! Сгенерировать DOT-строку для узла списка модификаторов.
 * \param[in] node Узел списка модификаторов.
 * \return DOT-строка с дочерними узлами.
@@ -76,14 +82,14 @@ char * generateDotFromModifierList(struct ModifierListNode * node);
 char * generateDotFromFunction(struct FunctionNode * node);
 
 /*! Сгенерировать DOT-строку для узла объявления переменной.
-* \param[in] node Узел объявления переменной.
+* \param[in] varDecl Узел объявления переменной.
 * \return DOT-строка с дочерними узлами.
 */
-char * generateDotFromVarDeclaration(struct VarDeclarationNode * node);
+char * generateDotFromVarDeclaration(struct VarDeclarationNode * varDecl);
 
-/*! Сгенерировать DOT-строку для узла списка объявлений переменной.
-* \param[in] node Узел списка объявлений переменной.
-* \return DOT-строка с дочерними узлами.
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла stmt типа VarDeclarationListNode.
+* \param[in] stmt Визуализироваемый узел.
+* \return Строка кода на языке DOT из узла Statement типа VarDeclarationListNode.
 */
-char * generateDotFromVarDeclarationList(struct VarDeclarationListNode * node);
+char* generateDotFromStmtVarDeclarationList(struct StatementNode* stmt);
 

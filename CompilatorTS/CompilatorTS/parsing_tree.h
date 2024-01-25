@@ -222,12 +222,27 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
  */
 struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct StatementNode* trueStmt, struct StatementNode* falseStmt);
 
+/*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
+ * \param[in] mod модификатор идентификатора.
+ * \param[in] varDeclList Список объявлений переменных.
+ * \return Указатель на узел StatementNode, представляющий объявления переменных.
+ */
+struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode* mod, struct VarDeclarationListNode* varDeclList);
+
 /*! Создать узел StatementNode на основе узла BlockStatement.
 * \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
 * \return указатель на созданный экземпляр StatementNode.
 */
 struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt);
 
+/*! Создать узел StatementNode для цикла for.
+ * \param[in] init Инициализация цикла; узел Statement или NULL, если нет инициализации.
+ * \param[in] cond Условие выполнения цикла; узел Expression или NULL, если нет условия.
+ * \param[in] updExpr Выражение обновления после каждой итерации; узел Expression или NULL, если нет обновления.
+ * \param[in] stmt Тело цикла, состоящее из узла Statement.
+ * \return Созданный узел Statement.
+ */
+struct StatementNode* createForStatement(struct StatementNode* init, struct ExpressionNode* cond, struct ExpressionNode* updExpr, struct StatementNode* stmt);
 
 
 /*------------------------------------ StatementList -------------------------------------*/
@@ -246,6 +261,7 @@ struct StatementListNode* createStatementListNode(struct StatementNode* firstChi
 struct StatementListNode* addStatementToStatementList(struct StatementListNode* list, struct StatementNode* statement);
 
 
+<<<<<<< HEAD
 /*------------------------------------ TSFileElement -------------------------------------*/
 
 /*! Создать элемент файла TS на основе функции.
@@ -293,3 +309,86 @@ struct TSFileElementListNode* addTSFileElementToList(struct TSFileElementListNod
 * \return указатель на корневой узел файла TS.
 */
 struct TSFileNode* createTSFileNode(struct TSFileElementListNode* elemList);
+=======
+/*------------------------------------ Modifier -------------------------------------*/
+
+/*! Создать узел модификатора LET.
+* \return указатель на узел модификатора LET.
+*/
+struct ModifierNode* createLetModifierNode();
+
+/*! Создать узел модификатора CONST.
+ * \return указатель на узел модификатора CONST.
+ */
+struct ModifierNode* createConstModifierNode();
+
+/*------------------------------------ Type -------------------------------------*/
+
+/*! Создать узел типа NUMBER.
+ * \return Указатель на узел типа NUMBER.
+ */
+struct TypeNode* createNumberTypeNode();
+
+/*! Создать узел типа STRING.
+ * \return Указатель на узел типа STRING.
+ */
+struct TypeNode* createStringTypeNode();
+
+/*! Создать узел типа BOOLEAN.
+ * \return Указатель на узел типа BOOLEAN.
+ */
+struct TypeNode* createBooleanTypeNode();
+
+/*! Создать узел типа ANY.
+ * \return Указатель на узел типа ANY.
+ */
+struct TypeNode* createAnyTypeNode();
+
+/*! Создать узел типа UNKNOWN.
+ * \return Указатель на узел типа UNKNOWN.
+ */
+struct TypeNode* createUnknownTypeNode();
+
+/*! Создать узел типа VOID.
+ * \return Указатель на узел типа VOID.
+ */
+struct TypeNode* createVoidTypeNode();
+
+/*------------------------------------ Dimension -------------------------------------*/
+
+/*! Создать узел DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* createDimensionNode();
+
+/*! Инкрементировать размерность в узле DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* incrementDimensionNode(struct DimensionNode* node);
+
+/*------------------------------------ VarDeclaration -------------------------------------*/
+
+/*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
+* \param[in] ident строка - наименование идентификатора.
+* \param[in] typ тип идентификатора; NULL, если не указан.
+* \param[in] dimen размерность идентификатора; NULL, если не указан.
+* \param[in] expr указатель на экземпляр ExpressionNode.
+* \return указатель на узел VarDeclaration.
+*/
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct DimensionNode* dimen, struct ExpressionNode* expr);
+
+/*------------------------------------ VarDeclarationList -------------------------------------*/
+
+/*! Создать узел списка VarDeclaration.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNode* firstChild, struct VarDeclarationNode* lastChild);
+
+/*! Добавить VarDeclarationNode к списку VarDeclaration.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел VarDeclaration.
+* \return измененный список VarDeclaration (тот же самый, что и параметр list).
+*/
+struct VarDeclarationListNode* addVarDeclarationToVarDeclarationList(struct VarDeclarationListNode* list, struct VarDeclarationNode* varDecl);
+>>>>>>> ccc88baa9c0caa2aab5a295d681a9328908686c1

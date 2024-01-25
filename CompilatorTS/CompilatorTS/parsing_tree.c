@@ -683,8 +683,6 @@ struct StatementNode* createReturnStatement(struct ExpressionNode* expr)
     node->complexBody = NULL;
     node->condition = NULL;
     node->singleBody = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     return node;
 }
 
@@ -699,8 +697,6 @@ struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct S
     node->id = ID++;
     node->type = _WHILE;
     node->next = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     node->expression = NULL;
     node->condition = cond;
     node->singleBody = stmt;
@@ -720,8 +716,6 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
     node->id = ID++;
     node->type = _DOWHILE;
     node->next = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     node->expression = NULL;
     node->condition = cond;
     node->singleBody = stmt;
@@ -742,8 +736,6 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
     node->id = ID++;
     node->type = _IF;
     node->next = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     node->expression = NULL;
     node->condition = cond;
     node->singleBody = trueStmt;
@@ -760,20 +752,59 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
 struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt)
 {
     struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
     node->type = _BLOCK;
-    node->expression = NULL;
+    node->expression = NULL;    
     node->complexBody = blockStmt;
     node->condition = NULL;
     node->singleBody = NULL;
-    node->id = ID++;
     node->next = NULL;
     node->varDeclList = NULL;
-    node->varValId = NULL;
-    node->varValType = NULL;
     return node;
 }
 
+/*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
+ * \param[in] mod модификатор идентификатора.
+ * \param[in] varDeclList Список объявлений переменных.
+ * \return Указатель на узел StatementNode, представляющий объявления переменных.
+ */
+struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode* mod, struct VarDeclarationListNode* varDeclList)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _VARDECLLIST;
+    node->expression = NULL;
+    node->condition = NULL;
+    node->complexBody = NULL;
+    node->singleBody = NULL;
+    node->next = NULL;
+    node->varDeclList = varDeclList;
+    node->modifier = mod;
+    return node;
+}
 
+/*! Создать узел StatementNode для цикла for.
+ * \param[in] init Инициализация цикла; узел Statement или NULL, если нет инициализации.
+ * \param[in] cond Условие выполнения цикла; узел Expression или NULL, если нет условия.
+ * \param[in] updExpr Выражение обновления после каждой итерации; узел Expression или NULL, если нет обновления.
+ * \param[in] stmt Тело цикла, состоящее из узла Statement.
+ * \return Созданный узел Statement.
+ */
+struct StatementNode* createForStatement(struct StatementNode* init, struct ExpressionNode* cond, struct ExpressionNode* updExpr, struct StatementNode* stmt)
+{
+    struct StatementNode* node = (struct StatementNode*)malloc(sizeof(struct StatementNode));
+    node->id = ID++;
+    node->type = _FOR;
+    node->initializer = init;
+    node->condition = cond;
+    node->expression = updExpr;
+    node->singleBody = NULL;
+    node->complexBody = stmt;
+    node->next = NULL;
+    node->varDeclList = NULL;
+    node->modifier = NULL;
+    return node;
+}
 
 /*------------------------------------ StatementList -------------------------------------*/
 
@@ -799,6 +830,179 @@ struct StatementListNode* addStatementToStatementList(struct StatementListNode* 
 {
     list->last->next = statement;
     list->last = statement;
+    return list;
+}
+
+/*------------------------------------ Modifier -------------------------------------*/
+
+/*! Создать узел модификатора LET.
+* \return указатель на узел модификатора LET.
+*/
+struct ModifierNode* createLetModifierNode()
+{
+    struct ModifierNode* node = (struct ModifierNode*)malloc(sizeof(struct ModifierNode));
+    node->id = ID++;
+    node->type = _LET;
+    return node;
+}
+
+/*! Создать узел модификатора CONST.
+ * \return указатель на узел модификатора CONST.
+ */
+struct ModifierNode* createConstModifierNode()
+{
+    struct ModifierNode* node = (struct ModifierNode*)malloc(sizeof(struct ModifierNode));
+    node->id = ID++;
+    node->type = _CONST;
+    return node;
+}
+
+/*------------------------------------ Type -------------------------------------*/
+
+/*! Создать узел типа NUMBER.
+ * \return Указатель на узел типа NUMBER.
+ */
+struct TypeNode* createNumberTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _NUMBER;
+    return node;
+}
+
+/*! Создать узел типа STRING.
+ * \return Указатель на узел типа STRING.
+ */
+struct TypeNode* createStringTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _STRING;
+    return node;
+}
+
+/*! Создать узел типа BOOLEAN.
+ * \return Указатель на узел типа BOOLEAN.
+ */
+struct TypeNode* createBooleanTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _BOOLEAN;
+    return node;
+}
+
+/*! Создать узел типа ANY.
+ * \return Указатель на узел типа ANY.
+ */
+struct TypeNode* createAnyTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _ANY;
+    return node;
+}
+
+/*! Создать узел типа UNKNOWN.
+ * \return Указатель на узел типа UNKNOWN.
+ */
+struct TypeNode* createUnknownTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _UNKNOWN;
+    return node;
+}
+
+/*! Создать узел типа VOID.
+ * \return Указатель на узел типа VOID.
+ */
+struct TypeNode* createVoidTypeNode()
+{
+    struct TypeNode* node = (struct TypeNode*)malloc(sizeof(struct TypeNode));
+    node->id = ID++;
+    node->type = _VOID;
+    return node;
+}
+
+
+/*------------------------------------ Dimension -------------------------------------*/
+
+/*! Создать узел DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* createDimensionNode()
+{
+    struct DimensionNode* node = (struct DimensionNode*)malloc(sizeof(struct DimensionNode));
+    node->id = ID++;
+    node->dimension = 1;
+    return node;
+}
+
+/*! Инкрементировать размерность в узле DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* incrementDimensionNode(struct DimensionNode* node)
+{
+    node->dimension = node->dimension+1;
+    return node;
+}
+
+
+/*------------------------------------ VarDeclaration -------------------------------------*/
+
+/*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
+* \param[in] ident строка - наименование идентификатора.
+* \param[in] typ тип идентификатора; NULL, если не указан.
+* \param[in] dimen размерность идентификатора; NULL, если не указан.
+* \param[in] expr указатель на экземпляр ExpressionNode.
+* \return указатель на узел VarDeclaration.
+*/
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct DimensionNode* dimen, struct ExpressionNode* expr)
+{
+    struct VarDeclarationNode* node = (struct VarDeclarationNode*)malloc(sizeof(struct VarDeclarationNode));
+    node->id = ID++;
+    node->identifier = ident;
+    node->type = typ;
+    node->dimen = dimen;
+    node->expression = expr;
+    node->next = NULL;
+    return node;
+}
+
+
+/*------------------------------------ VarDeclarationList -------------------------------------*/
+
+/*! Создать узел списка VarDeclaration.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNode* firstChild, struct VarDeclarationNode* lastChild)
+{
+    struct VarDeclarationListNode* node = (struct VarDeclarationListNode*)malloc(sizeof(struct VarDeclarationListNode));
+    node->first = firstChild;
+    if (lastChild != NULL)
+    {
+        node->first->next = lastChild;
+        node->last = lastChild;
+    }
+    else 
+    {
+        node->last = firstChild;
+    }
+    node->id = ID++;
+    return node;
+}
+
+/*! Добавить VarDeclarationNode к списку VarDeclaration.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел VarDeclaration.
+* \return измененный список VarDeclaration (тот же самый, что и параметр list).
+*/
+struct VarDeclarationListNode* addVarDeclarationToVarDeclarationList(struct VarDeclarationListNode* list, struct VarDeclarationNode* varDecl)
+{
+    list->last->next = varDecl;
+    list->last = varDecl;
     return list;
 }
 

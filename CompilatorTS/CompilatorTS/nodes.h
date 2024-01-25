@@ -201,6 +201,15 @@ enum StatementType
     /// Блок операторов.
     _BLOCK,
 
+    /// Объявление переменной.
+    _VARDECL,
+
+    /// Объявление списка переменных.
+    _VARDECLLIST,
+
+    /// Управляющий оператор цикла FOR.
+    _FOR,
+
     /// Возврат из функции.
     _RETURN
 };
@@ -215,16 +224,13 @@ struct StatementNode
     /// Тип обозреваемого Statement - вариант перечисления.
     enum StatementType type;
 
-    /// Идентификатор переменной для выражения объявления переменной.
-    char* varValId;
+    /// Ссылка на инициализатор в цикле for.
+    struct StatementNode* initializer;
 
-    /// Тип переменной для выражения объявления переменной с явным указанием типа.
-    struct TypeNode* varValType;
-
-    /// Ссылка на Expression, которое используется при созании Statement.
+    /// Ссылка на Expression, которое используется при создании Statement.
     struct ExpressionNode* expression;
 
-    /// Ссылка на выражение условия (для циклов WHILE и DO..WHILE).
+    /// Ссылка на выражение условия (для циклов).
     struct ExpressionNode* condition;
 
     /// Ссылка на простое тело цикла.
@@ -241,6 +247,9 @@ struct StatementNode
 
     /// Указатель на список переменных.
     struct VarDeclarationListNode* varDeclList;
+
+    /// Ссылка на модификатор переменной.
+    struct ModifierNode* modifier;
 
     /// Временное хранилище модификаторов.
     struct ModifierHead* _tempHead;
@@ -259,6 +268,103 @@ struct StatementListNode
 
     /// Указатель на последний элемент списка Statement.
     struct StatementNode* last;
+};
+
+/*------------------------------------ Modifier -------------------------------------*/
+
+/// \brief Перечисление типов модификатора.
+enum ModifierType
+{
+    _LET,
+    _CONST
+};
+
+/*! \brief Узел модификатора. */
+struct ModifierNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Тип узла.
+    enum ModifierType type;
+};
+
+/*------------------------------------ VarDeclaration -------------------------------------*/
+
+/*! \brief Структура узла, описывающего объявление переменной. */
+struct VarDeclarationNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Модификатор переменной.
+    struct ModifierNode* modif;
+
+    /// Идентификатор переменной.
+    char* identifier;
+
+    /// Тип переменной.
+    struct TypeNode* type;
+
+    /// Ссылка на Dimension.
+    struct DimensionNode* dimen;
+
+    /// Ссылка на Expression.
+    struct ExpressionNode* expression;
+
+    /// Указатель на следующий узел объявления переменной в списке.
+    struct VarDeclarationNode* next;
+};
+
+/*------------------------------------ VarDeclarationList -------------------------------------*/
+
+/*! \brief Структура узла списка VarDeclaration. */
+struct VarDeclarationListNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Указатель на первый элемент списка VarDeclaration.
+    struct VarDeclarationNode* first;
+
+    /// Указатель на последний элемент списка VarDeclaration.
+    struct VarDeclarationNode* last;
+};
+
+/*------------------------------------ Type -------------------------------------*/
+
+/// Тип узла типа.
+enum TypeType
+{
+    _NUMBER,
+    _STRING,
+    _BOOLEAN,
+    _ANY,
+    _UNKNOWN,
+    _VOID
+};
+
+
+/*! \brief Структура, описывающая узел типа. */
+struct TypeNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Тип узла типа.
+    enum TypeType type;
+};
+
+/*------------------------------------ Dimension -------------------------------------*/
+
+/*! \brief Структура, описывающая узел размерности массива. */
+struct DimensionNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Размерность.
+    int dimension;
 };
 
 /*------------------------------------ TSFileElement -------------------------------------*/

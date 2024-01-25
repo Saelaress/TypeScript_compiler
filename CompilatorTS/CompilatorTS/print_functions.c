@@ -2,7 +2,7 @@
 #pragma warning(disable : 4996)
 #include "print_functions.h"
 
-/*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла Expression.
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла Expression.
 * \param[in] node Визуализироваемый узел.
 * \return Строка кода на языке DOT из узла Expression.
 */
@@ -224,10 +224,10 @@ char * generateDotFromExpressionList(struct ExpressionListNode * listNode)
     return res;
 }
 
-/*!    /*! Сгегнерировать строку в DOT-формате для дальнейшей визуализации для узла Statement.
-    * \param[in] stmt Визуализироваемый узел.
-    * \return Строка кода на языке DOT из узла Statement.
-    */
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла Statement.
+* \param[in] stmt Визуализироваемый узел.
+* \return Строка кода на языке DOT из узла Statement.
+*/
 char* generateDotFromStatement(struct StatementNode* stmt)
 {
     char base[] = "";
@@ -328,6 +328,46 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, (char*)"[label = \"false_body\"];\n");
         }
         break;
+    case _VARDECLLIST:
+        res = concat(res, generateDotFromStmtVarDeclarationList(stmt));
+        break;
+    case _FOR:
+        res = concat(res, (char*)"[label=\"FOR\"];\n");
+        if (stmt->initializer != NULL) {
+            if (stmt->initializer->varDeclList != NULL)
+            {
+                res = concat(res, itoa(stmt->initializer->id, strId, 10));
+                res = concat(res, generateDotFromStmtVarDeclarationList(stmt->initializer));
+            }
+            else
+            {
+                res = concat(res, generateDotFromStatement(stmt->initializer));
+            }
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->initializer->id, strId, 10));
+            res = concat(res, (char*)"[label = \"initializer\"];\n");
+        }
+        if (stmt->condition != NULL) {
+            res = concat(res, generateDotFromExpression(stmt->condition));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->condition->id, strId, 10));
+            res = concat(res, (char*)"[label = \"condition\"];\n");
+        }
+        if (stmt->expression != NULL) {
+            res = concat(res, generateDotFromExpression(stmt->expression));
+            res = concat(res, itoa(stmt->id, strId, 10));
+            res = concat(res, (char*)" -> ");
+            res = concat(res, itoa(stmt->expression->id, strId, 10));
+            res = concat(res, (char*)"[label = \"expression\"];\n");
+        }
+        res = concat(res, generateDotFromStatement(stmt->complexBody));
+        res = concat(res, itoa(stmt->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(stmt->complexBody->id, strId, 10));
+        res = concat(res, (char*)"[label = \"control_body\"];\n");
+        break;
     case _RETURN:
         res = concat(res, (char*)"[label=\"RETURN\"];\n");
         if (stmt->expression != NULL)
@@ -384,12 +424,10 @@ char* concat(char* firstStr, char* secStr)
     result[0] = 0;
     strcpy(result, firstStr);
     strcat(result, secStr);
-    //printf("len of \"%s\" is %d\n\n\n", firstStr, strlen(firstStr));
-    //printf("len of \"%s\" is %d\n\n\n", secStr, strlen(secStr));
     return result;
 }
 
-/*! Сгенерировать DOT-строку для дочерних узллов Expression бинарной операции.
+/*! Сгенерировать DOT-строку для дочерних узлов Expression бинарной операции.
 * \param[in] node узел, для дочерних узлов которого формируется DOT-строка.
 * \return DOT-строка с дочерними узлами.
 */
@@ -410,6 +448,7 @@ char* generateStrForBinOperation(struct ExpressionNode* node)
     return res;
 }
 
+<<<<<<< HEAD
 /*!Сгенерировать DOT - строку для файла TS.трока будет содержать корневую структуру направленного графа digraph prg.
 * \param[in] node Визуализироваемый узел.
 * \return DOT - строка с дочерними узлами.
@@ -488,7 +527,137 @@ char* generateDotFromTSFileElement(struct TSFileElementNode* node)
         res = concat(res, itoa(node->id, strId, 10));
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(node->next->id, strId, 10));
+=======
+/*! Сгенерировать DOT-строку для узла объявления переменной.
+* \param[in] varDecl Узел объявления переменной.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromVarDeclaration(struct VarDeclarationNode* varDecl)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(varDecl->id, strId, 10));
+    res = concat(res, (char*)"[label=\"VAR <ident=");
+    res = concat(res, varDecl->identifier);
+    res = concat(res, (char*)">\"];\n");
+    if (varDecl->type != NULL)
+    {
+        res = concat(res, generateDotFromType(varDecl->type));
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->type->id, strId, 10));
+        res = concat(res, (char*)"[label = \"type\"];\n");
+    }
+    if (varDecl->dimen != NULL)
+    {
+        res = concat(res, itoa(varDecl->dimen->id, strId, 10));
+        res = concat(res, (char*)"[label=\"");
+        res = concat(res, itoa(varDecl->dimen->dimension, strId, 10));
+        res = concat(res, (char*)"\"];\n");
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->dimen->id, strId, 10));
+        res = concat(res, (char*)"[label = \"dimension\"];\n");
+    }
+    if (varDecl->expression != NULL)
+    {
+        res = concat(res, generateDotFromExpression(varDecl->expression));
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->expression->id, strId, 10));
+        res = concat(res, (char*)"[label = \"expr\"];\n");
+    }
+    if (varDecl->next != NULL)
+    {
+        res = concat(res, generateDotFromVarDeclaration(varDecl->next));
+        res = concat(res, itoa(varDecl->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(varDecl->next->id, strId, 10));
+>>>>>>> ccc88baa9c0caa2aab5a295d681a9328908686c1
         res = concat(res, (char*)"[label=\"next\"];\n");
     }
     return res;
 }
+<<<<<<< HEAD
+=======
+
+/*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла stmt типа VarDeclarationListNode.
+* \param[in] stmt Визуализироваемый узел.
+* \return Строка кода на языке DOT из узла Statement типа VarDeclarationListNode.
+*/
+char* generateDotFromStmtVarDeclarationList(struct StatementNode* stmt)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, (char*)"[label=\"VARDECLLIST\"];\n");
+    res = concat(res, generateDotFromModifier(stmt->modifier));
+    res = concat(res, itoa(stmt->id, strId, 10));
+    res = concat(res, (char*)" -> ");
+    res = concat(res, itoa(stmt->modifier->id, strId, 10));
+    res = concat(res, (char*)"[label = \"modifier\"];\n");
+    res = concat(res, generateDotFromVarDeclaration(stmt->varDeclList->first));
+    res = concat(res, itoa(stmt->id, strId, 10));
+    res = concat(res, (char*)" -> ");
+    res = concat(res, itoa(stmt->varDeclList->first->id, strId, 10));
+    res = concat(res, (char*)"[label = \"first\"];\n");
+    return res;
+}
+
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла модификатора (ModifierNode).
+ * \param[in] mod Модификатор переменной.
+ * \return Строка кода на языке DOT из узла модификатора.
+ */
+char* generateDotFromModifier(struct ModifierNode* mod)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(mod->id, strId, 10));
+
+    switch (mod->type)
+    {
+    case _LET:
+        res = concat(res, (char*)"[label=\"LET\"];\n");
+        break;
+    case _CONST:
+        res = concat(res, (char*)"[label=\"CONST\"];\n");
+        break;
+    }
+
+    return res;
+}
+
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла типа (TypeNode).
+ * \param[in] typ Тип переменной.
+ * \return Строка кода на языке DOT из узла типа.
+ */
+char* generateDotFromType(struct TypeNode* typ)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(typ->id, strId, 10));
+
+    switch (typ->type)
+    {
+    case _NUMBER:
+        res = concat(res, (char*)"[label=\"NUMBER\"];\n");
+        break;
+    case _STRING:
+        res = concat(res, (char*)"[label=\"STRING\"];\n");
+        break;
+    case _BOOLEAN:
+        res = concat(res, (char*)"[label=\"BOOLEAN\"];\n");
+        break;
+    case _ANY:
+        res = concat(res, (char*)"[label=\"ANY\"];\n");
+        break;
+    case _UNKNOWN:
+        res = concat(res, (char*)"[label=\"UNKNOWN\"];\n");
+        break;
+    case _VOID:
+        res = concat(res, (char*)"[label=\"VOID\"];\n");
+        break;
+    }
+
+    return res;
+}
+>>>>>>> ccc88baa9c0caa2aab5a295d681a9328908686c1

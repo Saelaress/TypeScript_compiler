@@ -230,21 +230,21 @@ type: NUMBER
 // | ID
 ;
 
-type_mark:  ':' endl_opt type
+type_mark: ':' endl_opt type
 ;
 
 variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt
 | ID endl_opt type_mark endl_opt
 | ID endl_opt var_init endl_opt
 | ID endl_opt type_mark dimensions_list endl_opt // Объявление массива
-| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' endl_opt // Инициализация массива
+| ID endl_opt type_mark dimensions_list endl_opt var_init endl_opt // Инициализация массива
 ;
 
 variable_stmt: ID endl_opt type_mark endl_opt var_init stmt_sep
 | ID endl_opt type_mark stmt_sep
 | ID endl_opt var_init stmt_sep
 | ID endl_opt type_mark dimensions_list stmt_sep // Объявление массива
-| ID endl_opt type_mark dimensions_list endl_opt '=' endl_opt '[' endl_opt expr_list_endl_opt ']' stmt_sep // Инициализация массива
+| ID endl_opt type_mark dimensions_list endl_opt var_init stmt_sep // Инициализация массива
 ;
 
 var_init: '=' endl_opt expr
@@ -255,6 +255,7 @@ var_list: variable_endl ',' endl_opt variable_endl
 | variable_endl ',' endl_opt ID endl_opt
 | ID endl_opt ',' endl_opt ID endl_opt
 | var_list ',' endl_opt variable_endl
+| var_list ',' endl_opt ID endl_opt
 ;
 
 var_list_stmt: variable_stmt
@@ -263,6 +264,7 @@ var_list_stmt: variable_stmt
 | variable_endl ',' endl_opt ID stmt_sep
 | ID endl_opt ',' endl_opt ID stmt_sep
 | var_list ',' endl_opt variable_stmt
+| var_list ',' endl_opt ID stmt_sep
 ;
 
 dimensions: '[' endl_opt ']'

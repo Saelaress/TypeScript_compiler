@@ -14,6 +14,11 @@
     struct ExpressionListNode * exprList;
 	struct StatementNode * statement;
     struct StatementListNode * stmtList;
+    struct ModifierNode * mod;
+    struct TypeNode * typ;
+    struct VarDeclarationListNode * varDeclList;
+    struct VarDeclarationNode * varDecl;
+    struct DimensionNode * dimension;
     struct TSFileElementNode * elem;
     struct TSFileElementListNode * elemList;
     struct TSFileNode * file;
@@ -22,10 +27,12 @@
 %define lr.type ielr
 
 %token RETURN DO IF ELSE FOR IN WHILE BREAK CONTINUE DEFAULT ENDL
-%token SWITCH CASE TRY CATCH THROW FINALLY INSTANCEOF
-%token LET CONST FUNC
-%token UNKNOWN ANY NUMBER STRING VOID BOOLEAN ENUM
+%token SWITCH CASE TRY CATCH THROW FINALLY INSTANCEOF FUNC ENUM
 
+%token CONST
+%token LET 
+%token UNKNOWN ANY STRING VOID BOOLEAN
+%token NUMBER
 %token <intLit> INT_LITERAL
 %token <floatLit> FLOAT_LITERAL
 %token <stringLit> STRING_LITERAL
@@ -52,11 +59,18 @@
 
 //%start stmt_list
 
+%type <expression>expr var_init expr_opt
+%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt for_stmt
+%type <varDeclList> var_list_stmt var_list
+%type <varDecl> variable_stmt variable_endl
 %type <expression>expr 
 %type <exprList>expr_list expr_list_endl_opt expr_list_endl
 
 %type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
 %type <stmtList>stmt_list stmt_list_opt
+%type <mod>modifier
+%type <typ>type type_mark
+%type <dimension>dimensions_list
 
 %type <elem>program_elem
 %type <elemList>program_elem_list
@@ -99,12 +113,13 @@ stmt_sep: ';' endl_opt
  | expr_list_endl 
  ;
 
- expr_list_endl: expr_list endl_opt 
+  expr_list_endl: expr_list endl_opt {$$ = $1;}
  ;
 
-// expr_opt: /*empty*/
-// | endl_opt expr endl_opt
-// ;
+
+expr_opt: /*empty*/ {$$ = NULL;}
+| endl_opt expr endl_opt {$$ = $2;}
+;
 
 expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNode($1);}
 | DECREMENT endl_opt expr %prec PREF_DECREMENT {$$ = createPrefDecrementExpressionNode($3);}
@@ -156,10 +171,13 @@ while_stmt: WHILE endl_opt '(' endl_opt expr endl_opt ')' endl_opt stmt {$$ = cr
 do_while_stmt: DO endl_opt stmt WHILE endl_opt '(' endl_opt expr endl_opt ')' stmt_sep {$$ = createDoWhileStatement($8, $3);}
 ;
 
-// for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt
-// | FOR endl_opt '(' endl_opt modifier endl_opt var_list ';' expr_opt ';' expr_opt ')' endl_opt stmt
-// | FOR endl_opt '(' endl_opt modifier endl_opt ID ';' expr_opt ';' expr_opt ')' endl_opt stmt
-// ;
+for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt {$$ = createForStatement(createStatementFromExpression($4), $6, $8, $11);}
+| FOR endl_opt '(' endl_opt modifier endl_opt var_list ';' expr_opt ';' expr_opt ')' endl_opt stmt {
+    $$ = createForStatement(createStatementFromVarDeclarationList($5, $7), $9, $11, $14);}
+| FOR endl_opt '(' endl_opt modifier endl_opt ID ';' expr_opt ';' expr_opt ')' endl_opt stmt {$$ = 
+    createForStatement(createStatementFromVarDeclarationList($5, 
+    createVarDeclarationList(createVarDeclarationNode($7, NULL, NULL, NULL), NULL)), $9, $11, $14);}
+;
 
 // switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list_break '}' endl_opt
 // ;
@@ -219,13 +237,13 @@ stmt_list: stmt {$$ = createStatementListNode($1);}
 stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 | if_stmt {$$ = $1;}
 | while_stmt {$$ = $1;}
-// | for_stmt
+| for_stmt {$$ = $1;}
 | do_while_stmt {$$ = $1;}
 // | switch_stmt
 // | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
-// | modifier endl_opt ID stmt_sep
-// | modifier endl_opt var_list_stmt
+| modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclarationList($1, createVarDeclarationList(createVarDeclarationNode($3, NULL, NULL, NULL), NULL));}
+| modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclarationList($1, $3);}
 // | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
 // | THROW expr stmt_sep
@@ -233,6 +251,63 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 
 stmt: stmt_top {$$ = $1;}
 | return_statement {$$ = $1;}
+;
+
+modifier: LET {$$ = createLetModifierNode();}
+| CONST {$$ = createConstModifierNode();}
+;
+
+type: NUMBER {$$ = createNumberTypeNode();}
+| STRING {$$ = createStringTypeNode();}
+| BOOLEAN {$$ = createBooleanTypeNode();}
+| ANY {$$ = createAnyTypeNode();}
+| UNKNOWN {$$ = createUnknownTypeNode();}
+| VOID {$$ = createVoidTypeNode();}
+// | ID
+;
+
+type_mark: ':' endl_opt type {$$ = $3;}
+;
+
+variable_endl: ID endl_opt type_mark endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, $3, NULL, $5);}
+| ID endl_opt type_mark endl_opt {$$ = createVarDeclarationNode($1, $3, NULL, NULL);}
+| ID endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, NULL, NULL, $3);}
+| ID endl_opt type_mark dimensions_list endl_opt {$$ = createVarDeclarationNode($1, $3, $4, NULL);} // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt var_init endl_opt {$$ = createVarDeclarationNode($1, $3, $4, $6);} // Инициализация массива
+;
+
+var_list: variable_endl ',' endl_opt variable_endl {$$ = createVarDeclarationList($1, $4);}
+| ID endl_opt ',' endl_opt variable_endl {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), $5);}
+| variable_endl ',' endl_opt ID endl_opt {$$ = createVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
+| ID endl_opt ',' endl_opt ID endl_opt {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), createVarDeclarationNode($5, NULL, NULL, NULL));}
+| var_list ',' endl_opt variable_endl {$$ = addVarDeclarationToVarDeclarationList($1, $4);}
+| var_list ',' endl_opt ID endl_opt {$$ = addVarDeclarationToVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
+;
+
+var_list_stmt: variable_stmt {$$ = createVarDeclarationList($1, NULL);}
+| variable_endl ',' endl_opt variable_stmt {$$ = createVarDeclarationList($1, $4);}
+| ID endl_opt ',' endl_opt variable_stmt {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), $5);}
+| variable_endl ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
+| ID endl_opt ',' endl_opt ID stmt_sep {$$ = createVarDeclarationList(createVarDeclarationNode($1, NULL, NULL, NULL), createVarDeclarationNode($5, NULL, NULL, NULL));}
+| var_list ',' endl_opt variable_stmt {$$ = addVarDeclarationToVarDeclarationList($1, $4);}
+| var_list ',' endl_opt ID stmt_sep {$$ = addVarDeclarationToVarDeclarationList($1, createVarDeclarationNode($4, NULL, NULL, NULL));}
+;
+
+variable_stmt: ID endl_opt type_mark endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, $3, NULL, $5);}
+| ID endl_opt type_mark stmt_sep {$$ = createVarDeclarationNode($1, $3, NULL, NULL);}
+| ID endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, NULL, NULL, $3);}
+| ID endl_opt type_mark dimensions_list stmt_sep {$$ = createVarDeclarationNode($1, $3, $4, NULL);} // Объявление массива
+| ID endl_opt type_mark dimensions_list endl_opt var_init stmt_sep {$$ = createVarDeclarationNode($1, $3, $4, $6);} // Инициализация массива
+;
+
+var_init: '=' endl_opt expr {$$ = $3;}
+;
+
+dimensions: '[' endl_opt ']'
+;
+
+dimensions_list: dimensions {$$ = createDimensionNode();}
+| dimensions_list dimensions {$$ = incrementDimensionNode($1);}
 ;
 
 %%

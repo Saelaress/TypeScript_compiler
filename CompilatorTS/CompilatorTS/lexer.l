@@ -69,15 +69,24 @@ DIGIT [0-9]
 %} /* Объявление локальных переменных */
 
 abstract {fprintf(yyout, "Found KW_ABSTRACT: %s\n", yytext);} 
-any {fprintf(yyout, "Found TYPE_ANY: %s\n", yytext);} 
+any {
+    printHandler((char*)"TYPE_ANY", yytext);
+    return ANY;
+}
 as {fprintf(yyout, "Found KW_AS: %s\n", yytext);} 
-boolean {fprintf(yyout, "Found TYPE_BOOLEAN: %s\n", yytext);} 
+boolean {
+    printHandler((char*)"TYPE_BOOLEAN", yytext);
+    return BOOLEAN;
+}
 break {fprintf(yyout, "Found KW_BREAK: %s\n", yytext);} 
 case {fprintf(yyout, "Found KW_CASE: %s\n", yytext);} 
 catch {fprintf(yyout, "Found KW_CATCH: %s\n", yytext);} 
 class {fprintf(yyout, "Found KW_CLASS: %s\n", yytext);} 
 continue {fprintf(yyout, "Found KW_CONTINUE: %s\n", yytext);} 
-const {fprintf(yyout, "Found KW_CONST: %s\n", yytext);} 
+const {
+    printHandler((char*)"KW_CONST", yytext);
+    return CONST;
+}
 constructor {fprintf(yyout, "Found KW_CONSTRUCTOR: %s\n", yytext);} 
 debugger {fprintf(yyout, "Found KW_DEBUGGER: %s\n", yytext);} 
 declare {fprintf(yyout, "Found KW_DECLARE: %s\n", yytext);} 
@@ -99,7 +108,10 @@ false {
     return FALSE_LITERAL;
 }
 finally {fprintf(yyout, "Found KW_FINALLY: %s\n", yytext);} 
-for {fprintf(yyout, "Found KW_FOR: %s\n", yytext);} 
+for {
+    printHandler((char*)"KW_FOR", yytext);
+    return FOR;
+}
 from {fprintf(yyout, "Found KW_FROM: %s\n", yytext);} 
 function {fprintf(yyout, "Found KW_FUNCTION: %s\n", yytext);} 
 get {fprintf(yyout, "Found KW_GET: %s\n", yytext);} 
@@ -115,12 +127,18 @@ instanceof {fprintf(yyout, "Found KW_INSTANCEOF: %s\n", yytext);}
 interface {fprintf(yyout, "Found KW_INTARFACE: %s\n", yytext);} 
 is {fprintf(yyout, "Found KW_IS: %s\n", yytext);} 
 keyof {fprintf(yyout, "Found KW_KEYOF: %s\n", yytext);} 
-let {fprintf(yyout, "Found KW_LET: %s\n", yytext);} 
+let {
+    printHandler((char*)"KW_LET", yytext);
+    return LET;
+}
 module {fprintf(yyout, "Found KW_MODULE: %s\n", yytext);} 
 namespace {fprintf(yyout, "Found KW_NAMESPACE: %s\n", yytext);} 
 never {fprintf(yyout, "Found TYPE_NEVER: %s\n", yytext);} 
 null {fprintf(yyout, "Found KW_NULL: %s\n", yytext);} 
-number {fprintf(yyout, "Found TYPE_NUMBER: %s\n", yytext);} 
+number {
+    printHandler((char*)"TYPE_NUMBER", yytext);
+    return NUMBER;
+}
 object {fprintf(yyout, "Found TYPE_OBJECT: %s\n", yytext);} 
 of {fprintf(yyout, "Found KW_OF: %s\n", yytext);} 
 package {fprintf(yyout, "Found KW_PACKAGE: %s\n", yytext);} 
@@ -135,7 +153,10 @@ return {
 } 
 set {fprintf(yyout, "Found KW_SET: %s\n", yytext);} 
 static {fprintf(yyout, "Found KW_STATIC: %s\n", yytext);} 
-string {fprintf(yyout, "Found TYPE_STRING: %s\n", yytext);} 
+string {
+    printHandler((char*)"TYPE_STRING", yytext);
+    return STRING;
+} 
 super {fprintf(yyout, "Found KW_SUPER: %s\n", yytext);} 
 switch {fprintf(yyout, "Found KW_SWITCH: %s\n", yytext);}
 symbol {fprintf(yyout, "Found TYPE_SYMBOL: %s\n", yytext);}
@@ -149,8 +170,15 @@ try {fprintf(yyout, "Found KW_TRY: %s\n", yytext);}
 type {fprintf(yyout, "Found KW_TYPE: %s\n", yytext);}
 typeof {fprintf(yyout, "Found KW_TYPEOF: %s\n", yytext);}
 unique {fprintf(yyout, "Found KW_UNIQUE: %s\n", yytext);} 
-unknown {fprintf(yyout, "Found TYPE_UNKNOWN: %s\n", yytext);} 
+unknown {
+    printHandler((char*)"TYPE_UNKNOWN", yytext);
+    return UNKNOWN;
+}
 var {fprintf(yyout, "Found KW_VAR: %s\n", yytext);}
+void {
+    printHandler((char*)"TYPE_VOID", yytext);
+    return VOID;
+}
 while {
     printHandler((char*)"WHILE_KEY_WORD", yytext);
     return WHILE;
@@ -268,7 +296,10 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     printHandler((char*)"RIGHT_BRACE", yytext);
     return '}';
 }
-":" {fprintf(yyout, "Found COLON: %s\n", yytext);}
+":" {
+    printHandler((char*)"COLON", yytext);
+    return ':';
+}
 ";" {
     printHandler((char*)"SEMICOLON", yytext);
     return ';';
