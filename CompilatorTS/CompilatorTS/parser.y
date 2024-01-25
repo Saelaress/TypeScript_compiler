@@ -59,14 +59,13 @@
 
 //%start stmt_list
 
-%type <expression>expr var_init expr_opt
 %type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt for_stmt
 %type <varDeclList> var_list_stmt var_list
 %type <varDecl> variable_stmt variable_endl
-%type <expression>expr 
+%type <expression>expr var_init expr_opt
 %type <exprList>expr_list expr_list_endl_opt expr_list_endl
 
-%type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt
+
 %type <stmtList>stmt_list stmt_list_opt
 %type <mod>modifier
 %type <typ>type type_mark

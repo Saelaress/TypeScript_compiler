@@ -448,7 +448,7 @@ char* generateStrForBinOperation(struct ExpressionNode* node)
     return res;
 }
 
-<<<<<<< HEAD
+
 /*!Сгенерировать DOT - строку для файла TS.трока будет содержать корневую структуру направленного графа digraph prg.
 * \param[in] node Визуализироваемый узел.
 * \return DOT - строка с дочерними узлами.
@@ -511,7 +511,7 @@ char* generateDotFromTSFileElement(struct TSFileElementNode* node)
         res = concat(res, itoa(node->stmt->id, strId, 10));
         res = concat(res, (char*)"[label=\"stmt\"];\n");
     }
-    /*if (node->func != NULL) 
+    /*if (node->func != NULL)
     {
         res = concat(res, generateDotFromFunction(node->func));
         res = concat(res, itoa(node->id, strId, 10));
@@ -519,7 +519,7 @@ char* generateDotFromTSFileElement(struct TSFileElementNode* node)
         res = concat(res, itoa(node->func->id, strId, 10));
         res = concat(res, (char*)"[label=\"function\"];\n");
     }*/
-    
+
 
     if (node->next != NULL)
     {
@@ -527,7 +527,10 @@ char* generateDotFromTSFileElement(struct TSFileElementNode* node)
         res = concat(res, itoa(node->id, strId, 10));
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(node->next->id, strId, 10));
-=======
+        res = concat(res, (char*)"[label=\"next\"];\n");
+    }
+    return res;
+}
 /*! Сгенерировать DOT-строку для узла объявления переменной.
 * \param[in] varDecl Узел объявления переменной.
 * \return DOT-строка с дочерними узлами.
@@ -573,13 +576,11 @@ char* generateDotFromVarDeclaration(struct VarDeclarationNode* varDecl)
         res = concat(res, itoa(varDecl->id, strId, 10));
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(varDecl->next->id, strId, 10));
->>>>>>> ccc88baa9c0caa2aab5a295d681a9328908686c1
         res = concat(res, (char*)"[label=\"next\"];\n");
     }
     return res;
 }
-<<<<<<< HEAD
-=======
+
 
 /*! Сгенерировать строку в DOT-формате для дальнейшей визуализации для узла stmt типа VarDeclarationListNode.
 * \param[in] stmt Визуализироваемый узел.
@@ -660,4 +661,3 @@ char* generateDotFromType(struct TypeNode* typ)
 
     return res;
 }
->>>>>>> ccc88baa9c0caa2aab5a295d681a9328908686c1

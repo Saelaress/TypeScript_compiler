@@ -228,7 +228,7 @@ struct ExpressionNode *createSquareBracketExpressionNode(struct ExpressionNode *
     struct ExpressionNode *node = (struct ExpressionNode *)malloc(sizeof(struct ExpressionNode));
     if (node == NULL)
     {
-        // Обработка ошибки выделения памяти
+       // Обработка ошибки выделения памяти
         exit(EXIT_FAILURE);
     }
 

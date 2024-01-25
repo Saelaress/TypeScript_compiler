@@ -261,7 +261,7 @@ struct StatementListNode* createStatementListNode(struct StatementNode* firstChi
 struct StatementListNode* addStatementToStatementList(struct StatementListNode* list, struct StatementNode* statement);
 
 
-<<<<<<< HEAD
+
 /*------------------------------------ TSFileElement -------------------------------------*/
 
 /*! Создать элемент файла TS на основе функции.
@@ -309,7 +309,7 @@ struct TSFileElementListNode* addTSFileElementToList(struct TSFileElementListNod
 * \return указатель на корневой узел файла TS.
 */
 struct TSFileNode* createTSFileNode(struct TSFileElementListNode* elemList);
-=======
+
 /*------------------------------------ Modifier -------------------------------------*/
 
 /*! Создать узел модификатора LET.
@@ -391,4 +391,4 @@ struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNod
 * \return измененный список VarDeclaration (тот же самый, что и параметр list).
 */
 struct VarDeclarationListNode* addVarDeclarationToVarDeclarationList(struct VarDeclarationListNode* list, struct VarDeclarationNode* varDecl);
->>>>>>> ccc88baa9c0caa2aab5a295d681a9328908686c1
+
