@@ -183,10 +183,10 @@ char * generateDotFromExpression(struct ExpressionNode * node)
         break;
     case _SQUARE_BRACKETS:
         res = concat(res, (char*)"[label=\"[]\"];\n");
-        res = concat(res, generateDotFromExpression(node->left));
+        res = concat(res, generateDotFromExpressionList(node->params));
         res = concat(res, itoa(node->id, idStr, 10));
         res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(node->left->id, idStr, 10));
+        res = concat(res, itoa(node->params->id, idStr, 10));
         res = concat(res, (char*)"[label=\"inner\"];\n");
         break;
     default:
@@ -249,20 +249,12 @@ char* generateDotFromStatement(struct StatementNode* stmt)
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(stmt->condition->id, strId, 10));
         res = concat(res, (char*)"[label = \"condition\"];\n");
-        if (stmt->complexBody != NULL)
+        if (stmt->body != NULL)
         {
-            res = concat(res, generateDotFromStatementList(stmt->complexBody));
+            res = concat(res, generateDotFromStatement(stmt->body));
             res = concat(res, itoa(stmt->id, strId, 10));
             res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->complexBody->id, strId, 10));
-            res = concat(res, (char*)"[label = \"control_body\"];\n");
-        }
-        else if (stmt->singleBody != NULL)
-        {
-            res = concat(res, generateDotFromStatement(stmt->singleBody));
-            res = concat(res, itoa(stmt->id, strId, 10));
-            res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->singleBody->id, strId, 10));
+            res = concat(res, itoa(stmt->body->id, strId, 10));
             res = concat(res, (char*)"[label = \"control_body\"];\n");
         }
         break;
@@ -273,20 +265,12 @@ char* generateDotFromStatement(struct StatementNode* stmt)
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(stmt->condition->id, strId, 10));
         res = concat(res, (char*)"[label = \"condition\"];\n");
-        if (stmt->complexBody != NULL)
+        if (stmt->body != NULL)
         {
-            res = concat(res, generateDotFromStatementList(stmt->complexBody));
+            res = concat(res, generateDotFromStatement(stmt->body));
             res = concat(res, itoa(stmt->id, strId, 10));
             res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->complexBody->id, strId, 10));
-            res = concat(res, (char*)"[label = \"control_body\"];\n");
-        }
-        else if (stmt->singleBody != NULL)
-        {
-            res = concat(res, generateDotFromStatement(stmt->singleBody));
-            res = concat(res, itoa(stmt->id, strId, 10));
-            res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->singleBody->id, strId, 10));
+            res = concat(res, itoa(stmt->body->id, strId, 10));
             res = concat(res, (char*)"[label = \"control_body\"];\n");
         }
         break;
@@ -295,12 +279,12 @@ char* generateDotFromStatement(struct StatementNode* stmt)
         break;
     case _BLOCK:
         res = concat(res, (char*)"[label=\"BLOCK\"];\n");
-        if (stmt->complexBody != NULL)
+        if (stmt->body != NULL)
         {
-            res = concat(res, generateDotFromStatementList(stmt->complexBody));
+            res = concat(res, generateDotFromStatementList(stmt->body));
             res = concat(res, itoa(stmt->id, strId, 10));
             res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->complexBody->id, strId, 10));
+            res = concat(res, itoa(stmt->body->id, strId, 10));
             res = concat(res, (char*)"[label = \"statements\"];\n");
         }
         break;
@@ -311,12 +295,12 @@ char* generateDotFromStatement(struct StatementNode* stmt)
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(stmt->condition->id, strId, 10));
         res = concat(res, (char*)"[label = \"condition\"];\n");
-        if (stmt->singleBody != NULL)
+        if (stmt->body != NULL)
         {
-            res = concat(res, generateDotFromStatement(stmt->singleBody));
+            res = concat(res, generateDotFromStatement(stmt->body));
             res = concat(res, itoa(stmt->id, strId, 10));
             res = concat(res, (char*)" -> ");
-            res = concat(res, itoa(stmt->singleBody->id, strId, 10));
+            res = concat(res, itoa(stmt->body->id, strId, 10));
             res = concat(res, (char*)"[label = \"true_body\"];\n");
         }
         if (stmt->falseBody != NULL)
@@ -362,10 +346,10 @@ char* generateDotFromStatement(struct StatementNode* stmt)
             res = concat(res, itoa(stmt->expression->id, strId, 10));
             res = concat(res, (char*)"[label = \"expression\"];\n");
         }
-        res = concat(res, generateDotFromStatement(stmt->complexBody));
+        res = concat(res, generateDotFromStatement(stmt->body));
         res = concat(res, itoa(stmt->id, strId, 10));
         res = concat(res, (char*)" -> ");
-        res = concat(res, itoa(stmt->complexBody->id, strId, 10));
+        res = concat(res, itoa(stmt->body->id, strId, 10));
         res = concat(res, (char*)"[label = \"control_body\"];\n");
         break;
     case _RETURN:

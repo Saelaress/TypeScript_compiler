@@ -80,7 +80,7 @@ struct ExpressionNode *createBracketExpressionNode(struct ExpressionNode *innerE
  * \param[in] innerExpression внутреннее выражение в квадратных скобках.
  * \return ссылка на узел оператора квадратных скобок.
  */
-struct ExpressionNode *createSquareBracketExpressionNode(struct ExpressionNode *innerExpression);
+struct ExpressionNode *createSquareBracketExpressionNode(struct ExpressionListNode *innerExpression);
 
 /*! Создать узел оператора сложения (+).
  * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.

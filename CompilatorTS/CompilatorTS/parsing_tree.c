@@ -223,22 +223,15 @@ struct ExpressionNode *createBracketExpressionNode(struct ExpressionNode *innerE
  * \param[in] innerExpression внутреннее выражение в квадратных скобках.
  * \return ссылка на узел оператора квадратных скобок.
  */
-struct ExpressionNode *createSquareBracketExpressionNode(struct ExpressionNode *innerExpression)
+struct ExpressionNode *createSquareBracketExpressionNode(struct ExpressionListNode *innerExpression)
 {
     struct ExpressionNode *node = (struct ExpressionNode *)malloc(sizeof(struct ExpressionNode));
-    if (node == NULL)
-    {
-       // Обработка ошибки выделения памяти
-        exit(EXIT_FAILURE);
-    }
-
     node->id = ID++;
     node->type = _SQUARE_BRACKETS;
-    node->left = innerExpression;
+    node->left = NULL;
     node->next = NULL;
-    node->params = NULL;
+    node->params = innerExpression;
     node->right = NULL;
-
     return node;
 }
 
@@ -641,10 +634,8 @@ struct StatementNode* createStatementFromExpression(struct ExpressionNode* expr)
     struct StatementNode* stmt = (struct StatementNode*)malloc(sizeof(struct StatementNode));
     stmt->type = _EXPRESSION;
     stmt->expression = expr;
-    stmt->complexBody = NULL;
+    stmt->body = NULL;
     stmt->condition = NULL;
-    stmt->singleBody = NULL;
-    stmt->complexBody = NULL;
     stmt->id = ID++;
     stmt->next = NULL;
     stmt->varDeclList = NULL;
@@ -661,8 +652,7 @@ struct StatementNode* createEmptyStatement()
     node->type = _EMPTY;
     node->expression = NULL;
     node->condition = NULL;
-    node->complexBody = NULL;
-    node->singleBody = NULL;
+    node->body = NULL;
     node->next = NULL;
     node->varDeclList = NULL;
     return node;
@@ -680,9 +670,8 @@ struct StatementNode* createReturnStatement(struct ExpressionNode* expr)
     node->varDeclList = NULL;
     node->expression = expr;
     node->type = _RETURN;
-    node->complexBody = NULL;
+    node->body = NULL;
     node->condition = NULL;
-    node->singleBody = NULL;
     return node;
 }
 
@@ -699,8 +688,7 @@ struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct S
     node->next = NULL;
     node->expression = NULL;
     node->condition = cond;
-    node->singleBody = stmt;
-    node->complexBody = NULL;
+    node->body = stmt;
     node->varDeclList = NULL;
     return node;
 }
@@ -718,8 +706,7 @@ struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct
     node->next = NULL;
     node->expression = NULL;
     node->condition = cond;
-    node->singleBody = stmt;
-    node->complexBody = NULL;
+    node->body = stmt;
     node->varDeclList = NULL;
     return node;
 }
@@ -738,8 +725,7 @@ struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct Stat
     node->next = NULL;
     node->expression = NULL;
     node->condition = cond;
-    node->singleBody = trueStmt;
-    node->complexBody = NULL;
+    node->body = trueStmt;
     node->varDeclList = NULL;
     node->falseBody = falseStmt;
     return node;
@@ -755,9 +741,8 @@ struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNod
     node->id = ID++;
     node->type = _BLOCK;
     node->expression = NULL;    
-    node->complexBody = blockStmt;
+    node->body = blockStmt;
     node->condition = NULL;
-    node->singleBody = NULL;
     node->next = NULL;
     node->varDeclList = NULL;
     return node;
@@ -775,8 +760,7 @@ struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode*
     node->type = _VARDECLLIST;
     node->expression = NULL;
     node->condition = NULL;
-    node->complexBody = NULL;
-    node->singleBody = NULL;
+    node->body = NULL;
     node->next = NULL;
     node->varDeclList = varDeclList;
     node->modifier = mod;
@@ -798,8 +782,7 @@ struct StatementNode* createForStatement(struct StatementNode* init, struct Expr
     node->initializer = init;
     node->condition = cond;
     node->expression = updExpr;
-    node->singleBody = NULL;
-    node->complexBody = stmt;
+    node->body = stmt;
     node->next = NULL;
     node->varDeclList = NULL;
     node->modifier = NULL;

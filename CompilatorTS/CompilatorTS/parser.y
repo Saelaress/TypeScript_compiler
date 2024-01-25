@@ -104,16 +104,16 @@ stmt_sep: ';' endl_opt
 | endl
 ;
 
- expr_list: expr {$$ = createExpressionListNode($1);}
- | expr_list endl_opt ',' endl_opt expr {$$ = addExpressionToExpressionList($1, $5);}
- ;
+expr_list: expr {$$ = createExpressionListNode($1);}
+| expr_list endl_opt ',' endl_opt expr {$$ = addExpressionToExpressionList($1, $5);}
+;
 
- expr_list_endl_opt: /* empty */ {$$ = createExpressionListNode(NULL);}
- | expr_list_endl 
- ;
+expr_list_endl_opt: /* empty */ {$$ = createExpressionListNode(NULL);}
+| expr_list_endl {$$ = $1;}
+;
 
-  expr_list_endl: expr_list endl_opt {$$ = $1;}
- ;
+expr_list_endl: expr_list endl_opt {$$ = $1;}
+;
 
 
 expr_opt: /*empty*/ {$$ = NULL;}

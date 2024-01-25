@@ -234,10 +234,7 @@ struct StatementNode
     struct ExpressionNode* condition;
 
     /// Ссылка на простое тело цикла.
-    struct StatementNode* singleBody;
-
-    /// Ссылка на составное тело цикла.
-    struct StatementListNode* complexBody;
+    struct StatementNode* body;
 
     /// Ссылка на тело ветки else в условном операторе if.
     struct StatementNode* falseBody;
