@@ -340,8 +340,8 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 <STRINGD,STRINGS,STRINGB>\\\" {appendChars(&buff, "\"");}
 <STRINGD,STRINGS,STRINGB>\\\' {appendChars(&buff, "\'");}
 <STRINGD>\" {
-    printHandler((char*)"ESCAPED STRING", getSafeCString(&buff)); 
-    printHandler((char*)"ESCAPED_STRING_END", yytext);
+    printHandler((char*)"STRINGD", getSafeCString(&buff)); 
+    printHandler((char*)"STRINGD_END", yytext);
     yy_pop_state();
     struct stringBuffer * ns = (struct stringBuffer*)malloc(sizeof(struct stringBuffer));
     memcpy(ns->buffer, buff.buffer, buff.length);
@@ -350,57 +350,74 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     return STRING_LITERAL;
     }
 <STRINGD,STRINGS>[\n\r] {
-    printf("ERROR: no closing \" (double-quote) in STRING in line %d.\n", multilineBegin);
+    printf("ERROR: no closing quote in STRING in line %d.\n", multilineBegin);
     exit(1);
     }
 <STRINGD,STRINGS,STRINGB><<EOF>> {
-    printf("ERROR: no closing \" (double-quote) in STRING in line %d.\n", multilineBegin);
+    printf("ERROR: no closing quote in STRING in line %d.\n", multilineBegin);
     exit(1);
     }
 
 
 \' { // строка с одинарными кавычками
-    BEGIN(STRINGS);
     bufferString[0] = 0; // зануляем переменную
+    multilineBegin = line;
+    clearStringBuffer(&buff);
+    printHandler((char*)"STRINGS_BEGIN", yytext);
+    yy_push_state(STRINGS);
     }
 <STRINGS>\' {
-    fprintf(yyout, "Строка: %s\n", bufferString);
-    BEGIN(INITIAL);
+    printHandler((char*)"STRINGS", getSafeCString(&buff)); 
+    printHandler((char*)"STRINGS_END", yytext);
+    yy_pop_state();
+    struct stringBuffer * ns = (struct stringBuffer*)malloc(sizeof(struct stringBuffer));
+    memcpy(ns->buffer, buff.buffer, buff.length);
+    ns->length = buff.length;
+    yylval.stringLit = ns;
+    return STRING_LITERAL;
     }
 
 
 \` { // шаблонная строка
-    BEGIN(STRINGB);
     bufferString[0] = 0; // зануляем переменную
+    multilineBegin = line;
+    clearStringBuffer(&buff);
+    printHandler((char*)"STRINGB_BEGIN", yytext);
+    yy_push_state(STRINGB);
     }
-<STRINGB>\n {strcat(bufferString, "\n");}
 <STRINGB>\$\{ {
-    strcat(bufferString, "${");
+    appendChars(&buff, "${");
     BEGIN(TEMPLATE);
     }
 <STRINGB>\$\{\s*\} {
-    printf("ERROR! Unexpected '}'. \n");
+    printf("ERROR! Expression expected in ${}. \n");
     exit(1);
     }
-<STRINGB>[\${]+ {strcat(bufferString, yytext);}
+<STRINGB>[\${]+ {appendChars(&buff, yytext);}
 <STRINGB>\\[0-7]{2} {
     printf("ERROR! Octal escape sequences are not allowed in template strings. \n");
     exit(1);
     }
-<STRINGB>[^\\\`\n] {strcat(bufferString, yytext);}
-<STRINGB>\\` {strcat(bufferString, "`");}
+<STRINGB>[^\\\`\n] {appendChars(&buff, yytext);}
+<STRINGB>\\` {appendChars(&buff, "`");}
 <STRINGB>\` {
-    fprintf(yyout, "Шаблонная строка: %s\n", bufferString);
-    BEGIN(INITIAL);
+    printHandler((char*)"STRINGB", getSafeCString(&buff)); 
+    printHandler((char*)"STRINGB_END", yytext);
+    yy_pop_state();
+    struct stringBuffer * ns = (struct stringBuffer*)malloc(sizeof(struct stringBuffer));
+    memcpy(ns->buffer, buff.buffer, buff.length);
+    ns->length = buff.length;
+    yylval.stringLit = ns;
+    return STRING_LITERAL;
     }
 
 <TEMPLATE>\} {
     printf("WARNING! Template is not supported. \n");
-    strcat(bufferString, yytext);
+    appendChars(&buff, yytext);
     BEGIN(STRINGB);
     }
 <TEMPLATE>[^\}]* {
-    strcat(bufferString, yytext);
+    appendChars(&buff, yytext);
 }
 <TEMPLATE><<EOF>> {
     printf("ERROR! Missing } in template expression. \n");
@@ -419,7 +436,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     }
 <COMMENTONE><<EOF>> {
     printHandler((char*)"COMMENTONE", bufferString);
-    BEGIN(INITIAL);
+    yy_pop_state;
     }
 
 
@@ -435,7 +452,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 <COMMENT>"*"+"/" {printHandler((char*)"COMMENT", bufferString); yy_pop_state();}
 <COMMENT><<EOF>> {
     printf("ERROR: no closing */ in line %d.\n", multilineBegin);
-    BEGIN(INITIAL);
+    yy_pop_state;
     exit(1);
     }
 
