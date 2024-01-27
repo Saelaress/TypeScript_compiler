@@ -90,7 +90,7 @@ program_elem_list: endl_opt program_elem {$$ = createTSFileElementListNode($2);}
 ;
 
 program_elem: stmt_top {$$ = createElementFromStatement($1);}
-| function_declaration {$$ = createElementFromFunction($1);}
+| function_declaration endl_opt {$$ = createElementFromFunction($1);}
 ;
 
 function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' {$$ = createFunctionNode($3, $5, $7, $11);}
