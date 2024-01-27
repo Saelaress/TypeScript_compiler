@@ -326,22 +326,22 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char* end;
     long int num = strtol(yytext+2, &end, 16);
     char asciiChar = (char)num;
-    appendChars(&buff, &asciiChar);
+    appendChar(&buff, asciiChar);
     }
 <STRINGD,STRINGS>\\[0-7]{1,2} {
     char* end;
     long int num = strtol(yytext+1, &end, 8);
     char asciiChar = (char)num;
-    appendChars(&buff, &asciiChar);
+    appendChar(&buff, asciiChar);
     }
 <STRINGD,STRINGS>[^\\\"\'\n\r]+ {appendChars(&buff, yytext);}
 <STRINGD,STRINGS,STRINGB>\\n {appendChars(&buff, "\n");}
 <STRINGD,STRINGS,STRINGB>\\r {appendChars(&buff, "\r");}
 <STRINGD,STRINGS,STRINGB>\\t {appendChars(&buff, "\t");}
-<STRINGD,STRINGS,STRINGB>\\ {}
 <STRINGD,STRINGS,STRINGB>\\\\ {appendChars(&buff, "\\");}
-<STRINGD,STRINGS,STRINGB>\\\" {appendChars(&buff, "\"");}
+<STRINGD,STRINGS,STRINGB>\\\" {appendChars(&buff, "\\\"");}
 <STRINGD,STRINGS,STRINGB>\\\' {appendChars(&buff, "\'");}
+<STRINGD,STRINGS,STRINGB>\\ {}
 <STRINGD>\" {
     printHandler((char*)"STRINGD", getSafeCString(&buff)); 
     printHandler((char*)"STRINGD_END", yytext);
@@ -492,8 +492,9 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char* buffer = bufferString;
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 16);
-    snprintf(numStr, sizeof(numStr), "%ld", res);
-    fprintf(yyout, "INT: %s\n", numStr);
+    if(needsTokens) printf("(%d) - HEX_INT\n", res);
+        yylval.intLit = res;
+        return INT_LITERAL;
 }
 
 ((0\_*(x|X){2,}|(0\_*(x|X)))\_*[0-9a-fA-F](\_*[0-9a-fA-F]+)*\_*)|(0\_*(x|X){2,})\_* {
@@ -508,8 +509,9 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char* buffer = bufferString;
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 8);
-    snprintf(numStr, sizeof(numStr), "%ld", res);
-    fprintf(yyout, "INT: %s\n", numStr);
+    if(needsTokens) printf("(%d) - OCTAL_INT\n", res);
+        yylval.intLit = res;
+        return INT_LITERAL;
 }
 
 ((0\_*(o|O){2,}|(0\_*(o|O)))\_*[0-7](\_*[0-7]+)*\_*)|(0\_*(o|O){2,})\_* {
@@ -524,12 +526,13 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     char* buffer = bufferString;
     char* end, numStr[20];
     long int res = strtol(buffer+2, &end, 2);
-    snprintf(numStr, sizeof(numStr), "%ld", res);
-    fprintf(yyout, "INT: %s\n", numStr);
+    if(needsTokens) printf("(%d) - BINARY_INT\n", res);
+        yylval.intLit = res;
+        return INT_LITERAL;
 }
 
 ((0\_*(b|B){2,}|(0\_*(b|B)))\_*[01](\_*[01]+)*\_*)|(0\_*(b|B){2,})\_* {
-    printf("ERROR: octal syntax error %s.\n", yytext);
+    printf("ERROR: binary syntax error %s.\n", yytext);
 	exit(1);
 }
 

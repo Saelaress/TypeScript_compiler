@@ -85,7 +85,7 @@
 TSFile: program_elem_list {$$ = root = createTSFileNode($1);}
 ;
 
-program_elem_list: program_elem {$$ = createTSFileElementListNode($1);}
+program_elem_list: endl_opt program_elem {$$ = createTSFileElementListNode($2);}
 | program_elem_list program_elem {$$ = addTSFileElementToList($1, $2);}
 ;
 

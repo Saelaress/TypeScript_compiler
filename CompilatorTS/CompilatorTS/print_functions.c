@@ -31,6 +31,22 @@ char * generateDotFromExpression(struct ExpressionNode * node)
         res = concat(res, (char*)"[label=\"-\"];\n");
         res = concat(res, generateStrForBinOperation(node));
         break;
+    case _UNARY_PLUS:
+        res = concat(res, (char*)"[label=\"U_+\"];\n");
+        res = concat(res, generateDotFromExpression(node->right));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->right->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
+    case _UNARY_MINUS:
+        res = concat(res, (char*)"[label=\"U_-\"];\n");
+        res = concat(res, generateDotFromExpression(node->right));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->right->id, idStr, 10));
+        res = concat(res, (char*)";\n");
+        break;
     case _MUL:
         res = concat(res, (char*)"[label=\"*\"];\n");
         res = concat(res, generateStrForBinOperation(node));
