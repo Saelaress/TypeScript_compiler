@@ -366,32 +366,16 @@ struct DimensionNode
 
 /*------------------------------------ TSFileElement -------------------------------------*/
 
-/*! \brief Перечисление типа элемента файла TS. */
-enum TSFileElementType
-{
-
-    /// Свободная функция.
-    _FUNCTION,
-
-    /// Пустой элемент.
-    //_EMPT
-};
-
 /*! \brief Структура, описывающая элемент файла TS. */
 struct TSFileElementNode
 {
     /// Идентификатор узла.
     int id;
-
-    /// Указатель на список модификаторов.
-   // struct ModifierListNode* modifiers;
-
-    /// Тип элемента TS.
-    enum TSFileElementType type;
-
+   
     /// Указатель на узел функции, если элемент - функция.
     struct FunctionNode* func;
 
+    /// Указатель на узел stmt, если элемент - stmt.
     struct StatementNode* stmt;
 
 
@@ -451,8 +435,6 @@ struct FunctionNode
     /// Тело функции.
     struct StatementListNode* body;
 
-    /// Временное хранилище модификаторов.
-   // struct ModifierHead* _tempHead;
 };
 
 /*! \brief Структура, описывающая параметры функции и методы. */
@@ -466,9 +448,6 @@ struct ParamForFuncNode
 
     /// Тип параметра.
     struct TypeNode* type;
-
-    /// Временное хранилище модификаторов.
-    //struct ModifierHead* _tempHead;
 
     /// Указатель на следующий ParamForFuncNode в списке ParamListNode 
     struct ParamForFuncNode* next;

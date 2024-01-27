@@ -60,7 +60,6 @@
 
 %start TSFile
 
-//%start stmt_list
 
 %type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt for_stmt
 %type <varDeclList> var_list_stmt var_list
@@ -196,52 +195,11 @@ for_stmt: FOR endl_opt '(' expr_opt ';' expr_opt ';' expr_opt ')' endl_opt stmt 
     createVarDeclarationList(createVarDeclarationNode($7, NULL, NULL, NULL), NULL)), $9, $11, $14);}
 ;
 
-// switch_stmt: SWITCH endl_opt '(' endl_opt expr endl_opt ')' endl_opt '{' endl_opt case_list_break '}' endl_opt
-// ;
-
-// case_list: case_stmt
-// | case_list case_stmt
-// ;
-
-// case_list_break: case_stmt_break
-// | case_list case_stmt_break
-// ;
-
-// case_stmt_break: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt_special
-// | DEFAULT endl_opt ':' endl_opt stmt_list_opt break_opt_special
-// ;
-
-// break_opt_special:/* empty */
-// | BREAK endl
-// | BREAK ';' endl_opt
-// | BREAK
-// ;
-
-// case_stmt: CASE endl_opt expr endl_opt ':' endl_opt stmt_list_opt break_opt
-// | DEFAULT endl_opt ':' endl_opt stmt_list_opt break_opt
-// ;
-
-// break_opt: /* empty */
-// | BREAK endl
-// | BREAK ';' endl_opt
-// ;
 
 return_statement: RETURN stmt_sep {$$ = createReturnStatement(NULL);}
 | RETURN expr stmt_sep {$$ = createReturnStatement($2);}
 ;
 
-// try_catch_block: TRY endl_opt block_statement endl_opt catch_clause
-// |TRY endl_opt block_statement endl_opt catch_clause FINALLY endl_opt block_statement
-// |TRY endl_opt block_statement endl_opt FINALLY endl_opt block_statement
-// ;
-
-// catch_clause: CATCH endl_opt '(' endl_opt ID endl_opt ')' endl_opt block_statement endl_opt
-// | CATCH endl_opt '(' endl_opt ID endl_opt ':' endl_opt error_type endl_opt ')' endl_opt block_statement endl_opt
-// ;
-
-// error_type: UNKNOWN
-// | ANY
-// ;
 
 stmt_list_opt: /* empty */ {$$ = createStatementListNode(NULL);}
 | stmt_list {$$ = $1;}
@@ -256,14 +214,10 @@ stmt_top: expr stmt_sep {$$ = createStatementFromExpression($1);}
 | while_stmt {$$ = $1;}
 | for_stmt {$$ = $1;}
 | do_while_stmt {$$ = $1;}
-// | switch_stmt
-// | try_catch_block
 | block_statement endl_opt {$$ = createStatementFromBlockStatement($1);}
 | modifier endl_opt ID stmt_sep {$$ = createStatementFromVarDeclarationList($1, createVarDeclarationList(createVarDeclarationNode($3, NULL, NULL, NULL), NULL));}
 | modifier endl_opt var_list_stmt {$$ = createStatementFromVarDeclarationList($1, $3);}
-// | enum_declaration endl_opt
 | ';' endl_opt {$$ = createEmptyStatement();}
-// | THROW expr stmt_sep
 ;
 
 stmt: stmt_top {$$ = $1;}
@@ -280,7 +234,6 @@ type: NUMBER {$$ = createNumberTypeNode();}
 | ANY {$$ = createAnyTypeNode();}
 | UNKNOWN {$$ = createUnknownTypeNode();}
 | VOID {$$ = createVoidTypeNode();}
-// | ID
 ;
 
 type_mark: ':' endl_opt type {$$ = $3;}

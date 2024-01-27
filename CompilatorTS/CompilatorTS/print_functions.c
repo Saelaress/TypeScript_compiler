@@ -484,8 +484,6 @@ char* generateDotFromTSFileElement(struct TSFileElementNode* node)
     char base[] = "";
     char strId[10];
     char* res = concat(base, itoa(node->id, strId, 10));
-    ///if (node->type != _EMPT) res = concat(res, (char*)"[label=\"TSFileElement\"];\n");
-    //else res = concat(res, (char*)"[label=\"EmptyElement\"];\n");
     res = concat(res, (char*)"[label=\"TSFileElement\"];\n");
     if (node->stmt != NULL)
     {

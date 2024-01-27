@@ -1018,9 +1018,6 @@ struct TSFileElementNode* createElementFromStatement(struct StatementNode* stmt)
     struct TSFileElementNode* node = (struct TSFileElementNode*)malloc(sizeof(struct TSFileElementNode));
     node->id = ID++;
     node->next = NULL;
-    //node->modifiers = modList;
-    //node->func = function;
-   // node->type = _FUNCTION;
     node->stmt = stmt;
     node->func = NULL;
     return node;
@@ -1035,9 +1032,7 @@ struct TSFileElementNode* createEmptyElement()
     struct TSFileElementNode* node = (struct TSFileElementNode*)malloc(sizeof(struct TSFileElementNode));
     node->id = ID++;
     node->next = NULL;
-    //node->modifiers = NULL;
     node->func = NULL;
-   // node->type = _EMPT;
     return node;
 }
 
