@@ -2,7 +2,6 @@ const asciiChar: string = "\x41";
 const asciiChar1: string = '\43';
 
 /* Объявление переменных разных типов данных */
-// Числа
 const letletlet = "let";
 let myDecWithUnderline = 7687_656;
 let myDec: number = 7777753;
@@ -21,33 +20,35 @@ let myMinusFloat: number = -0.2345;
 let myFloatWithPlusE: number = 3e+5;
 let myFloatWithMinusE: number = 3e-5;
 let myFlotWithUnderline = 0.e78_98;
-// Строки
-let myDQString: string = "Это строка\nс \'одинарными кавычками\', а также шестнадцатеричным числом: ${0x1A}.";
-let mySQString: string = 'Это строка\nс \"двойными кавычками\", а также шестнадцатеричным числом: ${0x1A}.';
-let myBQString = `q\`qq
-${0x1A}.`;
-// Другие типы
-let myBoolean: boolean = true;
-let myArray: string[] = ["apple", "banana", "orange"];
-let myTuple: [number, string] = [1, "Hello"];
 
-// Функция, возвращающая строку
-function sayHello(name: string, age?: number): string {
-    if (age !== undefined) {
-        console.log(`Age: ${age}`);
+let myDQString: string = "Это строка\nс \'одинарными кавычками\', а также шестнадцатеричным числом: 0x1A.";
+let mySQString: string = 'Это строка\nс \"двойными кавычками\", а также шестнадцатеричным числом:0x1A.';
+let myBQString = 'Это строка\nс \`обратными кавычками\`, а также шестнадцатеричным числом: ${0x1A}.';
+
+let myBoolean: boolean = myOctal > 
+myMinusOctal;
+let myArray: string[][] = [["apple", "banana", "orange"], ["hello"]];
+
+// Функция
+function hello(num1: number, num2?: number): number {
+    if (num2) {
+        return num1+num2;
     }
-    return `Hello, ${name}!`;
+	else return num1;
 }
 
-// Класс с конструктором и методом
-class Person {
-    constructor(public name: string, private age: number) { }
+myArray[0][0] = "lime"
 
-    sayHello(): void {
-        console.log(`Hello, my name is ${this.name} and I am ${this.age} years old.`);
-    }
+const myNumber = myDec - myMinusDec * 5, a: unknown, b = 6, c;
+for (let ii = 0, aa, bb; ii < 5; ii++) myNumber;
+;
+;
+
+
+while (1) {
+hello(1)
 }
 
-// Создание экземпляра класса и вызов его метода
-const person = new Person("John", 30);
-person.sayHello();
+do hello(1, 2); while (1)
+
+ 
