@@ -12,7 +12,7 @@ extern int yyparse();
 %}
 %option noyywrap
 %option never-interactive
-
+%option stack
 
 %x COMMENT
 %x STRINGD
@@ -54,8 +54,6 @@ DIGIT [0-9]
 
     char tempIdent[1024];
 
-    // struct ModifierHead head = {0,0,0,0,0,0,0};
-
     int line = 1;
 
     int multilineBegin;
@@ -63,9 +61,10 @@ DIGIT [0-9]
 
 /* Описание правил */
 %%
+
 %{ 
-    char str[1000];
-    char bufferString[1000];
+    char bufferString[20480]; // Массив символов - буфер для строковых выражений.
+    struct stringBuffer buff = {"", 0}; // Дополнительный буффер для строк.
 %} /* Объявление локальных переменных */
 
 abstract {fprintf(yyout, "Found KW_ABSTRACT: %s\n", yytext);} 
@@ -313,102 +312,150 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 }
 
 \" { // строка с двойными кавычками
-    BEGIN(STRINGD);
-    str[0] = 0; // зануляем переменную
+    bufferString[0] = 0; // зануляем переменную
+    multilineBegin = line;
+    clearStringBuffer(&buff);
+    printHandler((char*)"STRINGD_BEGIN", yytext);
+    yy_push_state(STRINGD);
     }
-<STRINGD,STRINGS,STRINGB>\\[xX][^0-9a-fA-F] {printf("ERROR! Invalid hexadecimal escape sequence. \n");}
+<STRINGD,STRINGS,STRINGB>\\[xX][^0-9a-fA-F] {
+    printf("ERROR! Invalid hexadecimal escape sequence. \n");
+    exit(1);
+    }
 <STRINGD,STRINGS,STRINGB>\\[xX][0-9a-fA-F]{1,2} {
     char* end;
     long int num = strtol(yytext+2, &end, 16);
     char asciiChar = (char)num;
-    strncat(str, &asciiChar, 1);
+    appendChars(&buff, &asciiChar);
     }
 <STRINGD,STRINGS>\\[0-7]{1,2} {
     char* end;
     long int num = strtol(yytext+1, &end, 8);
     char asciiChar = (char)num;
-    strncat(str, &asciiChar, 1);
+    appendChars(&buff, &asciiChar);
     }
-<STRINGD,STRINGS>[^\\\"\'\n]+ {strcat(str, yytext);}
-<STRINGD,STRINGS,STRINGB>\\n {strcat(str, "\n");}
-<STRINGD,STRINGS,STRINGB>\\t {strcat(str, "\t");}
-<STRINGD,STRINGS,STRINGB>\\\\ {strcat(str, "\\");}
-<STRINGD,STRINGS,STRINGB>\\\" {strcat(str, "\"");}
-<STRINGD,STRINGS,STRINGB>\\\' {strcat(str, "\'");}
+<STRINGD,STRINGS>[^\\\"\'\n\r]+ {appendChars(&buff, yytext);}
+<STRINGD,STRINGS,STRINGB>\\n {appendChars(&buff, "\n");}
+<STRINGD,STRINGS,STRINGB>\\r {appendChars(&buff, "\r");}
+<STRINGD,STRINGS,STRINGB>\\t {appendChars(&buff, "\t");}
+<STRINGD,STRINGS,STRINGB>\\ {}
+<STRINGD,STRINGS,STRINGB>\\\\ {appendChars(&buff, "\\");}
+<STRINGD,STRINGS,STRINGB>\\\" {appendChars(&buff, "\"");}
+<STRINGD,STRINGS,STRINGB>\\\' {appendChars(&buff, "\'");}
 <STRINGD>\" {
-    fprintf(yyout, "Строка: %s\n", str);
-    BEGIN(INITIAL);
+    printHandler((char*)"STRINGD", getSafeCString(&buff)); 
+    printHandler((char*)"STRINGD_END", yytext);
+    yy_pop_state();
+    struct stringBuffer * ns = (struct stringBuffer*)malloc(sizeof(struct stringBuffer));
+    memcpy(ns->buffer, buff.buffer, buff.length);
+    ns->length = buff.length;
+    yylval.stringLit = ns;
+    return STRING_LITERAL;
     }
-<STRINGD,STRINGS>\n {
-    printf("ERROR! Line break inside literal.\n");
+<STRINGD,STRINGS>[\n\r] {
+    printf("ERROR: no closing quote in STRING in line %d.\n", multilineBegin);
     exit(1);
     }
 <STRINGD,STRINGS,STRINGB><<EOF>> {
-    printf("ERROR! Unterminated string literal. \n");
+    printf("ERROR: no closing quote in STRING in line %d.\n", multilineBegin);
     exit(1);
     }
 
 
 \' { // строка с одинарными кавычками
-    BEGIN(STRINGS);
-    str[0] = 0; // зануляем переменную
+    bufferString[0] = 0; // зануляем переменную
+    multilineBegin = line;
+    clearStringBuffer(&buff);
+    printHandler((char*)"STRINGS_BEGIN", yytext);
+    yy_push_state(STRINGS);
     }
 <STRINGS>\' {
-    fprintf(yyout, "Строка: %s\n", str);
-    BEGIN(INITIAL);
+    printHandler((char*)"STRINGS", getSafeCString(&buff)); 
+    printHandler((char*)"STRINGS_END", yytext);
+    yy_pop_state();
+    struct stringBuffer * ns = (struct stringBuffer*)malloc(sizeof(struct stringBuffer));
+    memcpy(ns->buffer, buff.buffer, buff.length);
+    ns->length = buff.length;
+    yylval.stringLit = ns;
+    return STRING_LITERAL;
     }
 
 
 \` { // шаблонная строка
-    BEGIN(STRINGB);
-    str[0] = 0; // зануляем переменную
+    bufferString[0] = 0; // зануляем переменную
+    multilineBegin = line;
+    clearStringBuffer(&buff);
+    printHandler((char*)"STRINGB_BEGIN", yytext);
+    yy_push_state(STRINGB);
     }
-<STRINGB>\n {strcat(str, "\n");}
 <STRINGB>\$\{ {
-    strcat(str, "${");
+    appendChars(&buff, "${");
     BEGIN(TEMPLATE);
     }
 <STRINGB>\$\{\s*\} {
-    printf("ERROR! Unexpected '}'. \n");
+    printf("ERROR! Expression expected in ${}. \n");
     exit(1);
     }
-<STRINGB>[\${]+ {strcat(str, yytext);}
+<STRINGB>[\${]+ {appendChars(&buff, yytext);}
 <STRINGB>\\[0-7]{2} {
     printf("ERROR! Octal escape sequences are not allowed in template strings. \n");
     exit(1);
     }
-<STRINGB>[^\\\`\n] {strcat(str, yytext);}
-<STRINGB>\\` {strcat(str, "`");}
+<STRINGB>[^\\\`\n] {appendChars(&buff, yytext);}
+<STRINGB>\\` {appendChars(&buff, "`");}
 <STRINGB>\` {
-    fprintf(yyout, "Шаблонная строка: %s\n", str);
-    BEGIN(INITIAL);
+    printHandler((char*)"STRINGB", getSafeCString(&buff)); 
+    printHandler((char*)"STRINGB_END", yytext);
+    yy_pop_state();
+    struct stringBuffer * ns = (struct stringBuffer*)malloc(sizeof(struct stringBuffer));
+    memcpy(ns->buffer, buff.buffer, buff.length);
+    ns->length = buff.length;
+    yylval.stringLit = ns;
+    return STRING_LITERAL;
     }
 
 <TEMPLATE>\} {
     printf("WARNING! Template is not supported. \n");
-    strcat(str, yytext);
+    appendChars(&buff, yytext);
     BEGIN(STRINGB);
     }
 <TEMPLATE>[^\}]* {
-    strcat(str, yytext);
+    appendChars(&buff, yytext);
 }
 <TEMPLATE><<EOF>> {
     printf("ERROR! Missing } in template expression. \n");
     exit(1);
     }
 
-\/\/ {BEGIN(COMMENTONE);}
-<COMMENTONE>[^\n]* {}
-<COMMENTONE>\n {BEGIN(INITIAL);}
-<COMMENTONE><<EOF>> {BEGIN(INITIAL);}
+\/\/ {
+    bufferString[0] = 0;
+    yy_push_state(COMMENTONE);
+    }
+<COMMENTONE>[^\n]* {strcat(bufferString, yytext);}
+<COMMENTONE>\n {
+    printHandler((char*)"COMMENTONE", bufferString);
+    line += 1; yy_pop_state();
+    return ENDL; 
+    }
+<COMMENTONE><<EOF>> {
+    printHandler((char*)"COMMENTONE", bufferString);
+    yy_pop_state;
+    }
 
 
-"/*" {BEGIN(COMMENT);}
-<COMMENT>[^*]+ {}
-<COMMENT>"*"+[^*/] {}
-<COMMENT>"*"+"/" {BEGIN(INITIAL);}
+"/*" {
+    bufferString[0] = 0;
+    multilineBegin = line;
+    yy_push_state(COMMENT);
+    }
+<COMMENT>[^*\n]+ {strcat(bufferString, yytext);}
+<COMMENT>[^*\n]*\n {line += 1; strcat(bufferString, yytext);}
+<COMMENT>"*"+\n {line += 1; strcat(bufferString, yytext);}
+<COMMENT>"*"+[^*/] {strcat(bufferString, yytext);}
+<COMMENT>"*"+"/" {printHandler((char*)"COMMENT", bufferString); yy_pop_state();}
 <COMMENT><<EOF>> {
-    printf("ERROR! No closing comment at the end. \n");
+    printf("ERROR: no closing */ in line %d.\n", multilineBegin);
+    yy_pop_state;
     exit(1);
     }
 
@@ -532,6 +579,7 @@ undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
     }
 
 [\r\n] {
+    line = line + 1;
     return ENDL;
 }
 
