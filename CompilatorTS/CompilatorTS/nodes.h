@@ -437,6 +437,23 @@ struct FunctionNode
 
 };
 
+enum OptOpt
+{
+    _OPTION,
+    _UNOPTION
+};
+
+/*! \brief Структура, описывающая узел типа. */
+struct ParamOpt
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Тип узла типа.
+    enum OptOpt opt;
+};
+
+
 /*! \brief Структура, описывающая параметры функции и методы. */
 struct ParamForFuncNode
 {
@@ -448,6 +465,8 @@ struct ParamForFuncNode
 
     /// Тип параметра.
     struct TypeNode* type;
+
+    struct ParamOpt* option;
 
     /// Указатель на следующий ParamForFuncNode в списке ParamListNode 
     struct ParamForFuncNode* next;

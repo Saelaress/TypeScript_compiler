@@ -1132,6 +1132,43 @@ struct ParamForFuncNode* createParamForFunc(char* ident, struct TypeNode* parTyp
         node->type = parType;
     }
     else { node->type = NULL; }
+    
+    struct ParamOpt*  newopt = (struct ParamOpt*)malloc(sizeof(struct ParamOpt));
+    newopt->id = ID++;
+    newopt->opt = _UNOPTION;
+    node->option = newopt;
+
+    node->next = NULL;
+    return node;
+}
+
+/*! Создать узел параметра функции.
+* \param[in] ident идентификатор (название) параметра.
+* \param[in] parType тип параметра.
+* \return Указатель на созданный узел функции.
+*/
+struct ParamForFuncNode* createOptParamForFunc(char* ident, struct TypeNode* parType)
+{
+    struct ParamForFuncNode* node = (struct ParamForFuncNode*)malloc(sizeof(struct ParamForFuncNode));
+    node->id = ID++;
+    if (ident != NULL)
+    {
+        char* tempI = (char*)malloc(strlen(ident) + 1);
+        strcpy(tempI, ident);
+        node->identifier = tempI;
+    }
+    else { node->identifier = NULL; }
+    if (parType != NULL)
+    {
+        node->type = parType;
+    }
+    else { node->type = NULL; }
+
+    struct ParamOpt* newopt = (struct ParamOpt*)malloc(sizeof(struct ParamOpt));
+    newopt->id = ID++;
+    newopt->opt = _OPTION;
+    node->option = newopt;
+
     node->next = NULL;
     return node;
 }

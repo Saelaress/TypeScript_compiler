@@ -101,3 +101,9 @@ char* generateDotFromParamList(struct ParamListNode* node);
 */
 char* generateDotFromParamForFuncNode(struct ParamForFuncNode* node);
 
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла типа (TypeNode).
+ * \param[in] typ Тип переменной.
+ * \return Строка кода на языке DOT из узла типа.
+ */
+char* generateDotFromOpt(struct ParamOpt* optP);
+

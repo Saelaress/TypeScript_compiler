@@ -725,6 +725,30 @@ char* generateDotFromParamForFuncNode(struct ParamForFuncNode* node)
         res = concat(res, itoa(node->type->id, idStr, 10));
         res = concat(res, (char*)"[label = \"type\"];\n");
     }
+    /*if (node->option == _OPTION) {
+        res = concat(res, itoa(node->option, idStr, 10));
+        res = concat(res, (char*)"[label=\"OPTION\"];\n");
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->option, idStr, 10));
+        res = concat(res, (char*)"[label = \"opt\"];\n");
+    }
+    else if(node->option == _UNOPTION){
+        res = concat(res, itoa(node->option, idStr, 10));
+        res = concat(res, (char*)"[label=\"UNOPTION\"];\n");
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->option, idStr, 10));
+        res = concat(res, (char*)"[label = \"opt\"];\n");
+    }*/
+    if (node->option != NULL) {
+        res = concat(res, generateDotFromOpt(node->option));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->option->id, idStr, 10));
+        res = concat(res, (char*)"[label = \"option\"];\n");
+    }
+
     if (node->next != NULL)
     {
         res = concat(res, generateDotFromParamForFuncNode(node->next));
@@ -736,5 +760,29 @@ char* generateDotFromParamForFuncNode(struct ParamForFuncNode* node)
     return res;
 
 }
+
+/*! \brief Сгенерировать строку в DOT-формате для визуализации узла типа (TypeNode).
+ * \param[in] typ Тип переменной.
+ * \return Строка кода на языке DOT из узла типа.
+ */
+char* generateDotFromOpt(struct ParamOpt* optP)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(optP->id, strId, 10));
+
+    switch (optP->opt)
+    {
+    case _OPTION:
+        res = concat(res, (char*)"[label=\"OPTION\"];\n");
+        break;
+    case _UNOPTION:
+        res = concat(res, (char*)"[label=\"UNOPTION\"];\n");
+        break;
+    }
+
+    return res;
+}
+
 
 

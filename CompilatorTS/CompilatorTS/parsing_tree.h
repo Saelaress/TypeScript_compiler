@@ -418,6 +418,13 @@ struct FunctionNode* createFunctionNode(char* ident, struct ParamListNode* pars,
 */
 struct ParamForFuncNode* createParamForFunc(char* ident, struct TypeNode* parType);
 
+/*! Создать узел параметра функции.
+* \param[in] ident идентификатор (название) параметра.
+* \param[in] parType тип параметра.
+* \return Указатель на созданный узел функции.
+*/
+struct ParamForFuncNode* createOptParamForFunc(char* ident, struct TypeNode* parType);
+
 
 /*! Создать узел списка элементов параметров функции.
 * \param[in] elem параметр функции, на основе которого создается список параметров функции.

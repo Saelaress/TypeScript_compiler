@@ -187,7 +187,10 @@ while {
 }
 undefined {fprintf(yyout, "Found KW_UNDEFINED: %s\n", yytext);}
 
-"?" {fprintf(yyout, "Found OPERATOR_OPT_PARAM: %s\n", yytext);}
+"?" {
+    printHandler((char*)"OPERATOR_OPT_PARAM", yytext);
+    return '?';
+}
 "%" {
     printHandler((char*)"OPERATOR_MOD", yytext);
     return '%';

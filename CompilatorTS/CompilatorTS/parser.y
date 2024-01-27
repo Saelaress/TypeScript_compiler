@@ -98,7 +98,7 @@ function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt ty
 ;
 
 param: ID endl_opt type_mark {$$ = createParamForFunc($1, $3);}
-| ID endl_opt '?' endl_opt type_mark {$$ = createParamForFunc($1, $5);}
+| ID endl_opt '?' endl_opt type_mark {$$ = createOptParamForFunc($1, $5);}
 ;
 
 param_list: param {$$ = createParamListNode($1);}
