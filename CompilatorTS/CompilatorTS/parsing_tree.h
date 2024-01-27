@@ -89,6 +89,13 @@ struct ExpressionNode *createSquareBracketExpressionNode(struct ExpressionListNo
  */
 struct ExpressionNode *createPlusExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
 
+/*! Создать узел оператора доступа к члену массива.
+ * \param[in] arr выражение, определяющее массив.
+ * \param[in] index выражение, определяющее индекс массива.
+ * \return указатель на узел оператора созданий.
+ */
+struct ExpressionNode* createArrayElementAccessExpression(struct ExpressionNode* arr, struct ExpressionNode* index);
+
 /*! Создать узел оператора вычитания (-).
  * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
  * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
