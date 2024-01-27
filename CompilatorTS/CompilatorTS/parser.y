@@ -19,6 +19,9 @@
     struct VarDeclarationListNode * varDeclList;
     struct VarDeclarationNode * varDecl;
     struct DimensionNode * dimension;
+    struct FunctionNode * function;
+    struct ParamListNode * paramList;
+    struct ParamForFuncNode * param;
     struct TSFileElementNode * elem;
     struct TSFileElementListNode * elemList;
     struct TSFileNode * file;
@@ -62,6 +65,9 @@
 %type <statement>stmt stmt_top return_statement while_stmt block_statement do_while_stmt if_stmt for_stmt
 %type <varDeclList> var_list_stmt var_list
 %type <varDecl> variable_stmt variable_endl
+%type <function> function_declaration
+%type <param> param
+%type <paramList> param_list param_list_0_or_more
 %type <expression>expr var_init expr_opt
 %type <exprList>expr_list expr_list_endl_opt expr_list_endl
 
@@ -85,12 +91,24 @@ program_elem_list: program_elem {$$ = createTSFileElementListNode($1);}
 ;
 
 program_elem: stmt_top {$$ = createElementFromStatement($1);}
-//| function_declaration {$$ = createElementFromFunction($1);}
+| function_declaration {$$ = createElementFromFunction($1);}
 ;
 
-// function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}'
-// | FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}'
-// ;
+function_declaration: FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt type_mark endl_opt '{' endl_opt stmt_list_opt '}' {$$ = createFunctionNode($3, $5, $7, $11);}
+| FUNC endl_opt ID endl_opt param_list_0_or_more endl_opt '{' endl_opt stmt_list_opt '}' {$$ = createFunctionNode($3, $5, NULL, $9);}
+;
+
+param: ID endl_opt type_mark {$$ = createParamForFunc($1, $3);}
+| ID endl_opt '?' endl_opt type_mark {$$ = createParamForFunc($1, $5);}
+;
+
+param_list: param {$$ = createParamListNode($1);}
+| param_list endl_opt ',' endl_opt param {$$ = addParamToListNode($1, $5);}
+;
+
+param_list_0_or_more: '(' endl_opt param_list endl_opt ')' {$$ = $3;}
+| '(' endl_opt ')' {$$ = createParamListNode(NULL);}
+;
 
 endl: ENDL
 | endl ENDL
@@ -154,7 +172,7 @@ expr: expr DECREMENT %prec POST_DECREMENT {$$ = createPostDecrementExpressionNod
 | expr AND endl_opt expr {$$ = createAndExpressionNode($1, $4);}
 | expr OR endl_opt expr {$$ = createOrExpressionNode($1, $4);}
 | expr '[' endl_opt expr endl_opt ']' {$$ = createArrayElementAccessExpression($1, $4);} // Обращение к элементу массива
-// | ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
+| ID '(' endl_opt expr_list_endl_opt ')' {$$ = createFunctionCallExpressionNode($1, $4);} // Вызов функции
 | '[' endl_opt expr_list_endl_opt ']' {$$ = createSquareBracketExpressionNode($3);}
 ;
 

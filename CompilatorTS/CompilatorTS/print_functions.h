@@ -69,17 +69,13 @@ char * generateDotFromTSFileElementList(struct TSFileElementListNode * node);
 */
 char * generateDotFromTSFileElement(struct TSFileElementNode * node);
 
-/*! Сгенерировать DOT-строку для узла списка модификаторов.
-* \param[in] node Узел списка модификаторов.
-* \return DOT-строка с дочерними узлами.
-*/
-char * generateDotFromModifierList(struct ModifierListNode * node);
 
 /*! Сгенерировать DOT-строку для узла функции.
 * \param[in] node Узел функции.
 * \return DOT-строка с дочерними узлами.
 */
-char * generateDotFromFunction(struct FunctionNode * node);
+char* generateDotFromFunction(struct FunctionNode* node);
+
 
 /*! Сгенерировать DOT-строку для узла объявления переменной.
 * \param[in] varDecl Узел объявления переменной.
@@ -92,4 +88,16 @@ char * generateDotFromVarDeclaration(struct VarDeclarationNode * varDecl);
 * \return Строка кода на языке DOT из узла Statement типа VarDeclarationListNode.
 */
 char* generateDotFromStmtVarDeclarationList(struct StatementNode* stmt);
+
+/*! Сгенерировать DOT-строку для списка элементов ParamListNode.
+* \param[in] node Узел списка элементов ParamListNode.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromParamList(struct ParamListNode* node);
+
+/*! Сгенерировать DOT-строку для элемента ParamListNode.
+* \param[in] node Узел элемента ParamListNode.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromParamForFuncNode(struct ParamForFuncNode* node);
 

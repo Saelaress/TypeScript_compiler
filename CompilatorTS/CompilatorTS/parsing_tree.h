@@ -164,6 +164,13 @@ struct ExpressionNode* createIDExpressionNode(char* ident);
  */
 struct ExpressionNode* createAssignmentExpressionNode(struct ExpressionNode* leftOperand, struct ExpressionNode* rightOperand);
 
+/*! Создать узел вызова функции.
+ * \param[in] idStr строка-идентификатор (имя) функции.
+ * \param[in] list список параметров-аргументов функции; NULL, если список пустой.
+ * \return указатель на созданный узел Expression.
+ */
+struct ExpressionNode* createFunctionCallExpressionNode(char* idStr, struct ExpressionListNode* list);
+
 
 /*------------------------------------ ExpressionList -------------------------------------*/
 
@@ -276,7 +283,7 @@ struct TSFileElementNode* createElementFromFunction(struct FunctionNode* functio
 * \param[in] Statement, на основе которой создается элемент.
 * \return указатель на экземпляр структуры-элемента TS.
 */
-struct TSFileElementNode* createElementFromStatement(struct FunctionNode* stmt);
+struct TSFileElementNode* createElementFromStatement(struct StatementNode* stmt);
 
 
 /*! Создать пустой элемент файла TS.
@@ -392,3 +399,36 @@ struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNod
 */
 struct VarDeclarationListNode* addVarDeclarationToVarDeclarationList(struct VarDeclarationListNode* list, struct VarDeclarationNode* varDecl);
 
+
+/*------------------------------------ Function -------------------------------------*/
+
+/*! Создать узел функции.
+* \param[in] ident идентификатор (название) функции.
+* \param[in] pars список параметров функции.
+* \param[in] ret возвращаемое значение функции.
+* \param[in] bod тело функции.
+* \return Указатель на созданный узел функции.
+*/
+struct FunctionNode* createFunctionNode(char* ident, struct ParamListNode* pars, struct TypeNode* ret, struct StatementListNode* bod);
+
+/*! Создать узел параметра функции.
+* \param[in] ident идентификатор (название) параметра.
+* \param[in] parType тип параметра.
+* \return Указатель на созданный узел функции.
+*/
+struct ParamForFuncNode* createParamForFunc(char* ident, struct TypeNode* parType);
+
+
+/*! Создать узел списка элементов параметров функции.
+* \param[in] elem параметр функции, на основе которого создается список параметров функции.
+* \return указатель на список параметров функции.
+*/
+struct ParamListNode* createParamListNode(struct ParamForFuncNode* elem);
+
+
+/*! Добавить параметр к списку параметров функции.
+* \param[in] elemList список параметров функции, к которому добавляется новый параметр.
+* \param[in] elem новый добавляемый параметр.
+* \return указатель на обновленный список параметров.
+*/
+struct ParamListNode* addParamToListNode(struct ParamListNode* elemList, struct ParamForFuncNode* elem);

@@ -430,3 +430,60 @@ struct TSFileNode
     struct TSFileElementListNode* elemList;
 };
 
+
+/*------------------------------------ Function -------------------------------------*/
+
+/*! \brief Структура, описывающая функции и методы. */
+struct FunctionNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Идентфикатор (название) функции.
+    char* identifier;
+
+    /// Список параметорв функции.
+    struct ParamListNode* params;
+
+    /// Возвращаемой значение функции.
+    struct TypeNode* returnValue;
+
+    /// Тело функции.
+    struct StatementListNode* body;
+
+    /// Временное хранилище модификаторов.
+   // struct ModifierHead* _tempHead;
+};
+
+/*! \brief Структура, описывающая параметры функции и методы. */
+struct ParamForFuncNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Идентфикатор (название) параметра.
+    char* identifier;
+
+    /// Тип параметра.
+    struct TypeNode* type;
+
+    /// Временное хранилище модификаторов.
+    //struct ModifierHead* _tempHead;
+
+    /// Указатель на следующий ParamForFuncNode в списке ParamListNode 
+    struct ParamForFuncNode* next;
+};
+
+/*! \brief Структура, описывающая список параметров функции и методы. */
+struct ParamListNode
+{
+    /// Идентификатор узла.
+    int id;
+
+    /// Указатель на первый элемент списка ParamListNode.
+    struct ParamForFuncNode* first;
+
+    /// Указатель на последний элемент списка ParamListNode.
+    struct ParamForFuncNode* last;
+};
+

@@ -1086,3 +1086,85 @@ struct TSFileNode* createTSFileNode(struct TSFileElementListNode* elemList)
 }
 
 
+/*------------------------------------ Function -------------------------------------*/
+
+/*! Создать узел функции.
+* \param[in] ident идентификатор (название) функции.
+* \param[in] pars список параметров функции.
+* \param[in] ret возвращаемое значение функции.
+* \param[in] bod тело функции.
+* \return Указатель на созданный узел функции.
+*/
+struct FunctionNode* createFunctionNode(char* ident, struct ParamListNode* pars, struct TypeNode* ret, struct StatementListNode* bod)
+{
+    struct FunctionNode* node = (struct FunctionNode*)malloc(sizeof(struct FunctionNode));
+    node->id = ID++;
+    if (ident != NULL)
+    {
+        char* tempI = (char*)malloc(strlen(ident) + 1);
+        strcpy(tempI, ident);
+        node->identifier = tempI;
+    }
+    else { node->identifier = NULL; }
+    node->params = pars;
+    if (ret != NULL)
+    {
+        node->returnValue = ret;
+    }
+    else { node->returnValue = NULL; }
+    node->body = bod;
+    return node;
+}
+
+/*! Создать узел параметра функции.
+* \param[in] ident идентификатор (название) параметра.
+* \param[in] parType тип параметра.
+* \return Указатель на созданный узел функции.
+*/
+struct ParamForFuncNode* createParamForFunc(char* ident, struct TypeNode* parType)
+{
+    struct ParamForFuncNode* node = (struct ParamForFuncNode*)malloc(sizeof(struct ParamForFuncNode));
+    node->id = ID++;
+    if (ident != NULL)
+    {
+        char* tempI = (char*)malloc(strlen(ident) + 1);
+        strcpy(tempI, ident);
+        node->identifier = tempI;
+    }
+    else { node->identifier = NULL; }
+    if (parType != NULL)
+    {
+        node->type = parType;
+    }
+    else { node->type = NULL; }
+    node->next = NULL;
+    return node;
+}
+
+/*! Создать узел списка элементов параметров функции.
+* \param[in] elem параметр функции, на основе которого создается список параметров функции.
+* \return указатель на список параметров функции.
+*/
+struct ParamListNode* createParamListNode(struct ParamForFuncNode* elem)
+{
+    struct ParamListNode* node = (struct ParamListNode*)malloc(sizeof(struct ParamListNode));
+    node->id = ID++;
+    node->first = elem;
+    node->last = elem;
+    return node;
+}
+
+/*! Добавить параметр к списку параметров функции.
+* \param[in] elemList список параметров функции, к которому добавляется новый параметр.
+* \param[in] elem новый добавляемый параметр.
+* \return указатель на обновленный список параметров.
+*/
+struct ParamListNode* addParamToListNode(struct ParamListNode* elemList, struct ParamForFuncNode* elem)
+{
+    elemList->last->next = elem;
+    elemList->last = elem;
+    return elemList;
+}
+
+
+

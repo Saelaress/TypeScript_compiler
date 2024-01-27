@@ -113,7 +113,10 @@ for {
     return FOR;
 }
 from {fprintf(yyout, "Found KW_FROM: %s\n", yytext);} 
-function {fprintf(yyout, "Found KW_FUNCTION: %s\n", yytext);} 
+function {
+    printHandler((char*)"KW_FUNCTION", yytext);
+    return FUNC;
+} 
 get {fprintf(yyout, "Found KW_GET: %s\n", yytext);} 
 if {
     printHandler((char*)"KW_IF", yytext);

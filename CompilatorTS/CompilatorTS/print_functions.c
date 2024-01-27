@@ -139,7 +139,7 @@ char * generateDotFromExpression(struct ExpressionNode * node)
         res = concat(res, (char*)"[label=\"invoke <name=");
         res = concat(res, node->identifierString);
         res = concat(res, (char*)">\"];\n");
-        if (node->params != NULL)
+        if (node->params->first != NULL)
         {
             res = concat(res, generateDotFromExpressionList(node->params));
             res = concat(res, itoa(node->id, idStr, 10));
@@ -495,14 +495,14 @@ char* generateDotFromTSFileElement(struct TSFileElementNode* node)
         res = concat(res, itoa(node->stmt->id, strId, 10));
         res = concat(res, (char*)"[label=\"stmt\"];\n");
     }
-    /*if (node->func != NULL)
+    if (node->func != NULL)
     {
         res = concat(res, generateDotFromFunction(node->func));
         res = concat(res, itoa(node->id, strId, 10));
         res = concat(res, (char*)" -> ");
         res = concat(res, itoa(node->func->id, strId, 10));
         res = concat(res, (char*)"[label=\"function\"];\n");
-    }*/
+    }
 
 
     if (node->next != NULL)
@@ -645,3 +645,98 @@ char* generateDotFromType(struct TypeNode* typ)
 
     return res;
 }
+
+
+
+/*! Сгенерировать DOT-строку для узла функции.
+* \param[in] node Узел функции.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromFunction(struct FunctionNode* node)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(node->id, strId, 10));
+    res = concat(res, (char*)"[label=\"Function <ident=");
+    res = concat(res, node->identifier);
+    res = concat(res, (char*)">\"];\n");
+    if (node->returnValue != NULL)
+    {
+        res = concat(res, generateDotFromType(node->returnValue));
+        res = concat(res, itoa(node->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->returnValue->id, strId, 10));
+        res = concat(res, (char*)"[label=\"type\"];\n");
+    }
+    if (node->params->first != NULL) /*Список параметров.*/
+    {
+        res = concat(res, generateDotFromParamList(node->params));
+        res = concat(res, itoa(node->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->params->id, strId, 10));
+        res = concat(res, (char*)"[label=\"params\"];\n");
+    }
+    res = concat(res, generateDotFromStatementList(node->body));
+    res = concat(res, itoa(node->id, strId, 10));
+    res = concat(res, (char*)" -> ");
+    res = concat(res, itoa(node->body->id, strId, 10));
+    res = concat(res, (char*)"[label=\"body\"];\n");
+    return res;
+}
+
+
+/*! Сгенерировать DOT-строку для списка элементов ParamListNode.
+* \param[in] node Узел списка элементов ParamListNode.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromParamList(struct ParamListNode* node)
+{
+    char base[] = "";
+    char strId[10];
+    char* res = concat(base, itoa(node->id, strId, 10));
+    res = concat(res, (char*)"[label=\"ParamListNode\"];\n");
+    if (node->first != NULL)
+    {
+        res = concat(res, generateDotFromParamForFuncNode(node->first));
+        res = concat(res, itoa(node->id, strId, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->first->id, strId, 10));
+        res = concat(res, (char*)"[label=\"first\"];\n");
+    }
+    return res;
+}
+
+/*! Сгенерировать DOT-строку для элемента ParamListNode.
+* \param[in] node Узел элемента ParamListNode.
+* \return DOT-строка с дочерними узлами.
+*/
+char* generateDotFromParamForFuncNode(struct ParamForFuncNode* node)
+{
+    char base[] = "";
+    char idStr[10];
+    char* res = concat(base, itoa(node->id, idStr, 10));
+    res = concat(res, (char*)"[label=\"Param <ident=");
+    if (node->identifier != NULL) {
+        res = concat(res, node->identifier);
+        res = concat(res, (char*)">\"];\n");
+    }
+    if (node->type != NULL) {
+        res = concat(res, generateDotFromType(node->type));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->type->id, idStr, 10));
+        res = concat(res, (char*)"[label = \"type\"];\n");
+    }
+    if (node->next != NULL)
+    {
+        res = concat(res, generateDotFromParamForFuncNode(node->next));
+        res = concat(res, itoa(node->id, idStr, 10));
+        res = concat(res, (char*)" -> ");
+        res = concat(res, itoa(node->next->id, idStr, 10));
+        res = concat(res, (char*)"[label=\"next\"];\n");
+    }
+    return res;
+
+}
+
+
