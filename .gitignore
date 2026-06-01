@@ -1,0 +1,8 @@
+lex.yy.c
+main.cpp
+main.exe
+parser.tab.c
+parser.tab.h
+output.txt
+**/.vs/
+**/x64/

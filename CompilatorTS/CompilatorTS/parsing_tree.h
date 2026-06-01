@@ -1,0 +1,448 @@
+#pragma once
+#include "nodes.h"
+
+/// Ссылка на корневой узел программы.
+struct TSFileNode *root;
+
+/*------------------------------------ Expression -------------------------------------*/
+
+/*! Создать узел Expression на основе целочисленной литеральной констаты.
+ * \param[in] value значение целочисленной литеральной константы.
+ * \return указатель на созданный экземпляр узла целочисленной литеральной константы.
+ */
+struct ExpressionNode *createIntLiteralExpressionNode(int value);
+
+/*! Создать узел Expression на основе литеральной констаты числа с плавающей запятой.
+ * \param[in] value значение литеральной константы числа с плавающей запятой.
+ * \return указатель на созданный экземпляр узла литеральной константы числа с плавающей запятой.
+ */
+struct ExpressionNode *createFloatLiteralExpressionNode(float value);
+
+/*! Создать узел Expression на основе логической литеральной констаты true.
+ * \return указатель на созданный экземпляр узла логической литеральной константы true.
+ */
+struct ExpressionNode *createTrueLiteralExpressionNode();
+
+/*! Создать узел Expression на основе логической литеральной констаты false.
+ * \return указатель на созданный экземпляр узла логической литеральной константы false.
+ */
+struct ExpressionNode *createFalseLiteralExpressionNode();
+
+/*! Создать узел Expression на основе литеральной строковой констаты.
+ * \param[in] value значение литеральной строковой константы.
+ * \return указатель на созданный экземпляр узла литеральной строковой константы.
+ */
+struct ExpressionNode *createStringLiteralExpressionNode(struct stringBuffer *value);
+
+/*! Создать узел оператора унарного плюса.
+ * \param[in] value указатель на опреанд.
+ * \return указатель на узел оператора унарного плюса.
+ */
+struct ExpressionNode *createUnaryPlusExpressionNode(struct ExpressionNode *value);
+
+/*! Создать узел оператора унарного минуса.
+ * \param[in] value указатель на операнд.
+ * \return указатель на узел оператора унарного минуса.
+ */
+struct ExpressionNode *createUnaryMinusExpressionNode(struct ExpressionNode *value);
+
+/*! Создать узел оператора префиксного инкремента.
+ * \param[in] value указатель на инкрементируемый Expression.
+ * \return указатель на узел оператора префиксного инкремента.
+ */
+struct ExpressionNode *createPrefIncrementExpressionNode(struct ExpressionNode *value);
+
+/*! Создать узел оператора префиксного декремента.
+ * \param[in] value указатель на декрементируемый Expression.
+ * \return указатель на узел оператора префиксного декремента.
+ */
+struct ExpressionNode *createPrefDecrementExpressionNode(struct ExpressionNode *value);
+
+/*! Создать узел оператора постфиксного инкремента.
+ * \param[in] value указатель на инкрементируемый Expression.
+ * \return указатель на узел оператора постфиксного инкремента.
+ */
+struct ExpressionNode *createPostIncrementExpressionNode(struct ExpressionNode *value);
+
+/*! Создать узел оператора постфиксного декремента.
+ * \param[in] value указатель на инкрементируемый Expression.
+ * \return указатель на узел оператора постфиксного декремента.
+ */
+struct ExpressionNode *createPostDecrementExpressionNode(struct ExpressionNode *value);
+
+/*! Создать узел оператора круглых скобок.
+ * \param[in] innerExpression внутреннее выражение в круглых скобках.
+ * \return ссылка на узел оператора круглых скобок.
+ */
+struct ExpressionNode *createBracketExpressionNode(struct ExpressionNode *innerExpression);
+
+/*! Создать узел оператора квадратных скобок.
+ * \param[in] innerExpression внутреннее выражение в квадратных скобках.
+ * \return ссылка на узел оператора квадратных скобок.
+ */
+struct ExpressionNode *createSquareBracketExpressionNode(struct ExpressionListNode *innerExpression);
+
+/*! Создать узел оператора сложения (+).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла сложения.
+ */
+struct ExpressionNode *createPlusExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора доступа к члену массива.
+ * \param[in] arr выражение, определяющее массив.
+ * \param[in] index выражение, определяющее индекс массива.
+ * \return указатель на узел оператора созданий.
+ */
+struct ExpressionNode* createArrayElementAccessExpression(struct ExpressionNode* arr, struct ExpressionNode* index);
+
+/*! Создать узел оператора вычитания (-).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла вычитания.
+ */
+struct ExpressionNode *createMinusExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора умножения (*).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла умножения.
+ */
+struct ExpressionNode *createMulExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора деления (/).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла деления.
+ */
+struct ExpressionNode *createDivExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора получния остатка от деления (%).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла остатка от деления.
+ */
+struct ExpressionNode *createModExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора сравнения "больше" (>).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла оператора сравнения "больше".
+ */
+struct ExpressionNode *createGreatExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора сравнения "меньше" (<).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла оператора сравнения "меньше".
+ */
+struct ExpressionNode *createLessExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора дизъюнкции (||).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла дизъюнкции.
+ */
+struct ExpressionNode *createOrExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора конъюнкции (&&).
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на созданный экземпляр узла конъюнкции.
+ */
+struct ExpressionNode *createAndExpressionNode(struct ExpressionNode *leftOperand, struct ExpressionNode *rightOperand);
+
+/*! Создать узел оператора логического отрицания.
+* \param[in] value указатель на операнд.
+* \return указатель на узел оператора логического отрицания.
+*/
+struct ExpressionNode* createNotExpressionNode(struct ExpressionNode* value);
+
+/*! Создать узел выражения идентификатора.
+* \param[in] ident строка идентификатора.
+* \return указатель на узел Expression ID.
+*/
+struct ExpressionNode* createIDExpressionNode(char* ident);
+
+/*! Создать узел оператора присвоения.
+ * \param[in] leftOperand указатель на левый операнд - экземаляр ExpressionNode.
+ * \param[in] rightOperand указатель на правый операнд - экземаляр ExpressionNode.
+ * \return указатель на узел оператора присвоения.
+ */
+struct ExpressionNode* createAssignmentExpressionNode(struct ExpressionNode* leftOperand, struct ExpressionNode* rightOperand);
+
+/*! Создать узел вызова функции.
+ * \param[in] idStr строка-идентификатор (имя) функции.
+ * \param[in] list список параметров-аргументов функции; NULL, если список пустой.
+ * \return указатель на созданный узел Expression.
+ */
+struct ExpressionNode* createFunctionCallExpressionNode(char* idStr, struct ExpressionListNode* list);
+
+
+/*------------------------------------ ExpressionList -------------------------------------*/
+
+/*! Создать узел списка Expression.
+ * \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+ * \return указатель на созданный экземпляр узла списка Expression.
+ */
+struct ExpressionListNode *createExpressionListNode(struct ExpressionNode *firstChild);
+
+/*! Добавить ExpressionNode к списку Expression.
+ * \param[in,out] list список, к которому добавляется новый узел.
+ * \param[in] expression добавляемый узел Expression.
+ * \return измененный список Expression (тот же самый, что и параметр list).
+ */
+struct ExpressionListNode *addExpressionToExpressionList(struct ExpressionListNode *list, struct ExpressionNode *expression);
+
+
+/*------------------------------------ Statement -------------------------------------*/
+
+/*! Создать узел StatementNode на основе узла ExpressionNode.
+* \param[in] expr указатель на экземпляр ExpressionNode, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
+*/
+struct StatementNode* createStatementFromExpression(struct ExpressionNode* expr);
+
+/*! Создать пустой узел Statement.
+* \return указатель на пустой узел Statement.
+*/
+struct StatementNode* createEmptyStatement();
+
+/*! Создать узел Return Statement.
+* \param[in] expr выражение, результат которого возвращается; может быть NULL, если ничего не возвращается.
+* \return созданный узел Return Stmt.
+*/
+struct StatementNode* createReturnStatement(struct ExpressionNode* expr);
+
+/*! Создать узел StatementNode для цикла while.
+* \param[in] cond Условие выполнения цикла - указатель на узел  Expression.
+* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
+* \return Созданный узел Statement.
+*/
+struct StatementNode* createWhileStatement(struct ExpressionNode* cond, struct StatementNode* stmt);
+
+/*! Создать узел StatementNode для цикла do..while.
+* \param[in] cond Условие выполнения цикла - указатель на узел Expression.
+* \param[in] stmt Тело цикла, состоящее из одного узла Statement.
+* \return Созданный узел Statement.
+*/
+struct StatementNode* createDoWhileStatement(struct ExpressionNode* cond, struct StatementNode* stmt);
+
+/*! Создать узел StatementNode для условного оператора if.
+ * \param[in] cond Условие выполнения ветки if - указатель на узел Expression.
+ * \param[in] trueStmt Тело ветки if, состоящее из одного узла Statement.
+ * \param[in] falseStmt Тело ветки else, состоящее из одного узла Statement (может быть NULL).
+ * \return Созданный узел Statement.
+ */
+struct StatementNode* createIfStatement(struct ExpressionNode* cond, struct StatementNode* trueStmt, struct StatementNode* falseStmt);
+
+/*! Создать узел StatementNode на основе списка объявлений переменных (VarDeclarationListNode).
+ * \param[in] mod модификатор идентификатора.
+ * \param[in] varDeclList Список объявлений переменных.
+ * \return Указатель на узел StatementNode, представляющий объявления переменных.
+ */
+struct StatementNode* createStatementFromVarDeclarationList(struct ModifierNode* mod, struct VarDeclarationListNode* varDeclList);
+
+/*! Создать узел StatementNode на основе узла BlockStatement.
+* \param[in] blockStmt указатель на экземпляр BlockStatement, на основе которого создается StatementNode.
+* \return указатель на созданный экземпляр StatementNode.
+*/
+struct StatementNode* createStatementFromBlockStatement(struct BlockStatementNode* blockStmt);
+
+/*! Создать узел StatementNode для цикла for.
+ * \param[in] init Инициализация цикла; узел Statement или NULL, если нет инициализации.
+ * \param[in] cond Условие выполнения цикла; узел Expression или NULL, если нет условия.
+ * \param[in] updExpr Выражение обновления после каждой итерации; узел Expression или NULL, если нет обновления.
+ * \param[in] stmt Тело цикла, состоящее из узла Statement.
+ * \return Созданный узел Statement.
+ */
+struct StatementNode* createForStatement(struct StatementNode* init, struct ExpressionNode* cond, struct ExpressionNode* updExpr, struct StatementNode* stmt);
+
+
+/*------------------------------------ StatementList -------------------------------------*/
+
+/*! Создать узел списка Statement.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct StatementListNode* createStatementListNode(struct StatementNode* firstChild);
+
+/*! Добавить StatementNode к списку Statement.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел Statement.
+* \return измененный список Statement (тот же самый, что и параметр list).
+*/
+struct StatementListNode* addStatementToStatementList(struct StatementListNode* list, struct StatementNode* statement);
+
+
+
+/*------------------------------------ TSFileElement -------------------------------------*/
+
+/*! Создать элемент файла TS на основе функции.
+* \param[in] modList список модификаторов элемента.
+* \param[in] function функция, на основе которой создается элемент.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createElementFromFunction(struct FunctionNode* function);
+
+/*! Создать элемент файла TS на основе Statement.
+* \param[in] modList список модификаторов элемента.
+* \param[in] Statement, на основе которой создается элемент.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createElementFromStatement(struct StatementNode* stmt);
+
+
+/*! Создать пустой элемент файла TS.
+* \return указатель на экземпляр структуры-элемента TS.
+*/
+struct TSFileElementNode* createEmptyElement();
+
+
+/*------------------------------------ TSFileElementList -------------------------------------*/
+
+/*! Создать узел списка элементов файла TS на основе элемента TS.
+* \param[in] elem элемент файла TS, на основе которого создается список элементов TS.
+* \return указатель на список элементов файла TS.
+*/
+struct TSFileElementListNode* createTSFileElementListNode(struct TSFileElementNode* elem);
+
+/*! Добавить элемент файла TS к списку элементов файла TS.
+* \param[in] elemList список элементов файла TS, к которому добавляется новый элемент.
+* \param[in] elem новый добавляемый элемет файла TS.
+* \return указатель на обновленный список элементов.
+*/
+struct TSFileElementListNode* addTSFileElementToList(struct TSFileElementListNode* elemList, struct TSFileElementNode* elem);
+
+
+
+/*------------------------------------ TSFile -------------------------------------*/
+
+/*! Создать корневой узел файла TS на основе списка элементов файла.
+* \param[in] elemList список элементов файла TS, на основе которого создается файл TS.
+* \return указатель на корневой узел файла TS.
+*/
+struct TSFileNode* createTSFileNode(struct TSFileElementListNode* elemList);
+
+/*------------------------------------ Modifier -------------------------------------*/
+
+/*! Создать узел модификатора LET.
+* \return указатель на узел модификатора LET.
+*/
+struct ModifierNode* createLetModifierNode();
+
+/*! Создать узел модификатора CONST.
+ * \return указатель на узел модификатора CONST.
+ */
+struct ModifierNode* createConstModifierNode();
+
+/*------------------------------------ Type -------------------------------------*/
+
+/*! Создать узел типа NUMBER.
+ * \return Указатель на узел типа NUMBER.
+ */
+struct TypeNode* createNumberTypeNode();
+
+/*! Создать узел типа STRING.
+ * \return Указатель на узел типа STRING.
+ */
+struct TypeNode* createStringTypeNode();
+
+/*! Создать узел типа BOOLEAN.
+ * \return Указатель на узел типа BOOLEAN.
+ */
+struct TypeNode* createBooleanTypeNode();
+
+/*! Создать узел типа ANY.
+ * \return Указатель на узел типа ANY.
+ */
+struct TypeNode* createAnyTypeNode();
+
+/*! Создать узел типа UNKNOWN.
+ * \return Указатель на узел типа UNKNOWN.
+ */
+struct TypeNode* createUnknownTypeNode();
+
+/*! Создать узел типа VOID.
+ * \return Указатель на узел типа VOID.
+ */
+struct TypeNode* createVoidTypeNode();
+
+/*------------------------------------ Dimension -------------------------------------*/
+
+/*! Создать узел DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* createDimensionNode();
+
+/*! Инкрементировать размерность в узле DimensionNode.
+ * \return указатель на узел DimensionNode.
+ */
+struct DimensionNode* incrementDimensionNode(struct DimensionNode* node);
+
+/*------------------------------------ VarDeclaration -------------------------------------*/
+
+/*! Создать узел VarDeclaration на основе идентификатора и его модификатора с типом.
+* \param[in] ident строка - наименование идентификатора.
+* \param[in] typ тип идентификатора; NULL, если не указан.
+* \param[in] dimen размерность идентификатора; NULL, если не указан.
+* \param[in] expr указатель на экземпляр ExpressionNode.
+* \return указатель на узел VarDeclaration.
+*/
+struct VarDeclarationNode* createVarDeclarationNode(char* ident, struct TypeNode* typ, struct DimensionNode* dimen, struct ExpressionNode* expr);
+
+/*------------------------------------ VarDeclarationList -------------------------------------*/
+
+/*! Создать узел списка VarDeclaration.
+* \param[in] firstChild указатель на первый элемент списка; для пустого списка - NULL.
+* \return указатель на созданный экземпляр узла списка Statement.
+*/
+struct VarDeclarationListNode* createVarDeclarationList(struct VarDeclarationNode* firstChild, struct VarDeclarationNode* lastChild);
+
+/*! Добавить VarDeclarationNode к списку VarDeclaration.
+* \param[in,out] list список, к которому добавляется новый узел.
+* \param[in] statement добавляемый узел VarDeclaration.
+* \return измененный список VarDeclaration (тот же самый, что и параметр list).
+*/
+struct VarDeclarationListNode* addVarDeclarationToVarDeclarationList(struct VarDeclarationListNode* list, struct VarDeclarationNode* varDecl);
+
+
+/*------------------------------------ Function -------------------------------------*/
+
+/*! Создать узел функции.
+* \param[in] ident идентификатор (название) функции.
+* \param[in] pars список параметров функции.
+* \param[in] ret возвращаемое значение функции.
+* \param[in] bod тело функции.
+* \return Указатель на созданный узел функции.
+*/
+struct FunctionNode* createFunctionNode(char* ident, struct ParamListNode* pars, struct TypeNode* ret, struct StatementListNode* bod);
+
+/*! Создать узел параметра функции.
+* \param[in] ident идентификатор (название) параметра.
+* \param[in] parType тип параметра.
+* \return Указатель на созданный узел функции.
+*/
+struct ParamForFuncNode* createParamForFunc(char* ident, struct TypeNode* parType);
+
+/*! Создать узел параметра функции.
+* \param[in] ident идентификатор (название) параметра.
+* \param[in] parType тип параметра.
+* \return Указатель на созданный узел функции.
+*/
+struct ParamForFuncNode* createOptParamForFunc(char* ident, struct TypeNode* parType);
+
+
+/*! Создать узел списка элементов параметров функции.
+* \param[in] elem параметр функции, на основе которого создается список параметров функции.
+* \return указатель на список параметров функции.
+*/
+struct ParamListNode* createParamListNode(struct ParamForFuncNode* elem);
+
+
+/*! Добавить параметр к списку параметров функции.
+* \param[in] elemList список параметров функции, к которому добавляется новый параметр.
+* \param[in] elem новый добавляемый параметр.
+* \return указатель на обновленный список параметров.
+*/
+struct ParamListNode* addParamToListNode(struct ParamListNode* elemList, struct ParamForFuncNode* elem);
