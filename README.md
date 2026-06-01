@@ -137,8 +137,9 @@ for (let i = 0; i < n; i++) { ... }
 
 ```
 TypeScript_compiler/
-├── CompilatorTS/
-│   └── CompilatorTS/
+├── CompilatorTS/                # Visual Studio solution
+│   ├── CompilatorTS.sln
+│   └── CompilatorTS/            # VS project (исходный код)
 │       ├── lexer.l              # Лексер (Flex)
 │       ├── parser.y             # Парсер (Bison)
 │       ├── nodes.h              # Типы AST-узлов
